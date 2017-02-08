@@ -6,8 +6,7 @@ import java.awt.Graphics;
 import java.io.File;
 import java.util.LinkedList;
 
-import main.AlphaImage;
-import main.DisplayPanel;
+import display.DisplayPanel;
 
 public class DisplayLayerPanel extends DisplayPanel {
 	private static final long serialVersionUID = 1L;

@@ -11,7 +11,7 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
-import main.DisplayPanel;
+import display.DisplayPanel;
 import main.FileChooser;
 
 public class DisplayLoadingPanel extends DisplayPanel {
@@ -92,7 +92,7 @@ public class DisplayLoadingPanel extends DisplayPanel {
 	}
 	
 	public void rePop() {
-		if (folder != null && fileNames.isEmpty()) {
+		if (folder != null && fileNames.isEmpty() && folder.exists()) {
 			Random rand = new Random();
 			for (File f: folder.listFiles()) {
 				String name = f.getName();

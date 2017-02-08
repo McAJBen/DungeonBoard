@@ -5,19 +5,24 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import main.ControlPanel;
+import control.ControlPanel;
 import main.FileChooser;
 
 public class ControlPaint extends ControlPanel {
@@ -27,9 +32,13 @@ public class ControlPaint extends ControlPanel {
 	private ImageIcon[] drawStyle;
 	private ImageIcon[] drawMode;
 	private ImageIcon[] penType;
+	
 	private DrawPanel drawPanel;
 	private DisplayPaintPanel paintDisplay;
-	JButton updateScreen;
+	
+	private JComboBox<String> fileBox;
+	private JButton updateScreen;
+	
 	
 	public ControlPaint(Dimension displaySize, DisplayPaintPanel disp) {
 		setLayout(new BorderLayout());
@@ -59,10 +68,31 @@ public class ControlPaint extends ControlPanel {
 		FileChooser fc = new FileChooser();
 		fc.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				setImage(fc.getImage());
+				setFile(fc.getFile());
 			}
 		});
 		northPanel.add(fc);
+		
+		fileBox = new JComboBox<>();
+		fileBox.addItem("");
+		File folder = new File(System.getProperty("user.dir") + "\\DungeonBoard\\Paint");
+		if (folder.exists()) {
+			for (File f: folder.listFiles()) {
+				String name = f.getName();
+				String suffix = name.substring(name.lastIndexOf('.') + 1);
+				if (suffix.equalsIgnoreCase("PNG") || suffix.equalsIgnoreCase("JPG")) {
+					fileBox.addItem(name);
+				}
+			}
+		}
+		fileBox.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if (!fileBox.getSelectedItem().equals("")) {
+					setFile((String) fileBox.getSelectedItem());
+				}
+			}
+		});
+		northPanel.add(fileBox);
 		
 		JButton drawStyleButton = new JButton(drawStyle[0]);
 		drawStyleButton.addActionListener(new ActionListener() {
@@ -116,6 +146,11 @@ public class ControlPaint extends ControlPanel {
 		setVisible(true);
 	}
 	
+	protected void setFile(String selectedItem) {
+		File f = new File(System.getProperty("user.dir") + "\\DungeonBoard\\Paint\\" + selectedItem);
+		setFile(f);
+	}
+
 	private static ImageIcon createImageIcon(String path) {
         java.net.URL imgURL = FileChooser.class.getResource(path);
         if (imgURL != null) {
@@ -126,11 +161,16 @@ public class ControlPaint extends ControlPanel {
         }
     }
 
-	public void setImage(BufferedImage image) {
-		if (image != null) {
-			drawPanel.setImage(image);
-			paintDisplay.setMask(drawPanel.getMask());
-			paintDisplay.setImage(image);
+	public void setFile(File f) {
+		try {
+			BufferedImage image = ImageIO.read(f);
+			if (image != null) {
+				drawPanel.setImage(image);
+				paintDisplay.setMask(drawPanel.getMask());
+				paintDisplay.setImage(image);
+			}
+		} catch (Exception error) {
+			
 		}
 	}
 }

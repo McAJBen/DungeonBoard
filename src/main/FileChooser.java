@@ -1,8 +1,6 @@
 package main;
-import java.awt.image.BufferedImage;
 import java.io.File;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -24,20 +22,16 @@ public class FileChooser extends JButton {
         }
     }
 	
-	public BufferedImage getImage() {
+	public File getFile() {
 		JFileChooser chooser = new JFileChooser();
-		chooser.setCurrentDirectory(new java.io.File("."));
+		chooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
 		chooser.setDialogTitle("Select Picture");
 		if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 			File f = chooser.getSelectedFile();
 			String name = f.getName();
 			String suffix = name.substring(name.lastIndexOf('.') + 1);
 			if (suffix.equalsIgnoreCase("PNG") || suffix.equalsIgnoreCase("JPG")) {
-				try {
-					return ImageIO.read(f);
-				} catch (Exception error) {
-					
-				}
+				return f;
 			}
 		}
 		return null;

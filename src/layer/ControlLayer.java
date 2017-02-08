@@ -8,10 +8,11 @@ import java.io.File;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import main.ControlPanel;
+import control.ControlPanel;
 import main.FileChooser;
 
 public class ControlLayer extends ControlPanel {
@@ -19,6 +20,7 @@ public class ControlLayer extends ControlPanel {
 	
 	private DisplayLayerPanel layerDisplay;
 	private PicturePanel pp;
+	private JLabel folder;
 	
 	public ControlLayer(DisplayLayerPanel layerDisplay) {
 		this.layerDisplay = layerDisplay;
@@ -35,6 +37,9 @@ public class ControlLayer extends ControlPanel {
 		});
 		northPanel.add(fc);
 		
+		folder = new JLabel();
+		northPanel.add(folder);
+		
 		pp = new PicturePanel(layerDisplay);
 		
 		add(northPanel, BorderLayout.NORTH);
@@ -43,11 +48,14 @@ public class ControlLayer extends ControlPanel {
 		jsp.setBorder(BorderFactory.createEmptyBorder());
 		add(jsp, BorderLayout.CENTER);
 		
+		setDirectory(new File(System.getProperty("user.dir") + "\\DungeonBoard\\Layer"));
+		
 		setVisible(true);
 	}
 	
 	public void setDirectory(File folder) {
-		if (folder != null) {
+		if (folder != null && folder.exists()) {
+			this.folder.setText(folder.getPath());
 			layerDisplay.setFolder(folder);
 			pp.clearImages();
 			for (File f: folder.listFiles()) {

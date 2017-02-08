@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 
-import main.DisplayPanel;
+import display.DisplayPanel;
 
 public class DisplayPaintPanel extends DisplayPanel {
 	private static final long serialVersionUID = 1L;
