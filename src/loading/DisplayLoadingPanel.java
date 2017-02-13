@@ -17,6 +17,10 @@ import main.FileChooser;
 public class DisplayLoadingPanel extends DisplayPanel {
 	private static final long serialVersionUID = 1L;
 	
+	private static final int FADE_IN = 17;
+	private static final int TOTAL_WAIT = 400;
+	private static final int FADE_OUT = 383;
+	
 	private File folder;
 	private LinkedList<String> fileNames;
 	private BufferedImage image;
@@ -35,22 +39,25 @@ public class DisplayLoadingPanel extends DisplayPanel {
 
 	private void motion() {
 		timer++;
-		if (timer <= 17) {
+		if (timer <= FADE_IN) { // fading in
 			repaint();
 			fade = 255 - timer * 15;
 		}
-		else if (timer > 400) {
+		else if (timer > TOTAL_WAIT) { // end
 			repaint();
 			timer = 0;
 			getImage();
 		}	
-		else if (timer > 383) {
+		else if (timer > FADE_OUT) { // fading out
 			repaint();
-			fade = (timer - 383) * 15;
+			fade = (timer - FADE_OUT) * 15;
 		}
 	}
 	
 	private void getImage() {
+		if (fileNames.isEmpty()) {
+			rePop();
+		}
 		if (!fileNames.isEmpty()) {
 			Random rand = new Random();
 			if (rand.nextInt(100) == 0) {
@@ -91,32 +98,35 @@ public class DisplayLoadingPanel extends DisplayPanel {
 		g.dispose();
 	}
 	
-	public void rePop() {
-		if (folder != null && fileNames.isEmpty() && folder.exists()) {
+	private void rePop() {
+		if (folder != null && folder.exists()) {
 			Random rand = new Random();
 			for (File f: folder.listFiles()) {
 				String name = f.getName();
 				String suffix = name.substring(name.lastIndexOf('.') + 1);
 				if (suffix.equalsIgnoreCase("PNG")) {
-					if (fileNames.isEmpty()) {
+					int index = rand.nextInt(fileNames.size() + 1);
+					if (index == fileNames.size()) {
 						fileNames.add(name);
 					}
 					else {
-						fileNames.add(rand.nextInt(fileNames.size()), name);
+						fileNames.add(index, name);
 					}
 				}
 			}
 		}
 	}
-	
-	private void restart() {
+
+	private void restart(boolean changeImage) {
 		paintThread.interrupt();
 		try {
 			paintThread.join();
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
-		getImage();
+		if (changeImage) {
+			getImage();
+		}
 		paintThread = new Thread("paintThread") {
 			@Override
 			public void run() {
@@ -130,7 +140,6 @@ public class DisplayLoadingPanel extends DisplayPanel {
 				}
 			}
 		};
-		timer = 0;
 		paintThread.start();
 	}
 	
@@ -138,7 +147,7 @@ public class DisplayLoadingPanel extends DisplayPanel {
 	public void setMainDisplay(boolean b) {
 		if (b) {
 			mainDisplay = true;
-			restart();
+			restart(false);
 		}
 		else {
 			mainDisplay = false;
@@ -148,7 +157,8 @@ public class DisplayLoadingPanel extends DisplayPanel {
 	public void setDirectory(File folder) {
 		this.folder = folder;
 		fileNames.clear();
+		timer = 0;
 		rePop();
-		restart();
+		restart(true);
 	}
 }
