@@ -24,6 +24,8 @@ public class DisplayWindow extends JFrame {
 	
 	private BufferedImage handImages[];
 	private Point mousePos;
+	private enum Direction {UP, RIGHT, DOWN, LEFT};
+	private Direction handDirection;
 	
 	public DisplayWindow(Rectangle r) {
 		super();
@@ -38,6 +40,7 @@ public class DisplayWindow extends JFrame {
 	            "null"));
 		mousePos = NULL_POS;
 		handImages = getImages();
+		handDirection = Direction.UP;
 		
 		addMouseMotionListener(new MouseMotionAdapter() {
 			public void mouseDragged(MouseEvent e) {
@@ -49,7 +52,10 @@ public class DisplayWindow extends JFrame {
 		});
 		addMouseListener(new MouseListener() {
 			public void mouseReleased(MouseEvent e) {}
-			public void mousePressed(MouseEvent e) {}
+			public void mousePressed(MouseEvent e) {
+				handDirection = Direction.values()[(handDirection.ordinal() + 1) % Direction.values().length];
+				repaint();
+			}
 			public void mouseClicked(MouseEvent e) {}
 			public void mouseExited(MouseEvent e) {
 				setMouse(NULL_POS);
@@ -93,30 +99,27 @@ public class DisplayWindow extends JFrame {
 	}
 	
 	private void paintMouse(Graphics g) {
-		// U D L R
-		if (mousePos.y < getSize().height / 3) {
-			// UP
+		switch (handDirection) {
+		case UP:
 			g.drawImage(handImages[0],
 					mousePos.x - HAND_OFFSET.height,
 					mousePos.y, null);
-		}
-		else if (mousePos.y > getSize().height * 2 / 3) {
-			// DOWN
+			break;
+		case RIGHT:
 			g.drawImage(handImages[1],
-					mousePos.x - handImages[1].getWidth() + HAND_OFFSET.height,
-					mousePos.y - HAND_OFFSET.width, null);
-		}
-		else if (mousePos.x < getSize().width / 3) {
-			// LEFT
-			g.drawImage(handImages[2],
-					mousePos.x,
-					mousePos.y + HAND_OFFSET.height - handImages[2].getHeight(), null);
-		}
-		else {
-			// RIGHT
-			g.drawImage(handImages[3],
-					mousePos.x - HAND_OFFSET.width,
+					mousePos.x - handImages[1].getWidth(),
 					mousePos.y - HAND_OFFSET.height, null);
+			break;
+		case DOWN:
+			g.drawImage(handImages[2],
+					mousePos.x - handImages[2].getWidth() + HAND_OFFSET.height,
+					mousePos.y + HAND_OFFSET.height - handImages[2].getHeight(), null);
+			break;
+		case LEFT:
+			g.drawImage(handImages[3],
+					mousePos.x,
+					mousePos.y + HAND_OFFSET.height - handImages[3].getHeight(), null);
+			break;
 		}
 	}
 }
