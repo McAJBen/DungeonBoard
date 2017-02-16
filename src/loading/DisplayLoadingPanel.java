@@ -1,8 +1,10 @@
 package loading;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -17,18 +19,18 @@ import main.FileChooser;
 public class DisplayLoadingPanel extends DisplayPanel {
 	private static final long serialVersionUID = 1L;
 	
-	private static final int FADE_IN = 17;
-	private static final int TOTAL_WAIT = 400;
-	private static final int FADE_OUT = 383;
+	private static final int FADE_IN = 20;
+	private static final int TOTAL_WAIT = 100;
 	
 	private File folder;
 	private LinkedList<String> fileNames;
-	private BufferedImage image;
+	private BufferedImage oldImage;
+	private BufferedImage currentImage;
 	
 	private Thread paintThread;
 	private boolean mainDisplay;
 	private short timer;
-	private int fade;
+	private float fade;
 	
 	public DisplayLoadingPanel() {
 		paintThread = new Thread();
@@ -39,18 +41,14 @@ public class DisplayLoadingPanel extends DisplayPanel {
 
 	private void motion() {
 		timer++;
-		if (timer <= FADE_IN) { // fading in
+		if (timer <= FADE_IN) {
 			repaint();
-			fade = 255 - timer * 15;
+			fade = (float)timer / FADE_IN;
 		}
-		else if (timer > TOTAL_WAIT) { // end
+		else if (timer > TOTAL_WAIT) {
 			repaint();
 			timer = 0;
 			getImage();
-		}	
-		else if (timer > FADE_OUT) { // fading out
-			repaint();
-			fade = (timer - FADE_OUT) * 15;
 		}
 	}
 	
@@ -59,16 +57,17 @@ public class DisplayLoadingPanel extends DisplayPanel {
 			rePop();
 		}
 		if (!fileNames.isEmpty()) {
+			oldImage = currentImage;
 			Random rand = new Random();
-			if (rand.nextInt(100) == 0) {
-				image = getFakeImage();
+			if (rand.nextInt(1_000) == 0) {
+				currentImage = getFakeImage();
 			}
 			else {
 				String file = folder.getAbsolutePath() + "\\" + fileNames.removeFirst();
 				try {
-					image = ImageIO.read(new File(file));
+					currentImage = ImageIO.read(new File(file));
 				} catch (Exception e) {
-					image = null;
+					currentImage = null;
 				}
 			}
 		}
@@ -89,12 +88,13 @@ public class DisplayLoadingPanel extends DisplayPanel {
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
+		Graphics2D g2d = (Graphics2D) g;
 		Dimension s = getSize();
-		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, s.width, s.height);
-		g.drawImage(image, 0, 0, s.width, s.height, null);
-		g.setColor(new Color(0, 0, 0, fade));
-		g.fillRect(0, 0, s.width, s.height);
+		g2d.setColor(Color.BLACK);
+		g2d.fillRect(0, 0, s.width, s.height);
+		g2d.drawImage(oldImage, 0, 0, s.width, s.height, null);
+		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade));
+		g2d.drawImage(currentImage, 0, 0, s.width, s.height, null);
 		g.dispose();
 	}
 	
