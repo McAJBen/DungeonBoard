@@ -1,10 +1,10 @@
 # DungeonBoard
 A D&amp;D Map viewer for DMs to show players maps/dungeons without spoiling too much
 
-### Examples
+## Examples
 The following examples will show different use cases for the application.
 
-## Paint ability
+### Paint ability
 Painting onto a map to reveal known areas to players.
 This is the Control Window, it will be only shown to the DM so they can edit behind the scenes.
 <br>
@@ -24,7 +24,7 @@ Being able to dynamically show and hide sections quickly is the main purpose of 
 <img src="Examples/view2.png" alt="View" width="367" height="223">
 <br>
 
-## Layer ability
+### Layer ability
 Unlike the paint ability this allows the DM to overlay different pictures ontop of each other.
 The best use case would be for a world map, where you can apply layers that show hidden information not shown on the original map.
 In this example the base map is displayed first, then the DM can choose to tell the players of specific areas like the Blacksmith or the Burial Grounds.
@@ -39,14 +39,14 @@ This is useful in a dungeon where you want to reveal pre-determined areas, or if
 <img src="Examples/view1.png" alt="View" width="276" height="100">
 <br>
 
-## Loading ability
+### Loading ability
 This ability is useful when the DM needs to kill some time.
 The display will alternate randomly between all images in a directory.
 The main use case is for the DM to show 'loading tips' to distract the players and also teach them about things they might not know they can do.
 
 
 
-### Controls
+## Controls
 <img src="Examples/guide.png" alt="Guide">
 
 
