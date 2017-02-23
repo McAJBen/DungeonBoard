@@ -21,5 +21,11 @@ Painting onto a dungeon
 <img src="Examples/control2.png" alt="Controls" width="331" height="282">
 <img src="Examples/view2.png" alt="View" width="367" height="223">
 <p>
+Painting onto a dungeon
+<p>
+<img src="Examples/control3.png" alt="Controls" width="309" height="186">
+<img src="Examples/view3.png" alt="View" width="336" height="210">
+<p>
 <img src="Examples/guide.png" alt="Guide">
+
 
