@@ -25,7 +25,7 @@ Being able to dynamically show and hide sections quickly is the main purpose of 
 <br>
 
 ### Layer ability
-Unlike the paint ability this allows the DM to overlay different pictures ontop of each other.
+Unlike the paint ability this allows the DM to overlay different pictures on top of each other.
 The best use case would be for a world map, where you can apply layers that show hidden information not shown on the original map.
 In this example the base map is displayed first, then the DM can choose to tell the players of specific areas like the Blacksmith or the Burial Grounds.
 <br>
@@ -33,7 +33,7 @@ In this example the base map is displayed first, then the DM can choose to tell 
 <img src="Examples/view3.png" alt="View" width="336" height="210">
 <br>
 Here the DM has many different rooms that they can toggle the display of quickly.
-This is useful in a dungeon where you want to reveal pre-determined areas, or if a room changes through a playthough.
+This is useful in a dungeon where you want to reveal pre-determined areas, or if a room changes through a session.
 <br>
 <img src="Examples/control1.png" alt="Controls" width="331" height="369">
 <img src="Examples/view1.png" alt="View" width="276" height="100">
@@ -44,7 +44,7 @@ This ability is useful when the DM needs to kill some time.
 The display will alternate randomly between all images in a directory.
 The main use case is for the DM to show 'loading tips' to distract the players and also teach them about things they might not know they can do.
 
-<a href="http://imgur.com/a/GB9kA">Exmaple Loading texts</a>
+<a href="http://imgur.com/a/GB9kA">Example Loading texts</a>
 
 ## Controls
 <img src="Examples/guide.png" alt="Guide">
