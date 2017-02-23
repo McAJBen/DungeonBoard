@@ -44,7 +44,7 @@ This ability is useful when the DM needs to kill some time.
 The display will alternate randomly between all images in a directory.
 The main use case is for the DM to show 'loading tips' to distract the players and also teach them about things they might not know they can do.
 
-<a href="http://imgur.com/a/HM3iw">Exmaple Loading texts</a>
+<a href="http://imgur.com/a/GB9kA">Exmaple Loading texts</a>
 
 ## Controls
 <img src="Examples/guide.png" alt="Guide">
