@@ -7,20 +7,18 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
 
 import display.DisplayPanel;
-import main.FileChooser;
 
 public class DisplayLoadingPanel extends DisplayPanel {
 	private static final long serialVersionUID = 1L;
 	
 	private static final int FADE_IN = 20;
-	private static final int TOTAL_WAIT = 100;
+	private static final int TOTAL_WAIT = 400;
 	
 	private File folder;
 	private LinkedList<String> fileNames;
@@ -58,31 +56,13 @@ public class DisplayLoadingPanel extends DisplayPanel {
 		}
 		if (!fileNames.isEmpty()) {
 			oldImage = currentImage;
-			Random rand = new Random();
-			if (rand.nextInt(1_000) == 0) {
-				currentImage = getFakeImage();
-			}
-			else {
-				String file = folder.getAbsolutePath() + "\\" + fileNames.removeFirst();
-				try {
-					currentImage = ImageIO.read(new File(file));
-				} catch (Exception e) {
-					currentImage = null;
-				}
+			String file = folder.getAbsolutePath() + "\\" + fileNames.removeFirst();
+			try {
+				currentImage = ImageIO.read(new File(file));
+			} catch (Exception e) {
+				currentImage = null;
 			}
 		}
-	}
-
-	private BufferedImage getFakeImage() {
-		try {
-        	java.net.URL imgURL = FileChooser.class.getResource("/resources/fakeLoadingTip.png");
-        	if (imgURL != null) {
-        		return ImageIO.read(imgURL);
-        	}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	@Override
@@ -92,7 +72,9 @@ public class DisplayLoadingPanel extends DisplayPanel {
 		Dimension s = getSize();
 		g2d.setColor(Color.BLACK);
 		g2d.fillRect(0, 0, s.width, s.height);
-		g2d.drawImage(oldImage, 0, 0, s.width, s.height, null);
+		if (timer <= FADE_IN) {
+			g2d.drawImage(oldImage, 0, 0, s.width, s.height, null);
+		}
 		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade));
 		g2d.drawImage(currentImage, 0, 0, s.width, s.height, null);
 		g.dispose();

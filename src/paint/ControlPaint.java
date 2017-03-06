@@ -170,7 +170,7 @@ public class ControlPaint extends ControlPanel {
 				paintDisplay.setImage(image);
 			}
 		} catch (Exception error) {
-			
+			error.printStackTrace();
 		}
 	}
 }

@@ -1,11 +1,13 @@
 package paint;
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
-import java.awt.RenderingHints;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -17,9 +19,8 @@ import javax.swing.JComponent;
 public class DrawPanel extends JComponent {
 	
 	private static final long serialVersionUID = 1L;
-	private static final Dimension SIZE = new Dimension(640, 460);
-	private static final int CLEAR = new Color(100, 255, 100, 120).getRGB();
-	private static final int OPAQUE = new Color(255, 100, 100, 128).getRGB();
+	private static final Color CLEAR = new Color(100, 255, 100); // green
+	private static final Color OPAQUE = new Color(255, 100, 100); // red
 	private static final Color PINK = new Color(255, 0, 255);
 	
 	// Pen variables
@@ -32,7 +33,7 @@ public class DrawPanel extends JComponent {
 	private BufferedImage drawingLayer;
 	private BufferedImage image;
 	private Graphics2D g2;
-	private Dimension imageSize;
+	private Dimension controlSize;
 	
 	// drawing variables
 	private Point lastP;
@@ -67,7 +68,7 @@ public class DrawPanel extends JComponent {
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				if (image != null) {
-					lastP = e.getPoint();
+					lastP = toDrawingPoint(e.getPoint());
 					if (drawMode == DrawMode.ANY) {
 						if (e.getButton() == MouseEvent.BUTTON2) {
 							setWindowPos(lastP);
@@ -76,11 +77,11 @@ public class DrawPanel extends JComponent {
 						}
 						else {
 							if (e.getButton() == MouseEvent.BUTTON1) {
-								g2.setPaint(Color.WHITE);
+								g2.setPaint(CLEAR);
 								canDraw = true;
 							}
 							else if (e.getButton() == MouseEvent.BUTTON3) {
-								g2.setPaint(Color.BLACK);
+								g2.setPaint(OPAQUE);
 								canDraw = true;
 							}
 							addPoint(lastP);
@@ -104,10 +105,10 @@ public class DrawPanel extends JComponent {
 			public void mouseDragged(MouseEvent e) {
 				if (image != null) {
 					if (canDraw) {
-						addPoint(e.getPoint());
+						addPoint(toDrawingPoint(e.getPoint()));
 					}
 					else {
-						setWindowPos(e.getPoint());
+						setWindowPos(toDrawingPoint(e.getPoint()));
 						display.changeWindowPos(getWindowPos());
 					}
 					mousePos = e.getPoint();
@@ -119,28 +120,42 @@ public class DrawPanel extends JComponent {
 				repaint();
 			}
 		});
+		addComponentListener(new ComponentListener() {
+			public void componentShown(ComponentEvent e) {}
+			public void componentResized(ComponentEvent e) {
+				controlSize = getSize();
+			}
+			public void componentMoved(ComponentEvent e) {}
+			public void componentHidden(ComponentEvent e) {}
+		});
+		
 		repaint();
 	}
 	
+	private Point toDrawingPoint(Point p) {
+		return new Point(
+				p.x * image.getWidth() / controlSize.width,
+				p.y * image.getHeight() / controlSize.height);
+	}
+	
 	private void setWindowPos(Point p) {
-		windowPos.x = p.x * imageSize.width / SIZE.width;
-		windowPos.y = p.y * imageSize.height / SIZE.height;
+		windowPos.x = p.x;
+		windowPos.y = p.y;
 		windowPos.x -= displaySize.width / 2;
 		windowPos.y -= displaySize.height / 2;
 		
-		if (windowPos.x > imageSize.width - displaySize.width) {
-			windowPos.x = imageSize.width - displaySize.width;
+		if (windowPos.x > image.getWidth() - displaySize.width) {
+			windowPos.x = image.getWidth() - displaySize.width;
 		}
 		if (windowPos.x < 0) {
 			windowPos.x = 0;
 		}
-		if (windowPos.y > imageSize.height - displaySize.height) {
-			windowPos.y = imageSize.height - displaySize.height;
+		if (windowPos.y > image.getHeight() - displaySize.height) {
+			windowPos.y = image.getHeight() - displaySize.height;
 		}
 		if (windowPos.y < 0) {
 			windowPos.y = 0;
 		}
-		
 	}
 	
 	private void addPoint(Point newP) {
@@ -158,10 +173,18 @@ public class DrawPanel extends JComponent {
 			switch (penType) {
 			case CIRCLE:
 				g2.fillPolygon(getPolygon(newP, lastP));
-				g2.fillOval(newP.x - radius, newP.y - radius, diameter, diameter);
+				g2.fillOval(
+						newP.x - radius * image.getWidth() / controlSize.width,
+						newP.y - radius * image.getHeight() / controlSize.height,
+						diameter * image.getWidth() / controlSize.width,
+						diameter * image.getHeight() / controlSize.height);
 				break;
 			case SQUARE:
-				g2.fillRect(newP.x - radius, newP.y - radius, diameter, diameter);
+				g2.fillRect(
+						newP.x - radius * image.getWidth() / controlSize.width,
+						newP.y - radius * image.getHeight() / controlSize.height,
+						diameter * image.getWidth() / controlSize.width,
+						diameter * image.getHeight() / controlSize.height);
 				break;
 			}
 			lastP = newP;
@@ -173,10 +196,10 @@ public class DrawPanel extends JComponent {
 		double angle = -Math.atan2(newP.getY() - oldP.getY(), newP.getX() - oldP.getX());
 		double anglePos = angle + Math.PI / 2;
 		double angleNeg = angle - Math.PI / 2;
-		int cosP = (int) (Math.cos(anglePos) * radius);
-		int cosN = (int) (Math.cos(angleNeg) * radius);
-		int sinP = (int) (Math.sin(anglePos) * radius);
-		int sinN = (int) (Math.sin(angleNeg) * radius);
+		int cosP = (int) (Math.cos(anglePos) * radius * image.getWidth() / controlSize.width);
+		int cosN = (int) (Math.cos(angleNeg) * radius * image.getWidth() / controlSize.width);
+		int sinP = (int) (Math.sin(anglePos) * radius * image.getHeight() / controlSize.height);
+		int sinN = (int) (Math.sin(angleNeg) * radius * image.getHeight() / controlSize.height);
 		return new Polygon(
 				new int[] {
 						newP.x + cosP,
@@ -193,8 +216,8 @@ public class DrawPanel extends JComponent {
 	
 	protected void paintComponent(Graphics g) {
 		if (image != null) {
-			g.drawImage(image, 0, 0, SIZE.width, SIZE.height, null);
-			g.drawImage(toMask(drawingLayer), 0, 0, null);
+			g.drawImage(image, 0, 0, controlSize.width, controlSize.height, null);
+			g.drawImage(drawingLayer, 0, 0, controlSize.width, controlSize.height, null);
 			g.setColor(PINK);
 			switch (penType) {
 			case CIRCLE:
@@ -205,10 +228,10 @@ public class DrawPanel extends JComponent {
 				break;
 			}
 			g.drawRect(
-					windowPos.x * SIZE.width / imageSize.width,
-					windowPos.y * SIZE.height / imageSize.height,
-					displaySize.width * SIZE.width / imageSize.width,
-					displaySize.height * SIZE.height / imageSize.height);
+					windowPos.x * controlSize.width / image.getWidth(),
+					windowPos.y * controlSize.height / image.getHeight(),
+					displaySize.width * controlSize.width / image.getWidth(),
+					displaySize.height * controlSize.height / image.getHeight());
 		}
 	}
 	
@@ -217,14 +240,18 @@ public class DrawPanel extends JComponent {
 				img.getWidth(),
 				img.getHeight(),
 				BufferedImage.TYPE_INT_ARGB);
+		
 		for (int i = 0; i < img.getWidth(); i++) {
 			for (int j = 0; j < img.getHeight(); j++) {
 				int dl = img.getRGB(i, j);
-				if (dl == -16777216) { // clear
-					mask.setRGB(i, j, OPAQUE);
+				if (dl == -1721434268) { // CLEAR
+					mask.setRGB(i, j, -1);
 				}
-				else { // -1 opaque
-					mask.setRGB(i, j, CLEAR);
+				else if (dl == -1711315868) { // OPAQUE
+					mask.setRGB(i, j, -16777216);
+				}
+				else {
+					System.out.println(dl);
 				}
 			}
 		}
@@ -232,21 +259,21 @@ public class DrawPanel extends JComponent {
 	}
 	
 	public BufferedImage getMask() {
-		return drawingLayer;
+		return toMask(drawingLayer);
 	}
 	
 	public void showAll() {
-		fillAll(Color.WHITE);
+		fillAll(CLEAR);
 	}
 	
 	public void clear() {
-		fillAll(Color.BLACK);
+		fillAll(OPAQUE);
 	}
 	
 	private void fillAll(Color c) {
 		if (g2 != null) {
 			g2.setPaint(c);
-			g2.fillRect(0, 0, getSize().width, getSize().height);
+			g2.fillRect(0, 0, drawingLayer.getWidth(), drawingLayer.getHeight());
 			repaint();
 			updateButton.setEnabled(true);
 		}
@@ -254,10 +281,9 @@ public class DrawPanel extends JComponent {
 	
 	public void setImage(BufferedImage image) {
 		this.image = image;
-		imageSize = new Dimension(image.getWidth(), image.getHeight());
-		drawingLayer = new BufferedImage(SIZE.width, SIZE.height, BufferedImage.TYPE_BYTE_BINARY);
+		drawingLayer = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		g2 = (Graphics2D) drawingLayer.getGraphics();
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.6f));
 		clear();
 	}
 
@@ -290,11 +316,11 @@ public class DrawPanel extends JComponent {
 			case ANY:
 				break;
 			case VISIBLE:
-				g2.setPaint(Color.WHITE);
+				g2.setPaint(CLEAR);
 				canDraw = true;
 				break;
 			case INVISIBLE:
-				g2.setPaint(Color.BLACK);
+				g2.setPaint(OPAQUE);
 				canDraw = true;
 				break;
 			case WINDOW:
