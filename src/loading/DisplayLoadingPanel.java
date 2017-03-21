@@ -17,8 +17,9 @@ import display.DisplayPanel;
 public class DisplayLoadingPanel extends DisplayPanel {
 	private static final long serialVersionUID = 1L;
 	
+	// 50ms tick time makes 20 ticks per second
 	private static final int FADE_IN = 20;
-	private static final int TOTAL_WAIT = 400;
+	private int totalWait = 400;
 	
 	private File folder;
 	private LinkedList<String> fileNames;
@@ -43,7 +44,7 @@ public class DisplayLoadingPanel extends DisplayPanel {
 			repaint();
 			fade = (float)timer / FADE_IN;
 		}
-		else if (timer > TOTAL_WAIT) {
+		else if (timer > totalWait) {
 			repaint();
 			timer = 0;
 			getImage();
@@ -142,5 +143,9 @@ public class DisplayLoadingPanel extends DisplayPanel {
 		timer = 0;
 		rePop();
 		restart(true);
+	}
+	
+	public void setTotalWait(int seconds) {
+		totalWait = seconds * 20;
 	}
 }

@@ -23,10 +23,12 @@ public class DrawPanel extends JComponent {
 	private static final Color OPAQUE = new Color(255, 100, 100); // red
 	private static final Color PINK = new Color(255, 0, 255);
 	
+	private static final int PIXELS_PER_MASK = 10;
+	
 	// Pen variables
 	private int radius;
 	private int diameter;
-	private enum Pen {SQUARE, CIRCLE};
+	private enum Pen {CIRCLE, SQUARE};
 	private Pen penType;
 	
 	// images
@@ -61,7 +63,7 @@ public class DrawPanel extends JComponent {
 		this.displaySize = displaySize;
 		this.display = disp;
 		windowPos = new Point(0, 0);
-		penType = Pen.SQUARE;
+		penType = Pen.CIRCLE;
 		style = Direction.NONE;
 		drawMode = DrawMode.ANY;
 		
@@ -134,13 +136,13 @@ public class DrawPanel extends JComponent {
 	
 	private Point toDrawingPoint(Point p) {
 		return new Point(
-				p.x * image.getWidth() / controlSize.width,
-				p.y * image.getHeight() / controlSize.height);
+				p.x * drawingLayer.getWidth() / controlSize.width,
+				p.y * drawingLayer.getHeight() / controlSize.height);
 	}
 	
 	private void setWindowPos(Point p) {
-		windowPos.x = p.x;
-		windowPos.y = p.y;
+		windowPos.x = p.x * PIXELS_PER_MASK;
+		windowPos.y = p.y * PIXELS_PER_MASK;
 		windowPos.x -= displaySize.width / 2;
 		windowPos.y -= displaySize.height / 2;
 		
@@ -174,17 +176,17 @@ public class DrawPanel extends JComponent {
 			case CIRCLE:
 				g2.fillPolygon(getPolygon(newP, lastP));
 				g2.fillOval(
-						newP.x - radius * image.getWidth() / controlSize.width,
-						newP.y - radius * image.getHeight() / controlSize.height,
-						diameter * image.getWidth() / controlSize.width,
-						diameter * image.getHeight() / controlSize.height);
+						newP.x - radius * drawingLayer.getWidth() / controlSize.width,
+						newP.y - radius * drawingLayer.getHeight() / controlSize.height,
+						diameter * drawingLayer.getWidth() / controlSize.width,
+						diameter * drawingLayer.getHeight() / controlSize.height);
 				break;
 			case SQUARE:
 				g2.fillRect(
-						newP.x - radius * image.getWidth() / controlSize.width,
-						newP.y - radius * image.getHeight() / controlSize.height,
-						diameter * image.getWidth() / controlSize.width,
-						diameter * image.getHeight() / controlSize.height);
+						newP.x - radius * drawingLayer.getWidth() / controlSize.width,
+						newP.y - radius * drawingLayer.getHeight() / controlSize.height,
+						diameter * drawingLayer.getWidth() / controlSize.width,
+						diameter * drawingLayer.getHeight() / controlSize.height);
 				break;
 			}
 			lastP = newP;
@@ -196,10 +198,10 @@ public class DrawPanel extends JComponent {
 		double angle = -Math.atan2(newP.getY() - oldP.getY(), newP.getX() - oldP.getX());
 		double anglePos = angle + Math.PI / 2;
 		double angleNeg = angle - Math.PI / 2;
-		int cosP = (int) (Math.cos(anglePos) * radius * image.getWidth() / controlSize.width);
-		int cosN = (int) (Math.cos(angleNeg) * radius * image.getWidth() / controlSize.width);
-		int sinP = (int) (Math.sin(anglePos) * radius * image.getHeight() / controlSize.height);
-		int sinN = (int) (Math.sin(angleNeg) * radius * image.getHeight() / controlSize.height);
+		int cosP = (int) (Math.cos(anglePos) * radius * drawingLayer.getWidth() / controlSize.width);
+		int cosN = (int) (Math.cos(angleNeg) * radius * drawingLayer.getWidth() / controlSize.width);
+		int sinP = (int) (Math.sin(anglePos) * radius * drawingLayer.getHeight() / controlSize.height);
+		int sinN = (int) (Math.sin(angleNeg) * radius * drawingLayer.getHeight() / controlSize.height);
 		return new Polygon(
 				new int[] {
 						newP.x + cosP,
@@ -281,7 +283,10 @@ public class DrawPanel extends JComponent {
 	
 	public void setImage(BufferedImage image) {
 		this.image = image;
-		drawingLayer = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		drawingLayer = new BufferedImage(
+				image.getWidth() / PIXELS_PER_MASK,
+				image.getHeight() / PIXELS_PER_MASK,
+				BufferedImage.TYPE_INT_ARGB);
 		g2 = (Graphics2D) drawingLayer.getGraphics();
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.6f));
 		clear();

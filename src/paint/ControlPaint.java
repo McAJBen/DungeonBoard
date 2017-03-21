@@ -39,7 +39,6 @@ public class ControlPaint extends ControlPanel {
 	private JComboBox<String> fileBox;
 	private JButton updateScreen;
 	
-	
 	public ControlPaint(Dimension displaySize, DisplayPaintPanel disp) {
 		setLayout(new BorderLayout());
 		setBorder(BorderFactory.createLineBorder(Color.GRAY, 10));
@@ -53,8 +52,8 @@ public class ControlPaint extends ControlPanel {
 		drawMode[2] = createImageIcon("/resources/invisible.gif");
 		drawMode[3] = createImageIcon("/resources/move.gif");
 		penType = new ImageIcon[2];
-		penType[0] = createImageIcon("/resources/square.gif");
-		penType[1] = createImageIcon("/resources/circle.gif");
+		penType[0] = createImageIcon("/resources/circle.gif");
+		penType[1] = createImageIcon("/resources/square.gif");
 		
 		paintDisplay = disp;
 		

@@ -8,6 +8,7 @@ import java.io.File;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -17,6 +18,8 @@ import main.FileChooser;
 
 public class ControlLayer extends ControlPanel {
 	private static final long serialVersionUID = 1L;
+	private static final Color ACTIVE = new Color(153, 255, 187);
+	private static final Color NOT_ACTIVE = new Color(255, 128, 128);
 	
 	private DisplayLayerPanel layerDisplay;
 	private PicturePanel pp;
@@ -36,6 +39,22 @@ public class ControlLayer extends ControlPanel {
 			}
 		});
 		northPanel.add(fc);
+		
+		JButton scaleButton = new JButton("AutoScale");
+		scaleButton.setBackground(ACTIVE);
+		scaleButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				layerDisplay.toggleAutoScale();
+				if (layerDisplay.getAutoScale()) {
+					scaleButton.setBackground(ACTIVE);
+				}
+				else {
+					scaleButton.setBackground(NOT_ACTIVE);
+				}
+				
+			}
+		});
+		northPanel.add(scaleButton);
 		
 		folder = new JLabel();
 		northPanel.add(folder);
