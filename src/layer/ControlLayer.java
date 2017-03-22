@@ -9,6 +9,7 @@ import java.io.File;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -17,9 +18,12 @@ import control.ControlPanel;
 import main.FileChooser;
 
 public class ControlLayer extends ControlPanel {
+	
 	private static final long serialVersionUID = 1L;
 	private static final Color ACTIVE = new Color(153, 255, 187);
 	private static final Color NOT_ACTIVE = new Color(255, 128, 128);
+	
+	protected enum Scale {FILL, UP_SCALE, REAL_SIZE};
 	
 	private DisplayLayerPanel layerDisplay;
 	private PicturePanel pp;
@@ -40,21 +44,29 @@ public class ControlLayer extends ControlPanel {
 		});
 		northPanel.add(fc);
 		
-		JButton scaleButton = new JButton("AutoScale");
-		scaleButton.setBackground(ACTIVE);
-		scaleButton.addActionListener(new ActionListener() {
+		JComboBox<Scale> scaleComboBox = new JComboBox<>(Scale.values());
+		scaleComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				layerDisplay.toggleAutoScale();
-				if (layerDisplay.getAutoScale()) {
-					scaleButton.setBackground(ACTIVE);
-				}
-				else {
-					scaleButton.setBackground(NOT_ACTIVE);
-				}
-				
+				layerDisplay.setScaleMode((Scale) scaleComboBox.getSelectedItem());
 			}
 		});
-		northPanel.add(scaleButton);
+		northPanel.add(scaleComboBox);
+		
+		JButton showOneButton = new JButton("Show One");
+		showOneButton.setBackground(NOT_ACTIVE);
+		showOneButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (showOneButton.getBackground() == ACTIVE) {
+					layerDisplay.setShowOne(false);
+					showOneButton.setBackground(NOT_ACTIVE);
+				}
+				else if (showOneButton.getBackground() == NOT_ACTIVE) {
+					layerDisplay.setShowOne(true);
+					showOneButton.setBackground(ACTIVE);
+				}
+			}
+		});
+		northPanel.add(showOneButton);
 		
 		folder = new JLabel();
 		northPanel.add(folder);
@@ -88,7 +100,4 @@ public class ControlLayer extends ControlPanel {
 			revalidate();
 		}
 	}
-
-	
-
 }

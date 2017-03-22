@@ -1,6 +1,7 @@
 package paint;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -15,10 +16,12 @@ public class DisplayPaintPanel extends DisplayPanel {
 	private BufferedImage mask;
 	private BufferedImage image;
 	private Point windowPos;
+	private double imageScale;
 	
 	public DisplayPaintPanel() {
 		image = BLANK_CURSOR;
 		windowPos = new Point(0, 0);
+		imageScale = 1;
 		mask = BLANK_CURSOR;
 		setVisible(true);
 	}
@@ -40,8 +43,9 @@ public class DisplayPaintPanel extends DisplayPanel {
 		super.paint(g);
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, getSize().width, getSize().width);
-		g.drawImage(image, -windowPos.x, -windowPos.y, null);
-		g.drawImage(mask, -windowPos.x, -windowPos.y, image.getWidth(), image.getHeight(), null);
+		Dimension size = new Dimension((int)(image.getWidth() / imageScale), (int) (image.getHeight() / imageScale));
+		g.drawImage(image, -windowPos.x, -windowPos.y, size.width, size.height, null);
+		g.drawImage(mask, -windowPos.x, -windowPos.y, size.width, size.height, null);
 		g.dispose();
 	}
 	
@@ -58,6 +62,11 @@ public class DisplayPaintPanel extends DisplayPanel {
 		if (image.getHeight() < getSize().height) {
 			windowPos.y = (image.getHeight() - getSize().height) / 2;
 		}
+		repaint();
+	}
+	
+	public void changeWindowScale(double scale) {
+		imageScale = scale;
 		repaint();
 	}
 }

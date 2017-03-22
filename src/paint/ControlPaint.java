@@ -5,8 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -84,8 +82,8 @@ public class ControlPaint extends ControlPanel {
 				}
 			}
 		}
-		fileBox.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
+		fileBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				if (!fileBox.getSelectedItem().equals("")) {
 					setFile((String) fileBox.getSelectedItem());
 				}
@@ -161,15 +159,21 @@ public class ControlPaint extends ControlPanel {
     }
 
 	public void setFile(File f) {
-		try {
-			BufferedImage image = ImageIO.read(f);
-			if (image != null) {
-				drawPanel.setImage(image);
-				paintDisplay.setMask(drawPanel.getMask());
-				paintDisplay.setImage(image);
+		Thread fileLoadingThread = new Thread("fileLoadingThread") {
+			public void run() {
+				try {
+					BufferedImage image = ImageIO.read(f);
+					if (image != null) {
+						drawPanel.setImage(image);
+						paintDisplay.setMask(drawPanel.getMask());
+						paintDisplay.setImage(image);
+					}
+				} catch (Exception error) {
+					error.printStackTrace();
+				}
 			}
-		} catch (Exception error) {
-			error.printStackTrace();
-		}
+		};
+		drawPanel.setImageLoading();
+		fileLoadingThread.start();
 	}
 }
