@@ -14,8 +14,10 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -36,6 +38,8 @@ public class ControlPaint extends ControlPanel {
 	
 	private JComboBox<String> fileBox;
 	private JButton updateScreen;
+	private JTextField zoomText;
+	private JSlider zoomSlider;
 	
 	public ControlPaint(Dimension displaySize, DisplayPaintPanel disp) {
 		setLayout(new BorderLayout());
@@ -137,10 +141,52 @@ public class ControlPaint extends ControlPanel {
 		northPanel.add(updateScreen);
 		drawPanel.setUpdateButton(updateScreen);
 		
+		JPanel westPanel = new JPanel();
+		westPanel.setLayout(new BoxLayout(westPanel, BoxLayout.Y_AXIS));
+		
+		westPanel.add(new JLabel("Zoom", SwingConstants.LEFT));
+		
+		zoomText = new JTextField("1.00", 1);
+		zoomText.setMaximumSize(new Dimension(5000, 25));
+		zoomText.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				double result = 1;
+				try {
+					result = Double.parseDouble(zoomText.getText());
+				}
+				catch (NumberFormatException nfe) {
+					result = zoomSlider.getValue() / 100.0;
+				}
+				setZoom(result);
+			}
+		});
+		westPanel.add(zoomText);
+		
+		zoomSlider = new JSlider(SwingConstants.VERTICAL, 1, 1000, 100);
+		zoomSlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent arg0) {
+				setZoom(zoomSlider.getValue() / 100.0);
+			}
+		});
+		westPanel.add(zoomSlider);
+		
+		add(westPanel, BorderLayout.WEST);
 		add(northPanel, BorderLayout.NORTH);
 		add(drawPanel, BorderLayout.CENTER);
 		
 		setVisible(true);
+	}
+	
+	private void setZoom(double zoom) {
+		if (zoom < 0.01) {
+			zoom = 0.01;
+		}
+		else if (zoom > 10.0) {
+			zoom = 10.0;
+		}
+		zoomText.setText(String.format("%.2f", zoom));
+		zoomSlider.setValue((int)(zoom * 100));
+		drawPanel.setZoom(zoom);
 	}
 	
 	protected void setFile(String selectedItem) {
@@ -159,21 +205,23 @@ public class ControlPaint extends ControlPanel {
     }
 
 	public void setFile(File f) {
-		Thread fileLoadingThread = new Thread("fileLoadingThread") {
-			public void run() {
-				try {
-					BufferedImage image = ImageIO.read(f);
-					if (image != null) {
-						drawPanel.setImage(image);
-						paintDisplay.setMask(drawPanel.getMask());
-						paintDisplay.setImage(image);
+		if (f != null) {
+			drawPanel.setImageLoading();
+			Thread fileLoadingThread = new Thread("fileLoadingThread") {
+				public void run() {
+					try {
+						BufferedImage image = ImageIO.read(f);
+						if (image != null) {
+							drawPanel.setImage(image);
+							paintDisplay.setMask(drawPanel.getMask());
+							paintDisplay.setImage(image);
+						}
+					} catch (Exception error) {
+						error.printStackTrace();
 					}
-				} catch (Exception error) {
-					error.printStackTrace();
 				}
-			}
-		};
-		drawPanel.setImageLoading();
-		fileLoadingThread.start();
+			};
+			fileLoadingThread.start();
+		}
 	}
 }

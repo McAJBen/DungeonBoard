@@ -24,7 +24,7 @@ import paint.DisplayPaintPanel;
 public class ControlWindow extends JFrame {
 	
 	private static final long serialVersionUID = 1L;
-	private static final Dimension SIZE = new Dimension(676, 571);
+	private static final Dimension SIZE = new Dimension(800, 700);
 	private static final Color ACTIVE = new Color(153, 255, 187);
 	private static final Color NOT_ACTIVE = new Color(255, 128, 128);
 	
