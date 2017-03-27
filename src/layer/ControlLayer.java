@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -13,17 +12,14 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-
 import control.ControlPanel;
 import main.FileChooser;
+import main.Mode;
+import main.Settings;
 
 public class ControlLayer extends ControlPanel {
 	
-	private static final long serialVersionUID = 1L;
-	private static final Color ACTIVE = new Color(153, 255, 187);
-	private static final Color NOT_ACTIVE = new Color(255, 128, 128);
-	
-	protected enum Scale {FILL, UP_SCALE, REAL_SIZE};
+	private static final long serialVersionUID = 111613405297226375L;
 	
 	private DisplayLayerPanel layerDisplay;
 	private PicturePanel pp;
@@ -53,16 +49,16 @@ public class ControlLayer extends ControlPanel {
 		northPanel.add(scaleComboBox);
 		
 		JButton showOneButton = new JButton("Show One");
-		showOneButton.setBackground(NOT_ACTIVE);
+		showOneButton.setBackground(Settings.INACTIVE);
 		showOneButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (showOneButton.getBackground() == ACTIVE) {
+				if (showOneButton.getBackground() == Settings.ACTIVE) {
 					layerDisplay.setShowOne(false);
-					showOneButton.setBackground(NOT_ACTIVE);
+					showOneButton.setBackground(Settings.INACTIVE);
 				}
-				else if (showOneButton.getBackground() == NOT_ACTIVE) {
+				else if (showOneButton.getBackground() == Settings.INACTIVE) {
 					layerDisplay.setShowOne(true);
-					showOneButton.setBackground(ACTIVE);
+					showOneButton.setBackground(Settings.ACTIVE);
 				}
 			}
 		});
@@ -79,7 +75,7 @@ public class ControlLayer extends ControlPanel {
 		jsp.setBorder(BorderFactory.createEmptyBorder());
 		add(jsp, BorderLayout.CENTER);
 		
-		setDirectory(new File(System.getProperty("user.dir") + "\\DungeonBoard\\Layer"));
+		setDirectory(Settings.FOLDERS[Mode.LAYER.ordinal()]);
 		
 		setVisible(true);
 	}

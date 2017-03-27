@@ -9,13 +9,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.Random;
-
 import javax.imageio.ImageIO;
-
 import display.DisplayPanel;
 
 public class DisplayLoadingPanel extends DisplayPanel {
-	private static final long serialVersionUID = 1L;
+	
+	private static final long serialVersionUID = -4364176757863161776L;
 	
 	// 50ms tick time makes 20 ticks per second
 	private static final int FADE_IN = 20;
@@ -129,12 +128,9 @@ public class DisplayLoadingPanel extends DisplayPanel {
 	@Override
 	public void setMainDisplay(boolean b) {
 		if (b) {
-			mainDisplay = true;
 			restart(false);
 		}
-		else {
-			mainDisplay = false;
-		}
+		mainDisplay = b;
 	}
 	
 	public void setDirectory(File folder) {

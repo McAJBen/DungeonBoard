@@ -5,13 +5,12 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-
 import display.DisplayPanel;
+import main.Settings;
 
 public class DisplayPaintPanel extends DisplayPanel {
-	private static final long serialVersionUID = 1L;
 	
-	private static final BufferedImage BLANK_CURSOR = new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB);
+	private static final long serialVersionUID = -8389531693546434519L;
 	
 	private BufferedImage mask;
 	private BufferedImage image;
@@ -19,10 +18,10 @@ public class DisplayPaintPanel extends DisplayPanel {
 	private double imageScale;
 	
 	public DisplayPaintPanel() {
-		image = BLANK_CURSOR;
+		image = Settings.BLANK_CURSOR;
 		windowPos = new Point(0, 0);
 		imageScale = 1;
-		mask = BLANK_CURSOR;
+		mask = Settings.BLANK_CURSOR;
 		setVisible(true);
 	}
 	

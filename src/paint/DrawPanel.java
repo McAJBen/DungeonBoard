@@ -1,4 +1,5 @@
 package paint;
+
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -12,22 +13,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
-
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import main.Settings;
 
 public class DrawPanel extends JComponent {
 	
-	private static final long serialVersionUID = 1L;
-	private static final Color CLEAR = new Color(100, 255, 100); // green
-	private static final Color OPAQUE = new Color(255, 100, 100); // red
-	private static final Color PINK = new Color(255, 0, 255);
-	
-	private static final int PIXELS_PER_MASK = 3;
-	private enum Pen {CIRCLE, SQUARE};
-	private enum Direction {NONE, VERTICAL, HORIZONTAL};
-	private enum DrawMode {ANY, VISIBLE, INVISIBLE, WINDOW};
+	private static final long serialVersionUID = -3142625453462827948L;
 	
 	// Pen variables
 	private int radius;
@@ -83,11 +76,11 @@ public class DrawPanel extends JComponent {
 						}
 						else {
 							if (e.getButton() == MouseEvent.BUTTON1) {
-								g2.setPaint(CLEAR);
+								g2.setPaint(Settings.CLEAR);
 								canDraw = true;
 							}
 							else if (e.getButton() == MouseEvent.BUTTON3) {
-								g2.setPaint(OPAQUE);
+								g2.setPaint(Settings.OPAQUE);
 								canDraw = true;
 							}
 							addPoint(lastP);
@@ -155,8 +148,8 @@ public class DrawPanel extends JComponent {
 	private void setWindowPos(Point p) {
 		lastWindowClick = p;
 		
-		windowPos.x = (int) (p.x * PIXELS_PER_MASK - (displaySize.width * displayZoom) / 2);
-		windowPos.y = (int) (p.y * PIXELS_PER_MASK - (displaySize.height * displayZoom) / 2);
+		windowPos.x = (int) (p.x * Settings.PIXELS_PER_MASK - (displaySize.width * displayZoom) / 2);
+		windowPos.y = (int) (p.y * Settings.PIXELS_PER_MASK - (displaySize.height * displayZoom) / 2);
 		
 		if (image != null) {
 			if (windowPos.x > image.getWidth() - displaySize.width * displayZoom) {
@@ -241,7 +234,7 @@ public class DrawPanel extends JComponent {
 		else if (image != null) {
 			g.drawImage(image, 0, 0, controlSize.width, controlSize.height, null);
 			g.drawImage(drawingLayer, 0, 0, controlSize.width, controlSize.height, null);
-			g.setColor(PINK);
+			g.setColor(Settings.PINK);
 			switch (penType) {
 			case CIRCLE:
 				g.drawOval(mousePos.x - radius, mousePos.y - radius, diameter, diameter);
@@ -287,11 +280,11 @@ public class DrawPanel extends JComponent {
 	}
 	
 	public void showAll() {
-		fillAll(CLEAR);
+		fillAll(Settings.CLEAR);
 	}
 	
 	public void clear() {
-		fillAll(OPAQUE);
+		fillAll(Settings.OPAQUE);
 	}
 	
 	private void fillAll(Color c) {
@@ -314,8 +307,8 @@ public class DrawPanel extends JComponent {
 			
 		if (resetMask) {
 			drawingLayer = new BufferedImage(
-				image.getWidth() / PIXELS_PER_MASK,
-				image.getHeight() / PIXELS_PER_MASK,
+				image.getWidth() / Settings.PIXELS_PER_MASK,
+				image.getHeight() / Settings.PIXELS_PER_MASK,
 				BufferedImage.TYPE_INT_ARGB);
 			
 			g2 = (Graphics2D) drawingLayer.getGraphics();
@@ -325,8 +318,8 @@ public class DrawPanel extends JComponent {
 		else {
 			BufferedImage oldDrawingLayer = drawingLayer;
 			drawingLayer = new BufferedImage(
-					image.getWidth() / PIXELS_PER_MASK,
-					image.getHeight() / PIXELS_PER_MASK,
+					image.getWidth() / Settings.PIXELS_PER_MASK,
+					image.getHeight() / Settings.PIXELS_PER_MASK,
 					BufferedImage.TYPE_INT_ARGB);
 			g2 = (Graphics2D) drawingLayer.getGraphics();
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.6f));
@@ -363,11 +356,11 @@ public class DrawPanel extends JComponent {
 			case ANY:
 				break;
 			case VISIBLE:
-				g2.setPaint(CLEAR);
+				g2.setPaint(Settings.CLEAR);
 				canDraw = true;
 				break;
 			case INVISIBLE:
-				g2.setPaint(OPAQUE);
+				g2.setPaint(Settings.OPAQUE);
 				canDraw = true;
 				break;
 			case WINDOW:

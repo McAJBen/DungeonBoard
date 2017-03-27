@@ -1,78 +1,49 @@
 package main;
+
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
 import java.io.File;
-
 import javax.swing.JOptionPane;
-
 import control.ControlWindow;
 
 public class Main {
 	
 	public static void main(String[] args) {
 		
-		makeDirs();
+		Settings.load();
 		
-		new ControlWindow(getDisplays());
-	}
-	
-	private static void makeDirs() {
-		boolean created = true;
+		for (File f: Settings.FOLDERS) {
+			f.mkdirs();
+		}
 		
-		File[] folders = {
-				new File(System.getProperty("user.dir") + "\\DungeonBoard\\Layer"),
-				new File(System.getProperty("user.dir") + "\\DungeonBoard\\Paint"),
-				new File(System.getProperty("user.dir") + "\\DungeonBoard\\Loading")};
+		GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 		
-		for (File f: folders) {
-			if (!f.exists()) {
-				created = false;
+		if (screens.length > 2) {
+			int displayIndex = JOptionPane.showOptionDialog(null, "Select Display Window", Settings.NAME,
+					JOptionPane.DEFAULT_OPTION,
+					JOptionPane.QUESTION_MESSAGE,
+					null, toLabels(screens), 0);
+			
+			if (displayIndex >= 0 && displayIndex < screens.length) {
+				int controlIndex = displayIndex == 0 ? 1 : 0;
+				new ControlWindow(
+						screens[displayIndex].getDefaultConfiguration().getBounds(), 
+						screens[controlIndex].getDefaultConfiguration().getBounds());
 			}
 		}
-		if (!created) {
-			int response = JOptionPane.showConfirmDialog(
-					null, 
-					"Would you like to make a 'DungeonBoard' folder \nfor easier access and loading?",
-					"Dungeon Board",
-					JOptionPane.YES_NO_OPTION);
-			if (response == 0) {
-				for (File f: folders) {
-					f.mkdirs();
-				}
-			}
+		else {
+			JOptionPane.showMessageDialog(null, "Not enough screens!");
 		}
 	}
 	
-	private static String[] toLabels(GraphicsDevice[] graphicsDevice) {
-		String[] strings = new String[graphicsDevice.length];
-		for (int i = 0; i < graphicsDevice.length; i++) {
-			Dimension size = graphicsDevice[i].getDefaultConfiguration().getBounds().getSize();
-			strings[i] = graphicsDevice[i].getIDstring().substring(1) + 
+	private static String[] toLabels(GraphicsDevice[] gd) {
+		String[] strings = new String[gd.length];
+		for (int i = 0; i < gd.length; i++) {
+			Dimension size = gd[i].getDefaultConfiguration().getBounds().getSize();
+			strings[i] = gd[i].getIDstring().substring(1) + 
 					"  " + size.width + "x" + size.height; 
 		}
 		return strings;
-	}
-
-	private static Rectangle[] getDisplays() {
-		GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-		
-		if (screens.length < 1) {
-			JOptionPane.showMessageDialog(null, "Not enough screens!");
-			System.exit(-1);
-		}
-		int displayIndex = JOptionPane.showOptionDialog(null, "Select Display Window", "Dungeon Board",
-				JOptionPane.DEFAULT_OPTION,
-				JOptionPane.QUESTION_MESSAGE,
-				null, toLabels(screens), 0);
-		if (displayIndex < 0) {
-			System.exit(-2);
-		}
-		
-		int controlIndex = displayIndex == 0 ? screens.length - 1 : 0;
-		
-		return new Rectangle[] {screens[displayIndex].getDefaultConfiguration().getBounds(), 
-				screens[controlIndex].getDefaultConfiguration().getBounds()};
 	}
 }

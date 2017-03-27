@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -15,12 +14,14 @@ import javax.swing.JSlider;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
 import control.ControlPanel;
 import main.FileChooser;
+import main.Mode;
+import main.Settings;
 
 public class ControlLoading extends ControlPanel {
-	private static final long serialVersionUID = 1L;
+	
+	private static final long serialVersionUID = 5986059033234358609L;
 	
 	private DisplayLoadingPanel loadingDisplay;
 	private JLabel folder;
@@ -57,14 +58,9 @@ public class ControlLoading extends ControlPanel {
 		folder = new JLabel();
 		northPanel.add(folder);
 		
-		
-		
-		
-		
-		
 		add(northPanel, BorderLayout.NORTH);
 		
-		setDirectory(new File(System.getProperty("user.dir") + "\\DungeonBoard\\Loading"));
+		setDirectory(Settings.FOLDERS[Mode.LOADING.ordinal()]);
 		
 		setVisible(true);
 	}

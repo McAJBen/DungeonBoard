@@ -5,13 +5,12 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.io.File;
 import java.util.LinkedList;
-
 import display.DisplayPanel;
-import layer.ControlLayer.Scale;
 
 public class DisplayLayerPanel extends DisplayPanel {
-	private static final long serialVersionUID = 1L;
-
+	
+	private static final long serialVersionUID = 3211548259335689270L;
+	
 	private LinkedList<AlphaImage> images;
 	private File folder;
 	private Scale scaleMode;

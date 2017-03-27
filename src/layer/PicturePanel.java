@@ -1,5 +1,5 @@
 package layer;
-import java.awt.Color;
+
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.Insets;
@@ -8,20 +8,19 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import main.Settings;
 
 public class PicturePanel extends JPanel implements ActionListener {
-	private static final long serialVersionUID = 1L;
+	
+	private static final long serialVersionUID = 2972394170217781329L;
 	
 	private DisplayLayerPanel window;
-	private static final Color ENABLE_COLOR = Color.GREEN;
-	private static final Color DISABLE_COLOR = Color.GRAY;
 	
 	public PicturePanel(DisplayLayerPanel window) {
 		setLayout(new GridLayout(0, 3));
@@ -34,7 +33,7 @@ public class PicturePanel extends JPanel implements ActionListener {
 		    BufferedImage img = ImageIO.read(f);
 		    ImageIcon icon = new ImageIcon(img.getScaledInstance(192, 108, BufferedImage.SCALE_FAST));
 		    JButton jcb = new JButton(icon);
-		    jcb.setBackground(DISABLE_COLOR);
+		    jcb.setBackground(Settings.DISABLE_COLOR);
 		    jcb.setMargin(new Insets(0, 0, 0, 0));
 		    
 		    jcb.addActionListener(this);
@@ -44,7 +43,7 @@ public class PicturePanel extends JPanel implements ActionListener {
 		    add(jcb);
 		    
 		} catch (IOException e) {
-			
+			e.printStackTrace();
 		}
 	}
 	
@@ -59,12 +58,12 @@ public class PicturePanel extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JButton button = (JButton) (e.getSource());
-		if (button.getBackground() == DISABLE_COLOR) {
-			button.setBackground(ENABLE_COLOR);
+		if (button.getBackground() == Settings.DISABLE_COLOR) {
+			button.setBackground(Settings.ENABLE_COLOR);
 			window.addImage(button.getText());
 		}
-		else if (button.getBackground() == ENABLE_COLOR) {
-			button.setBackground(DISABLE_COLOR);
+		else if (button.getBackground() == Settings.ENABLE_COLOR) {
+			button.setBackground(Settings.DISABLE_COLOR);
 			window.removeImage(button.getText());
 		}
 	}
