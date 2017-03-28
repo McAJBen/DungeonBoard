@@ -27,12 +27,14 @@ public class DisplayLoadingPanel extends DisplayPanel {
 	
 	private Thread paintThread;
 	private boolean mainDisplay;
+	private boolean upScale;
 	private short timer;
 	private float fade;
 	
 	public DisplayLoadingPanel() {
 		paintThread = new Thread();
 		fileNames = new LinkedList<>();
+		upScale = false;
 		fade = 0;
 		setVisible(true);
 	}
@@ -70,14 +72,27 @@ public class DisplayLoadingPanel extends DisplayPanel {
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
 		Dimension s = getSize();
-		g2d.setColor(Color.BLACK);
-		g2d.fillRect(0, 0, s.width, s.height);
-		if (timer <= FADE_IN) {
-			g2d.drawImage(oldImage, 0, 0, s.width, s.height, null);
+		if (upScale) {
+			if (timer <= FADE_IN) {
+				g2d.drawImage(oldImage, 0, 0, s.width, s.height, null);
+			}
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade));
+			g2d.drawImage(currentImage, 0, 0, s.width, s.height, null);
 		}
-		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade));
-		g2d.drawImage(currentImage, 0, 0, s.width, s.height, null);
+		else {
+			g2d.setColor(new Color(currentImage.getRGB(0, 0)));
+			g2d.fillRect(0, 0, s.width, s.height);
+			
+			if (timer <= FADE_IN) {
+				g2d.drawImage(oldImage, (s.width - oldImage.getWidth()) / 2,
+						(s.height - oldImage.getHeight()) / 2, null);
+			}
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade));
+			g2d.drawImage(currentImage, (s.width - currentImage.getWidth()) / 2,
+					(s.height - currentImage.getHeight()) / 2, null);
+		}
 		g.dispose();
+		
 	}
 	
 	private void rePop() {
@@ -143,5 +158,9 @@ public class DisplayLoadingPanel extends DisplayPanel {
 	
 	public void setTotalWait(int seconds) {
 		totalWait = seconds * 20;
+	}
+
+	public void setUpScale(boolean b) {
+		upScale = b;
 	}
 }

@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -38,6 +39,22 @@ public class ControlLoading extends ControlPanel {
 			}
 		});
 		northPanel.add(fc);
+		
+		JButton upScaleButton = new JButton("Up Scale");
+		upScaleButton.setBackground(Settings.INACTIVE);
+		upScaleButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (upScaleButton.getBackground() == Settings.ACTIVE) {
+					loadingDisplay.setUpScale(false);
+					upScaleButton.setBackground(Settings.INACTIVE);
+				}
+				else if (upScaleButton.getBackground() == Settings.INACTIVE) {
+					loadingDisplay.setUpScale(true);
+					upScaleButton.setBackground(Settings.ACTIVE);
+				}
+			}
+		});
+		northPanel.add(upScaleButton);
 		
 		JLabel timeLabel = new JLabel("8");
 		timeLabel.setMinimumSize(new Dimension(20, 0));
