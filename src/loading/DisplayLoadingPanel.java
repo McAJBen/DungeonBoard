@@ -35,7 +35,8 @@ public class DisplayLoadingPanel extends DisplayPanel {
 		paintThread = new Thread();
 		fileNames = new LinkedList<>();
 		upScale = false;
-		fade = 0;
+		timer = 20;
+		fade = 1;
 		setVisible(true);
 	}
 
@@ -92,7 +93,6 @@ public class DisplayLoadingPanel extends DisplayPanel {
 					(s.height - currentImage.getHeight()) / 2, null);
 		}
 		g.dispose();
-		
 	}
 	
 	private void rePop() {
@@ -151,7 +151,8 @@ public class DisplayLoadingPanel extends DisplayPanel {
 	public void setDirectory(File folder) {
 		this.folder = folder;
 		fileNames.clear();
-		timer = 0;
+		timer = 20;
+		fade = 1;
 		rePop();
 		restart(true);
 	}
@@ -162,5 +163,6 @@ public class DisplayLoadingPanel extends DisplayPanel {
 
 	public void setUpScale(boolean b) {
 		upScale = b;
+		repaint();
 	}
 }
