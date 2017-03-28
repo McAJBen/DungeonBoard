@@ -67,14 +67,15 @@ public class ControlWindow extends JFrame {
 		controls = new ControlPanel[Mode.values().length];
 		displays = new DisplayPanel[Mode.values().length];
 		
-		displays[0] = new DisplayLayerPanel();
-		controls[0] = new ControlLayer((DisplayLayerPanel) displays[0]);
+		displays[Mode.LAYER.ordinal()] = new DisplayLayerPanel();
+		controls[Mode.LAYER.ordinal()] = new ControlLayer((DisplayLayerPanel) displays[Mode.LAYER.ordinal()]);
 		
-		displays[1] = new DisplayPaintPanel();
-		controls[1] = new ControlPaint(display.getSize(), (DisplayPaintPanel) displays[1]);
+		displays[Mode.PAINT.ordinal()] = new DisplayPaintPanel();
+		controls[Mode.PAINT.ordinal()] = new ControlPaint(
+				display.getSize(), (DisplayPaintPanel) displays[Mode.PAINT.ordinal()]);
 		
-		displays[2] = new DisplayLoadingPanel();
-		controls[2] = new ControlLoading((DisplayLoadingPanel) displays[2]);
+		displays[Mode.LOADING.ordinal()] = new DisplayLoadingPanel();
+		controls[Mode.LOADING.ordinal()] = new ControlLoading((DisplayLoadingPanel) displays[Mode.LOADING.ordinal()]);
 		
 		displayButtons[Mode.LOADING.ordinal()].doClick();
 		controlButtons[Mode.LAYER.ordinal()].doClick();
