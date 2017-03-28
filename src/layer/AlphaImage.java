@@ -34,5 +34,4 @@ public class AlphaImage {
 	public int getHeight() {
 		return image.getHeight();
 	}
-	
 }

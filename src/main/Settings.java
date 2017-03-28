@@ -18,6 +18,7 @@ public class Settings {
 	public static final File FOLDER = new File(USER_DIR.getAbsolutePath() + "\\DungeonBoard");
 	public static final File[] FOLDERS = {
 			new File(FOLDER + "\\Layer"),
+			new File(FOLDER + "\\Image"),
 			new File(FOLDER + "\\Paint"),
 			new File(FOLDER + "\\Loading")
 	};

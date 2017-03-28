@@ -14,6 +14,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import display.DisplayPanel;
 import display.DisplayWindow;
+import image.ControlImage;
+import image.DisplayImagePanel;
 import layer.ControlLayer;
 import layer.DisplayLayerPanel;
 import loading.ControlLoading;
@@ -69,6 +71,9 @@ public class ControlWindow extends JFrame {
 		
 		displays[Mode.LAYER.ordinal()] = new DisplayLayerPanel(window);
 		controls[Mode.LAYER.ordinal()] = new ControlLayer((DisplayLayerPanel) displays[Mode.LAYER.ordinal()]);
+		
+		displays[Mode.IMAGE.ordinal()] = new DisplayImagePanel(window);
+		controls[Mode.IMAGE.ordinal()] = new ControlImage((DisplayImagePanel)displays[Mode.IMAGE.ordinal()]);
 		
 		displays[Mode.PAINT.ordinal()] = new DisplayPaintPanel(window);
 		controls[Mode.PAINT.ordinal()] = new ControlPaint(

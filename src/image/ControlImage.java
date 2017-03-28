@@ -1,30 +1,33 @@
-package layer;
+package image;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
 import control.ControlPanel;
+import layer.Scale;
 import main.FileChooser;
 import main.Mode;
 import main.Settings;
 
-public class ControlLayer extends ControlPanel {
+public class ControlImage extends ControlPanel {
+
+	private static final long serialVersionUID = 3622994265203390348L;
 	
-	private static final long serialVersionUID = 111613405297226375L;
-	
-	private DisplayLayerPanel layerDisplay;
-	private PictureLayerPanel pp;
+	private DisplayImagePanel imageDisplay;
+	private PictureImagePanel pp;
 	private JLabel folder;
 	
-	public ControlLayer(DisplayLayerPanel layerDisplay) {
-		this.layerDisplay = layerDisplay;
+	public ControlImage(DisplayImagePanel imageDisplay) {
+		this.imageDisplay = imageDisplay;
 		setLayout(new BorderLayout());
 		setBorder(BorderFactory.createLineBorder(Settings.BACKGROUND, 5));
 		JPanel northPanel = new JPanel();
@@ -41,7 +44,7 @@ public class ControlLayer extends ControlPanel {
 		JComboBox<Scale> scaleComboBox = new JComboBox<>(Scale.values());
 		scaleComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				layerDisplay.setScaleMode((Scale) scaleComboBox.getSelectedItem());
+				imageDisplay.setScaleMode((Scale) scaleComboBox.getSelectedItem());
 			}
 		});
 		northPanel.add(scaleComboBox);
@@ -49,7 +52,7 @@ public class ControlLayer extends ControlPanel {
 		folder = new JLabel();
 		northPanel.add(folder);
 		
-		pp = new PictureLayerPanel(layerDisplay);
+		pp = new PictureImagePanel(imageDisplay);
 		
 		add(northPanel, BorderLayout.NORTH);
 		
@@ -57,7 +60,7 @@ public class ControlLayer extends ControlPanel {
 		jsp.setBorder(BorderFactory.createEmptyBorder());
 		add(jsp, BorderLayout.CENTER);
 		
-		setDirectory(Settings.FOLDERS[Mode.LAYER.ordinal()]);
+		setDirectory(Settings.FOLDERS[Mode.IMAGE.ordinal()]);
 		
 		setVisible(true);
 	}
@@ -65,8 +68,7 @@ public class ControlLayer extends ControlPanel {
 	public void setDirectory(File folder) {
 		if (folder != null && folder.exists()) {
 			this.folder.setText(folder.getPath());
-			layerDisplay.setFolder(folder);
-			pp.clearImages();
+			imageDisplay.setFolder(folder);
 			for (File f: folder.listFiles()) {
 				String name = f.getName();
 				String suffix = name.substring(name.lastIndexOf('.') + 1);
@@ -78,4 +80,5 @@ public class ControlLayer extends ControlPanel {
 			revalidate();
 		}
 	}
+
 }

@@ -1,24 +1,25 @@
-package layer;
+package image;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.io.File;
-import java.util.LinkedList;
+
 import display.DisplayPanel;
 import display.DisplayWindow;
+import layer.AlphaImage;
+import layer.Scale;
 
-public class DisplayLayerPanel extends DisplayPanel {
+public class DisplayImagePanel extends DisplayPanel {
+
+	private static final long serialVersionUID = 4732317749539981643L;
 	
-	private static final long serialVersionUID = 3211548259335689270L;
-	
-	private LinkedList<AlphaImage> images;
+	private AlphaImage image;
 	private File folder;
 	private Scale scaleMode;
 	
-	public DisplayLayerPanel(DisplayWindow window) {
+	public DisplayImagePanel(DisplayWindow window) {
 		super(window);
-		images = new LinkedList<>();
 		scaleMode = Scale.FILL;
 		setVisible(true);
 	}
@@ -30,10 +31,9 @@ public class DisplayLayerPanel extends DisplayPanel {
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, s.width, s.height);
 		
-		for (AlphaImage image: images) {
+		if (image != null) {
 			paintImage(g, image, s);
 		}
-		
 		window.paintMouse(g);
 		g.dispose();
 	}
@@ -70,26 +70,14 @@ public class DisplayLayerPanel extends DisplayPanel {
 		}
 	}
 	
-	public void addImage(String name) {
-		images.add(new AlphaImage(folder, name));
-		repaint();
-	}
-
-	public void removeImage(String name) {
-		for (int i = 0; i < images.size();) {
-			if (images.get(i).getName().equals(name)) {
-				images.remove(i);
-			}
-			else {
-				i++;
-			}
-		}
+	public void setImage(String name) {
+		image = new AlphaImage(folder, name);
 		repaint();
 	}
 
 	public void setFolder(File folder) {
 		this.folder = folder;
-		images.clear();
+		image = null;
 		repaint();
 	}
 

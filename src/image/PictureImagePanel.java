@@ -1,4 +1,4 @@
-package layer;
+package image;
 
 import java.awt.Component;
 import java.awt.GridLayout;
@@ -16,16 +16,16 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import main.Settings;
 
-public class PicturePanel extends JPanel implements ActionListener {
+public class PictureImagePanel extends JPanel implements ActionListener {
 	
 	private static final long serialVersionUID = 2972394170217781329L;
 	
-	private DisplayLayerPanel window;
+	private DisplayImagePanel displayImagePanel;
 	
-	public PicturePanel(DisplayLayerPanel window) {
+	public PictureImagePanel(DisplayImagePanel displayImagePanel) {
 		setLayout(new GridLayout(0, 3));
 		setBorder(BorderFactory.createEmptyBorder());
-		this.window = window;
+		this.displayImagePanel = displayImagePanel;
 	}
 
 	public void addImage(File f) {
@@ -46,29 +46,22 @@ public class PicturePanel extends JPanel implements ActionListener {
 			e.printStackTrace();
 		}
 	}
-	
-	public void clearImages() {
-		for (Component c: getComponents()) {
-			if (c.getClass().equals(JButton.class)) {
-				remove(c);
-			}
-		}
-	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
 		JButton button = (JButton) (e.getSource());
+		
 		if (button.getBackground() == Settings.DISABLE_COLOR) {
+			for (Component c: getComponents()) {
+				c.setBackground(Settings.DISABLE_COLOR);
+			}
 			button.setBackground(Settings.ENABLE_COLOR);
-			window.addImage(button.getText());
+			displayImagePanel.setImage(button.getText());
 		}
-		else if (button.getBackground() == Settings.ENABLE_COLOR) {
+		else {
 			button.setBackground(Settings.DISABLE_COLOR);
-			window.removeImage(button.getText());
+			displayImagePanel.setImage(null);
 		}
 	}
-	
-	
-	
-	
 }
