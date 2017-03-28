@@ -7,7 +7,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import main.Settings;
 
 public class DisplayWindow extends JFrame {
@@ -20,7 +19,6 @@ public class DisplayWindow extends JFrame {
 	public DisplayWindow(Rectangle r) {
 		super();
 		setUndecorated(true);
-		add(new PointerPanel());
 		setSize(r.getSize());
 		setLocation(r.getLocation());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -64,16 +62,7 @@ public class DisplayWindow extends JFrame {
 		repaint();
 	}
 	
-	private class PointerPanel extends JPanel {
-		
-		private static final long serialVersionUID = -4938048316836989026L;
-
-		public void paint(Graphics g) {
-			paintMouse(g);
-		}
-	}
-	
-	private void paintMouse(Graphics g) {
+	public void paintMouse(Graphics g) {
 		int i = handDirection.ordinal();
 		g.drawImage(
 				Settings.HANDS[i],

@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.Random;
 import javax.imageio.ImageIO;
 import display.DisplayPanel;
+import display.DisplayWindow;
 
 public class DisplayLoadingPanel extends DisplayPanel {
 	
@@ -31,7 +32,8 @@ public class DisplayLoadingPanel extends DisplayPanel {
 	private short timer;
 	private float fade;
 	
-	public DisplayLoadingPanel() {
+	public DisplayLoadingPanel(DisplayWindow window) {
+		super(window);
 		paintThread = new Thread();
 		fileNames = new LinkedList<>();
 		upScale = false;
@@ -84,7 +86,7 @@ public class DisplayLoadingPanel extends DisplayPanel {
 			g2d.setColor(new Color(currentImage.getRGB(0, 0)));
 			g2d.fillRect(0, 0, s.width, s.height);
 			
-			if (timer <= FADE_IN) {
+			if (timer <= FADE_IN && oldImage != null) {
 				g2d.drawImage(oldImage, (s.width - oldImage.getWidth()) / 2,
 						(s.height - oldImage.getHeight()) / 2, null);
 			}
@@ -92,6 +94,7 @@ public class DisplayLoadingPanel extends DisplayPanel {
 			g2d.drawImage(currentImage, (s.width - currentImage.getWidth()) / 2,
 					(s.height - currentImage.getHeight()) / 2, null);
 		}
+		window.paintMouse(g);
 		g.dispose();
 	}
 	

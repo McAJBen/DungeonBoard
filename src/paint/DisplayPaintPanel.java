@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import display.DisplayPanel;
+import display.DisplayWindow;
 import main.Settings;
 
 public class DisplayPaintPanel extends DisplayPanel {
@@ -17,7 +18,8 @@ public class DisplayPaintPanel extends DisplayPanel {
 	private Point windowPos;
 	private double imageScale;
 	
-	public DisplayPaintPanel() {
+	public DisplayPaintPanel(DisplayWindow window) {
+		super(window);
 		image = Settings.BLANK_CURSOR;
 		windowPos = new Point(0, 0);
 		imageScale = 1;
@@ -45,6 +47,7 @@ public class DisplayPaintPanel extends DisplayPanel {
 		Dimension size = new Dimension((int)(image.getWidth() / imageScale), (int) (image.getHeight() / imageScale));
 		g.drawImage(image, -windowPos.x, -windowPos.y, size.width, size.height, null);
 		g.drawImage(mask, -windowPos.x, -windowPos.y, size.width, size.height, null);
+		window.paintMouse(g);
 		g.dispose();
 	}
 	

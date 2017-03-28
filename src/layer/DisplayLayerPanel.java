@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.io.File;
 import java.util.LinkedList;
 import display.DisplayPanel;
+import display.DisplayWindow;
 
 public class DisplayLayerPanel extends DisplayPanel {
 	
@@ -16,7 +17,8 @@ public class DisplayLayerPanel extends DisplayPanel {
 	private Scale scaleMode;
 	private boolean showOne;
 	
-	public DisplayLayerPanel() {
+	public DisplayLayerPanel(DisplayWindow window) {
+		super(window);
 		images = new LinkedList<>();
 		scaleMode = Scale.FILL;
 		showOne = false;
@@ -40,6 +42,7 @@ public class DisplayLayerPanel extends DisplayPanel {
 				paintImage(g, image, s);
 			}
 		}
+		window.paintMouse(g);
 		g.dispose();
 	}
 	
