@@ -1,7 +1,6 @@
 package loading;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,7 +28,7 @@ public class ControlLoading extends ControlPanel {
 	public ControlLoading(DisplayLoadingPanel loadingDisplay) {
 		this.loadingDisplay = loadingDisplay;
 		setLayout(new BorderLayout());
-		setBorder(BorderFactory.createLineBorder(Color.GRAY, 10));
+		setBorder(BorderFactory.createLineBorder(Settings.BACKGROUND, 5));
 		JPanel northPanel = new JPanel();
 		northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.X_AXIS));
 		FileChooser fc = new FileChooser();

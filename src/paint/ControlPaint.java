@@ -1,7 +1,6 @@
 package paint;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -38,7 +37,7 @@ public class ControlPaint extends ControlPanel {
 	
 	public ControlPaint(Dimension displaySize, DisplayPaintPanel disp) {
 		setLayout(new BorderLayout());
-		setBorder(BorderFactory.createLineBorder(Color.GRAY, 10));
+		setBorder(BorderFactory.createLineBorder(Settings.BACKGROUND, 5));
 		
 		paintDisplay = disp;
 		

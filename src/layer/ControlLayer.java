@@ -1,7 +1,6 @@
 package layer;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -28,7 +27,7 @@ public class ControlLayer extends ControlPanel {
 	public ControlLayer(DisplayLayerPanel layerDisplay) {
 		this.layerDisplay = layerDisplay;
 		setLayout(new BorderLayout());
-		setBorder(BorderFactory.createLineBorder(Color.GRAY, 10));
+		setBorder(BorderFactory.createLineBorder(Settings.BACKGROUND, 5));
 		JPanel northPanel = new JPanel();
 		northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.X_AXIS));
 		

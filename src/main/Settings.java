@@ -51,6 +51,9 @@ public class Settings {
 	public static final Color OPAQUE = new Color(255, 100, 100);
 	public static final Color PINK = new Color(255, 0, 255);
 	
+	public static final Color BACKGROUND = Color.GRAY;
+	public static final Color CONTROL_BACKGROUND = Color.LIGHT_GRAY;
+	
 	public static final BufferedImage BLANK_CURSOR = new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB);
 	public static final BufferedImage HANDS[] = new BufferedImage[4];
 	public static final int[] HANDS_OFFSET = {-5, -100, -45, 0};
@@ -66,7 +69,7 @@ public class Settings {
 	public static void load() {
 		for (int i = 0; i < HANDS.length; i++) {
         	try {
-				HANDS[i] = ImageIO.read(FileChooser.class.getResource("/resources/hand" + i + ".png"));
+				HANDS[i] = ImageIO.read(Settings.class.getResource("/resources/hand" + i + ".png"));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

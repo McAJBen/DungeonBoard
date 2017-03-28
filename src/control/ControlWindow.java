@@ -5,10 +5,13 @@ import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import display.DisplayPanel;
 import display.DisplayWindow;
 import layer.ControlLayer;
@@ -44,31 +47,25 @@ public class ControlWindow extends JFrame {
 				(control.height - Settings.CONTROL_SIZE.height) / 2 + control.y);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		JPanel northPanel = new JPanel();
-		northPanel.setLayout(new GridLayout());
-		
-		controlButtons = new JButton[3];
-		for (int i = 0; i < 3; i++) {
+		controlButtons = new JButton[Mode.values().length];
+		displayButtons = new JButton[Mode.values().length];
+		for (int i = 0; i < controlButtons.length; i++) {
 			controlButtons[i] = new JButton(Mode.values()[i].name());
 			controlButtons[i].addActionListener(new ButtonListener(Display.CONTROL, Mode.values()[i]));
-			northPanel.add(controlButtons[i]);
-		}
-		
-		northPanel.add(new JLabel());
-		
-		displayButtons = new JButton[3];
-		for (int i = 0; i < 3; i++) {
 			displayButtons[i] = new JButton(Mode.values()[i].name());
 			displayButtons[i].addActionListener(new ButtonListener(Display.DISPLAY, Mode.values()[i]));
-			northPanel.add(displayButtons[i]);
 		}
+		
+		JPanel northPanel = new JPanel(new GridLayout(1, 2));
+		northPanel.add(createButtonGroup("Controls", controlButtons));
+		northPanel.add(createButtonGroup("Displaying", displayButtons));
 		
 		add(northPanel, BorderLayout.NORTH);
 		
 		window = new DisplayWindow(display);
 		
-		controls = new ControlPanel[3];
-		displays = new DisplayPanel[3];
+		controls = new ControlPanel[Mode.values().length];
+		displays = new DisplayPanel[Mode.values().length];
 		
 		displays[0] = new DisplayLayerPanel();
 		controls[0] = new ControlLayer((DisplayLayerPanel) displays[0]);
@@ -79,10 +76,30 @@ public class ControlWindow extends JFrame {
 		displays[2] = new DisplayLoadingPanel();
 		controls[2] = new ControlLoading((DisplayLoadingPanel) displays[2]);
 		
-		displayButtons[2].doClick();
-		controlButtons[0].doClick();
+		displayButtons[Mode.LOADING.ordinal()].doClick();
+		controlButtons[Mode.LAYER.ordinal()].doClick();
 		
 		setVisible(true);
+	}
+	
+	private JPanel createButtonGroup(String title, JButton[] buttons) {
+		JPanel panel = new JPanel();
+		panel.setBackground(Settings.CONTROL_BACKGROUND);
+		panel.setLayout(new GridLayout(2, 1));
+		panel.setBorder(BorderFactory.createLineBorder(Settings.BACKGROUND, 2));
+		
+		JPanel south = new JPanel();
+		south.setBackground(Settings.CONTROL_BACKGROUND);
+		south.setLayout(new GridLayout(1, buttons.length));
+		
+		for (JButton b: buttons) {
+			south.add(b);
+		}
+		
+		panel.add(new JLabel(title, SwingConstants.CENTER));
+		panel.add(south);
+		
+		return panel;
 	}
 
 	private class ButtonListener implements ActionListener {
@@ -109,7 +126,7 @@ public class ControlWindow extends JFrame {
 	
 	private void setControl(Mode mode) {
 		if (mode != controlMode) {
-			for (int i = 0; i < 3; i++) {
+			for (int i = 0; i < controls.length; i++) {
 				remove(controls[i]);
 				controlButtons[i].setBackground(Settings.INACTIVE);
 			}
@@ -124,7 +141,7 @@ public class ControlWindow extends JFrame {
 	private void setDisplay(Mode mode) {
 		if (mode != display) {
 			display = mode;
-			for (int i = 0; i < 3; i++) {
+			for (int i = 0; i < displays.length; i++) {
 				window.remove(displays[i]);
 				displays[i].setMainDisplay(false);
 				displayButtons[i].setBackground(Settings.INACTIVE);
