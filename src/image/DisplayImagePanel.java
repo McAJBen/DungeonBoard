@@ -44,11 +44,15 @@ public class DisplayImagePanel extends DisplayPanel {
 			g.drawImage(image.getImage(), 0, 0, s.width, s.height, null);
 			break;
 		case REAL_SIZE:
+			g.setColor(new Color(image.getImage().getRGB(0, 0)));
+			g.fillRect(0, 0, s.width, s.height);
 			g.drawImage(image.getImage(),
 					(s.width - image.getWidth()) / 2,
 					(s.height - image.getHeight()) / 2, null);
 			break;
 		case UP_SCALE:
+			g.setColor(new Color(image.getImage().getRGB(0, 0)));
+			g.fillRect(0, 0, s.width, s.height);
 			double screenRatio = s.getWidth() / s.getHeight();
 			double imageRatio = (double)image.getWidth() / image.getHeight();
 			Dimension imageScale;
