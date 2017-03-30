@@ -150,15 +150,14 @@ public class DrawPanel extends JComponent {
 	}
 	
 	public void setImage(BufferedImage image) {
-		this.image = image;
-		
-		boolean resetMask = g2 == null || 
+		if (g2 == null ||
+				this.image.getWidth() != image.getWidth() ||
+				this.image.getHeight() != image.getHeight() ||
 				JOptionPane.showConfirmDialog(this,
-				"Reset Mask?",
-				"Paint image have been changed",
-				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+					"Would you like to keep the same visibility mask?",
+					"Paint Image has been changed",
+					JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
 			
-		if (resetMask) {
 			drawingLayer = new BufferedImage(
 				image.getWidth() / Settings.PIXELS_PER_MASK,
 				image.getHeight() / Settings.PIXELS_PER_MASK,
@@ -166,22 +165,10 @@ public class DrawPanel extends JComponent {
 			
 			g2 = (Graphics2D) drawingLayer.getGraphics();
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.6f));
+			g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 			clear();
 		}
-		else {
-			BufferedImage oldDrawingLayer = drawingLayer;
-			drawingLayer = new BufferedImage(
-					image.getWidth() / Settings.PIXELS_PER_MASK,
-					image.getHeight() / Settings.PIXELS_PER_MASK,
-					BufferedImage.TYPE_INT_ARGB);
-			g2 = (Graphics2D) drawingLayer.getGraphics();
-			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.6f));
-			clear();
-			g2.setComposite(AlphaComposite.Src);
-			g2.drawImage(oldDrawingLayer, 0, 0, null);
-			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.6f));
-		}
-		g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+		this.image = image;
 		loading = false;
 	}
 
