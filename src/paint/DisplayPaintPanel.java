@@ -3,7 +3,9 @@ package paint;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import display.DisplayPanel;
 import display.DisplayWindow;
@@ -42,6 +44,7 @@ public class DisplayPaintPanel extends DisplayPanel {
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
+		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, getSize().width, getSize().width);
 		Dimension size = new Dimension((int)(image.getWidth() / imageScale), (int) (image.getHeight() / imageScale));

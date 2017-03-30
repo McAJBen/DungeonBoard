@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.RenderingHints;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
@@ -328,6 +329,7 @@ public class DrawPanel extends JComponent {
 			g2.drawImage(oldDrawingLayer, 0, 0, null);
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.6f));
 		}
+		g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 		loading = false;
 	}
 
