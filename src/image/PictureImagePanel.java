@@ -64,4 +64,12 @@ public class PictureImagePanel extends JPanel implements ActionListener {
 			e.printStackTrace();
 		}
 	}
+	
+	public void clearImages() {
+		for (Component c: getComponents()) {
+			if (c.getClass().equals(JButton.class)) {
+				remove(c);
+			}
+		}
+	}
 }

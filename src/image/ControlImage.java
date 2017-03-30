@@ -69,6 +69,7 @@ public class ControlImage extends ControlPanel {
 		if (folder != null && folder.exists()) {
 			this.folder.setText(folder.getPath());
 			imageDisplay.setFolder(folder);
+			pp.clearImages();
 			for (File f: folder.listFiles()) {
 				String name = f.getName();
 				String suffix = name.substring(name.lastIndexOf('.') + 1);
