@@ -31,7 +31,7 @@ public class DisplayImagePanel extends DisplayPanel {
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, s.width, s.height);
 		
-		if (image != null) {
+		if (image != null && image.getImage() != null) {
 			paintImage(g, image, s);
 		}
 		window.paintMouse(g);
