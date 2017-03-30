@@ -19,7 +19,7 @@ public class Main {
 		
 		GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 		
-		if (screens.length > 2) {
+		if (screens.length > 1) {
 			int displayIndex = JOptionPane.showOptionDialog(null, "Select Display Window", Settings.NAME,
 					JOptionPane.DEFAULT_OPTION,
 					JOptionPane.QUESTION_MESSAGE,
