@@ -23,6 +23,8 @@ public class DrawPanel extends JComponent {
 	
 	private static final long serialVersionUID = -3142625453462827948L;
 	
+	private final Dimension displaySize;
+	
 	// Pen variables
 	private int radius;
 	private int diameter;
@@ -34,7 +36,6 @@ public class DrawPanel extends JComponent {
 	private Graphics2D g2;
 	private Dimension controlSize;
 	private double displayZoom;
-	private final Dimension displaySize;
 	
 	// drawing variables
 	private Point lastP;
@@ -140,161 +141,12 @@ public class DrawPanel extends JComponent {
 		repaint();
 	}
 	
-	private Point toDrawingPoint(Point p) {
-		return new Point(
-				p.x * drawingLayer.getWidth() / controlSize.width,
-				p.y * drawingLayer.getHeight() / controlSize.height);
-	}
-	
-	private void setWindowPos(Point p) {
-		lastWindowClick = p;
-		
-		windowPos.x = (int) (p.x * Settings.PIXELS_PER_MASK - (displaySize.width * displayZoom) / 2);
-		windowPos.y = (int) (p.y * Settings.PIXELS_PER_MASK - (displaySize.height * displayZoom) / 2);
-		
-		if (image != null) {
-			if (windowPos.x > image.getWidth() - displaySize.width * displayZoom) {
-				windowPos.x = (int) (image.getWidth() - displaySize.width * displayZoom);
-			}
-			if (windowPos.x < 0) {
-				windowPos.x = 0;
-			}
-			if (windowPos.y > image.getHeight() - displaySize.height * displayZoom) {
-				windowPos.y = (int) (image.getHeight() - displaySize.height * displayZoom);
-			}
-			if (windowPos.y < 0) {
-				windowPos.y = 0;
-			}
-		}
-	}
-	
 	public Point getWindowPos() {
 		return new Point((int)(windowPos.x / displayZoom), (int) (windowPos.y / displayZoom));
 	}
-	
-	private void addPoint(Point newP) {
-		if (g2 != null) {
-			switch (style) {
-				case HORIZONTAL:
-					newP.y = lastP.y;
-					break;
-				case VERTICAL:
-					newP.x = lastP.x;
-					break;
-				default:
-					break;
-			}
-			switch (penType) {
-			case CIRCLE:
-				g2.fillPolygon(getPolygon(newP, lastP));
-				g2.fillOval(
-						newP.x - radius * drawingLayer.getWidth() / controlSize.width,
-						newP.y - radius * drawingLayer.getHeight() / controlSize.height,
-						diameter * drawingLayer.getWidth() / controlSize.width,
-						diameter * drawingLayer.getHeight() / controlSize.height);
-				break;
-			case SQUARE:
-				g2.fillRect(
-						newP.x - radius * drawingLayer.getWidth() / controlSize.width,
-						newP.y - radius * drawingLayer.getHeight() / controlSize.height,
-						diameter * drawingLayer.getWidth() / controlSize.width,
-						diameter * drawingLayer.getHeight() / controlSize.height);
-				break;
-			}
-			lastP = newP;
-			updateButton.setEnabled(true);
-		}
-	}
-	
-	private Polygon getPolygon(Point newP, Point oldP) {
-		double angle = -Math.atan2(newP.getY() - oldP.getY(), newP.getX() - oldP.getX());
-		double anglePos = angle + Math.PI / 2;
-		double angleNeg = angle - Math.PI / 2;
-		int cosP = (int) (Math.cos(anglePos) * radius * drawingLayer.getWidth() / controlSize.width);
-		int cosN = (int) (Math.cos(angleNeg) * radius * drawingLayer.getWidth() / controlSize.width);
-		int sinP = (int) (Math.sin(anglePos) * radius * drawingLayer.getHeight() / controlSize.height);
-		int sinN = (int) (Math.sin(angleNeg) * radius * drawingLayer.getHeight() / controlSize.height);
-		return new Polygon(
-				new int[] {
-						newP.x + cosP,
-						newP.x + cosN,
-						oldP.x + cosN,
-						oldP.x + cosP},
-				new int[] {
-						newP.y - sinP,
-						newP.y - sinN,
-						oldP.y - sinN,
-						oldP.y - sinP}, 4);
-		
-	}
-	
-	protected void paintComponent(Graphics g) {
-		if (loading) {
-			g.drawString("Loading...", controlSize.width / 2, controlSize.height / 2);
-		}
-		else if (image != null) {
-			g.drawImage(image, 0, 0, controlSize.width, controlSize.height, null);
-			g.drawImage(drawingLayer, 0, 0, controlSize.width, controlSize.height, null);
-			g.setColor(Settings.PINK);
-			switch (penType) {
-			case CIRCLE:
-				g.drawOval(mousePos.x - radius, mousePos.y - radius, diameter, diameter);
-				break;
-			case SQUARE:
-				g.drawRect(mousePos.x - radius, mousePos.y - radius, diameter, diameter);
-				break;
-			}
-			g.drawRect(
-					windowPos.x * controlSize.width / image.getWidth(),
-					windowPos.y * controlSize.height / image.getHeight(),
-					(int) (displaySize.width * displayZoom * controlSize.width / image.getWidth()),
-					(int) (displaySize.height * displayZoom * controlSize.height / image.getHeight()));
-		}
-		
-	}
-	
-	private BufferedImage toMask(BufferedImage img) {
-		BufferedImage mask = new BufferedImage(
-				img.getWidth(),
-				img.getHeight(),
-				BufferedImage.TYPE_INT_ARGB);
-		
-		for (int i = 0; i < img.getWidth(); i++) {
-			for (int j = 0; j < img.getHeight(); j++) {
-				int dl = img.getRGB(i, j);
-				if (dl == -1721434268) { // CLEAR
-					mask.setRGB(i, j, -1);
-				}
-				else if (dl == -1711315868) { // OPAQUE
-					mask.setRGB(i, j, -16777216);
-				}
-				else {
-					System.out.println(dl);
-				}
-			}
-		}
-		return mask;
-	}
-	
+
 	public BufferedImage getMask() {
 		return toMask(drawingLayer);
-	}
-	
-	public void showAll() {
-		fillAll(Settings.CLEAR);
-	}
-	
-	public void clear() {
-		fillAll(Settings.OPAQUE);
-	}
-	
-	private void fillAll(Color c) {
-		if (g2 != null) {
-			g2.setPaint(c);
-			g2.fillRect(0, 0, drawingLayer.getWidth(), drawingLayer.getHeight());
-			repaint();
-			updateButton.setEnabled(true);
-		}
 	}
 	
 	public void setImage(BufferedImage image) {
@@ -388,5 +240,149 @@ public class DrawPanel extends JComponent {
 	public void setImageLoading() {
 		loading = true;
 		repaint();
+	}
+	
+	protected void paintComponent(Graphics g) {
+		if (loading) {
+			g.drawString("Loading...", controlSize.width / 2, controlSize.height / 2);
+		}
+		else if (image != null) {
+			g.drawImage(image, 0, 0, controlSize.width, controlSize.height, null);
+			g.drawImage(drawingLayer, 0, 0, controlSize.width, controlSize.height, null);
+			g.setColor(Settings.PINK);
+			switch (penType) {
+			case CIRCLE:
+				g.drawOval(mousePos.x - radius, mousePos.y - radius, diameter, diameter);
+				break;
+			case SQUARE:
+				g.drawRect(mousePos.x - radius, mousePos.y - radius, diameter, diameter);
+				break;
+			}
+			g.drawRect(
+					windowPos.x * controlSize.width / image.getWidth(),
+					windowPos.y * controlSize.height / image.getHeight(),
+					(int) (displaySize.width * displayZoom * controlSize.width / image.getWidth()),
+					(int) (displaySize.height * displayZoom * controlSize.height / image.getHeight()));
+		}
+	}
+
+	private void clear() {
+		fillAll(Settings.OPAQUE);
+	}
+	
+	private Point toDrawingPoint(Point p) {
+		return new Point(
+				p.x * drawingLayer.getWidth() / controlSize.width,
+				p.y * drawingLayer.getHeight() / controlSize.height);
+	}
+	
+	private void setWindowPos(Point p) {
+		lastWindowClick = p;
+		
+		windowPos.x = (int) (p.x * Settings.PIXELS_PER_MASK - (displaySize.width * displayZoom) / 2);
+		windowPos.y = (int) (p.y * Settings.PIXELS_PER_MASK - (displaySize.height * displayZoom) / 2);
+		
+		if (image != null) {
+			if (windowPos.x > image.getWidth() - displaySize.width * displayZoom) {
+				windowPos.x = (int) (image.getWidth() - displaySize.width * displayZoom);
+			}
+			if (windowPos.x < 0) {
+				windowPos.x = 0;
+			}
+			if (windowPos.y > image.getHeight() - displaySize.height * displayZoom) {
+				windowPos.y = (int) (image.getHeight() - displaySize.height * displayZoom);
+			}
+			if (windowPos.y < 0) {
+				windowPos.y = 0;
+			}
+		}
+	}
+	
+	private void addPoint(Point newP) {
+		if (g2 != null) {
+			switch (style) {
+				case HORIZONTAL:
+					newP.y = lastP.y;
+					break;
+				case VERTICAL:
+					newP.x = lastP.x;
+					break;
+				default:
+					break;
+			}
+			switch (penType) {
+			case CIRCLE:
+				g2.fillPolygon(getPolygon(newP, lastP));
+				g2.fillOval(
+						newP.x - radius * drawingLayer.getWidth() / controlSize.width,
+						newP.y - radius * drawingLayer.getHeight() / controlSize.height,
+						diameter * drawingLayer.getWidth() / controlSize.width,
+						diameter * drawingLayer.getHeight() / controlSize.height);
+				break;
+			case SQUARE:
+				g2.fillRect(
+						newP.x - radius * drawingLayer.getWidth() / controlSize.width,
+						newP.y - radius * drawingLayer.getHeight() / controlSize.height,
+						diameter * drawingLayer.getWidth() / controlSize.width,
+						diameter * drawingLayer.getHeight() / controlSize.height);
+				break;
+			}
+			lastP = newP;
+			updateButton.setEnabled(true);
+		}
+	}
+	
+	private Polygon getPolygon(Point newP, Point oldP) {
+		double angle = -Math.atan2(newP.getY() - oldP.getY(), newP.getX() - oldP.getX());
+		double anglePos = angle + Math.PI / 2;
+		double angleNeg = angle - Math.PI / 2;
+		int cosP = (int) (Math.cos(anglePos) * radius * drawingLayer.getWidth() / controlSize.width);
+		int cosN = (int) (Math.cos(angleNeg) * radius * drawingLayer.getWidth() / controlSize.width);
+		int sinP = (int) (Math.sin(anglePos) * radius * drawingLayer.getHeight() / controlSize.height);
+		int sinN = (int) (Math.sin(angleNeg) * radius * drawingLayer.getHeight() / controlSize.height);
+		return new Polygon(
+				new int[] {
+						newP.x + cosP,
+						newP.x + cosN,
+						oldP.x + cosN,
+						oldP.x + cosP},
+				new int[] {
+						newP.y - sinP,
+						newP.y - sinN,
+						oldP.y - sinN,
+						oldP.y - sinP}, 4);
+		
+	}
+	
+	private BufferedImage toMask(BufferedImage img) {
+		BufferedImage mask = new BufferedImage(
+				img.getWidth(),
+				img.getHeight(),
+				BufferedImage.TYPE_INT_ARGB);
+		
+		for (int i = 0; i < img.getWidth(); i++) {
+			for (int j = 0; j < img.getHeight(); j++) {
+				int dl = img.getRGB(i, j);
+				if (dl == -1721434268) { // CLEAR
+					mask.setRGB(i, j, -1);
+				}
+				else if (dl == -1711315868) { // OPAQUE
+					mask.setRGB(i, j, -16777216);
+				}
+				else {
+					System.out.println(dl);
+				}
+			}
+		}
+		return mask;
+	}
+	
+	private void fillAll(Color c) {
+		if (g2 != null) {
+			g2.setPaint(c);
+			g2.fillRect(0, 0, drawingLayer.getWidth(), drawingLayer.getHeight());
+			repaint();
+			updateButton.setEnabled(true);
+		}
 	}
 }

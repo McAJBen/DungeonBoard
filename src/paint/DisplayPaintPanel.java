@@ -29,18 +29,6 @@ public class DisplayPaintPanel extends DisplayPanel {
 		setVisible(true);
 	}
 	
-	public void setMask(BufferedImage newMask) {
-		if (newMask != null) {
-			mask = new BufferedImage(newMask.getWidth(), newMask.getHeight(), BufferedImage.TYPE_INT_ARGB);
-			for (int i = 0; i < newMask.getWidth(); i++) {
-				for (int j = 0; j < newMask.getHeight(); j++) {
-					mask.setRGB(i, j, newMask.getRGB(i, j) + 1);
-				}
-			}
-			repaint();
-		}
-	}
-	
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
@@ -52,6 +40,18 @@ public class DisplayPaintPanel extends DisplayPanel {
 		g.drawImage(mask, -windowPos.x, -windowPos.y, size.width, size.height, null);
 		window.paintMouse(g);
 		g.dispose();
+	}
+	
+	public void setMask(BufferedImage newMask) {
+		if (newMask != null) {
+			mask = new BufferedImage(newMask.getWidth(), newMask.getHeight(), BufferedImage.TYPE_INT_ARGB);
+			for (int i = 0; i < newMask.getWidth(); i++) {
+				for (int j = 0; j < newMask.getHeight(); j++) {
+					mask.setRGB(i, j, newMask.getRGB(i, j) + 1);
+				}
+			}
+			repaint();
+		}
 	}
 	
 	public void setImage(BufferedImage image) {

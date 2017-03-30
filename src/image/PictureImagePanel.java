@@ -27,6 +27,24 @@ public class PictureImagePanel extends JPanel implements ActionListener {
 		setBorder(BorderFactory.createEmptyBorder());
 		this.displayImagePanel = displayImagePanel;
 	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		
+		JButton button = (JButton) (e.getSource());
+		
+		if (button.getBackground() == Settings.DISABLE_COLOR) {
+			for (Component c: getComponents()) {
+				c.setBackground(Settings.DISABLE_COLOR);
+			}
+			button.setBackground(Settings.ENABLE_COLOR);
+			displayImagePanel.setImage(button.getText());
+		}
+		else {
+			button.setBackground(Settings.DISABLE_COLOR);
+			displayImagePanel.setImage(null);
+		}
+	}
 
 	public void addImage(File f) {
 		try {
@@ -44,24 +62,6 @@ public class PictureImagePanel extends JPanel implements ActionListener {
 		    
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		
-		JButton button = (JButton) (e.getSource());
-		
-		if (button.getBackground() == Settings.DISABLE_COLOR) {
-			for (Component c: getComponents()) {
-				c.setBackground(Settings.DISABLE_COLOR);
-			}
-			button.setBackground(Settings.ENABLE_COLOR);
-			displayImagePanel.setImage(button.getText());
-		}
-		else {
-			button.setBackground(Settings.DISABLE_COLOR);
-			displayImagePanel.setImage(null);
 		}
 	}
 }

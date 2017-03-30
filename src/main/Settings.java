@@ -63,10 +63,6 @@ public class Settings {
 	
 	public static final Point NULL_POS = new Point(-100, -100);
 	
-	private static ImageIcon load(String res) {
-		return new ImageIcon(Settings.class.getResource("/resources/" + res));
-	}
-	
 	public static void load() {
 		for (int i = 0; i < HANDS.length; i++) {
         	try {
@@ -75,5 +71,9 @@ public class Settings {
 				e.printStackTrace();
 			}
     	}
+	}
+	
+	private static ImageIcon load(String res) {
+		return new ImageIcon(Settings.class.getResource("/resources/" + res));
 	}
 }

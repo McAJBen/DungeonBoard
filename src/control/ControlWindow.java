@@ -107,28 +107,6 @@ public class ControlWindow extends JFrame {
 		
 		return panel;
 	}
-
-	private class ButtonListener implements ActionListener {
-		
-		private final Display disp;
-		private final Mode mode;
-		
-		public ButtonListener(Display d, Mode m) {
-			disp = d;
-			mode = m;
-		}
-		
-		public void actionPerformed(ActionEvent arg0) {
-			switch (disp) {
-				case CONTROL:
-					setControl(mode);
-					break;
-				case DISPLAY:
-					setDisplay(mode);
-					break;
-			}
-		}
-	}
 	
 	private void setControl(Mode mode) {
 		if (mode != controlMode) {
@@ -157,6 +135,28 @@ public class ControlWindow extends JFrame {
 			displayButtons[display.ordinal()].setBackground(Settings.ACTIVE);
 			window.validate();
 			window.repaint();
+		}
+	}
+	
+	private class ButtonListener implements ActionListener {
+		
+		private final Display disp;
+		private final Mode mode;
+		
+		public ButtonListener(Display d, Mode m) {
+			disp = d;
+			mode = m;
+		}
+		
+		public void actionPerformed(ActionEvent arg0) {
+			switch (disp) {
+				case CONTROL:
+					setControl(mode);
+					break;
+				case DISPLAY:
+					setDisplay(mode);
+					break;
+			}
 		}
 	}
 }

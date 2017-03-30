@@ -80,5 +80,4 @@ public class ControlImage extends ControlPanel {
 			revalidate();
 		}
 	}
-
 }

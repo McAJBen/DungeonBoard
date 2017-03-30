@@ -41,6 +41,60 @@ public class DisplayLoadingPanel extends DisplayPanel {
 		fade = 1;
 		setVisible(true);
 	}
+	
+	@Override
+	public void paint(Graphics g) {
+		super.paint(g);
+		Graphics2D g2d = (Graphics2D) g;
+		Dimension s = getSize();
+		if (upScale) {
+			if (timer <= FADE_IN) {
+				g2d.drawImage(oldImage, 0, 0, s.width, s.height, null);
+			}
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade));
+			g2d.drawImage(currentImage, 0, 0, s.width, s.height, null);
+		}
+		else {
+			g2d.setColor(new Color(currentImage.getRGB(0, 0)));
+			g2d.fillRect(0, 0, s.width, s.height);
+			
+			if (timer <= FADE_IN && oldImage != null) {
+				g2d.drawImage(oldImage, (s.width - oldImage.getWidth()) / 2,
+						(s.height - oldImage.getHeight()) / 2, null);
+			}
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade));
+			g2d.drawImage(currentImage, (s.width - currentImage.getWidth()) / 2,
+					(s.height - currentImage.getHeight()) / 2, null);
+		}
+		window.paintMouse(g);
+		g.dispose();
+	}
+	
+	@Override
+	public void setMainDisplay(boolean b) {
+		if (b) {
+			restart(false);
+		}
+		mainDisplay = b;
+	}
+
+	public void setDirectory(File folder) {
+		this.folder = folder;
+		fileNames.clear();
+		timer = 20;
+		fade = 1;
+		rePop();
+		restart(true);
+	}
+	
+	public void setTotalWait(int seconds) {
+		totalWait = seconds * 20;
+	}
+
+	public void setUpScale(boolean b) {
+		upScale = b;
+		repaint();
+	}
 
 	private void motion() {
 		timer++;
@@ -70,34 +124,6 @@ public class DisplayLoadingPanel extends DisplayPanel {
 		}
 	}
 
-	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
-		Graphics2D g2d = (Graphics2D) g;
-		Dimension s = getSize();
-		if (upScale) {
-			if (timer <= FADE_IN) {
-				g2d.drawImage(oldImage, 0, 0, s.width, s.height, null);
-			}
-			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade));
-			g2d.drawImage(currentImage, 0, 0, s.width, s.height, null);
-		}
-		else {
-			g2d.setColor(new Color(currentImage.getRGB(0, 0)));
-			g2d.fillRect(0, 0, s.width, s.height);
-			
-			if (timer <= FADE_IN && oldImage != null) {
-				g2d.drawImage(oldImage, (s.width - oldImage.getWidth()) / 2,
-						(s.height - oldImage.getHeight()) / 2, null);
-			}
-			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade));
-			g2d.drawImage(currentImage, (s.width - currentImage.getWidth()) / 2,
-					(s.height - currentImage.getHeight()) / 2, null);
-		}
-		window.paintMouse(g);
-		g.dispose();
-	}
-	
 	private void rePop() {
 		if (folder != null && folder.exists()) {
 			Random rand = new Random();
@@ -141,31 +167,5 @@ public class DisplayLoadingPanel extends DisplayPanel {
 			}
 		};
 		paintThread.start();
-	}
-	
-	@Override
-	public void setMainDisplay(boolean b) {
-		if (b) {
-			restart(false);
-		}
-		mainDisplay = b;
-	}
-	
-	public void setDirectory(File folder) {
-		this.folder = folder;
-		fileNames.clear();
-		timer = 20;
-		fade = 1;
-		rePop();
-		restart(true);
-	}
-	
-	public void setTotalWait(int seconds) {
-		totalWait = seconds * 20;
-	}
-
-	public void setUpScale(boolean b) {
-		upScale = b;
-		repaint();
 	}
 }

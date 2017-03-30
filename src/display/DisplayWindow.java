@@ -57,11 +57,6 @@ public class DisplayWindow extends JFrame {
 		repaint();
 	}
 	
-	private void setMouse(Point p) {
-		mousePos = p;
-		repaint();
-	}
-	
 	public void paintMouse(Graphics g) {
 		int i = handDirection.ordinal();
 		g.drawImage(
@@ -69,5 +64,10 @@ public class DisplayWindow extends JFrame {
 				mousePos.x + Settings.HANDS_OFFSET[i],
 				mousePos.y + Settings.HANDS_OFFSET[i == 0 ? 3 : i - 1],
 				null);
+	}
+	
+	private void setMouse(Point p) {
+		mousePos = p;
+		repaint();
 	}
 }

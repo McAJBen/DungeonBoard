@@ -159,23 +159,6 @@ public class ControlPaint extends ControlPanel {
 		setVisible(true);
 	}
 	
-	private void setZoom(double zoom) {
-		if (zoom < 0.01) {
-			zoom = 0.01;
-		}
-		else if (zoom > 10.0) {
-			zoom = 10.0;
-		}
-		zoomText.setText(String.format("%.2f", zoom));
-		zoomSlider.setValue((int)(zoom * 100));
-		drawPanel.setZoom(zoom);
-	}
-	
-	protected void setFile(String selectedItem) {
-		File f = new File(Settings.FOLDERS[Mode.PAINT.ordinal()].getAbsolutePath() + "\\" + selectedItem);
-		setFile(f);
-	}
-
 	public void setFile(File f) {
 		if (f != null) {
 			drawPanel.setImageLoading();
@@ -195,5 +178,22 @@ public class ControlPaint extends ControlPanel {
 			};
 			fileLoadingThread.start();
 		}
+	}
+	
+	protected void setFile(String selectedItem) {
+		File f = new File(Settings.FOLDERS[Mode.PAINT.ordinal()].getAbsolutePath() + "\\" + selectedItem);
+		setFile(f);
+	}
+	
+	private void setZoom(double zoom) {
+		if (zoom < 0.01) {
+			zoom = 0.01;
+		}
+		else if (zoom > 10.0) {
+			zoom = 10.0;
+		}
+		zoomText.setText(String.format("%.2f", zoom));
+		zoomSlider.setValue((int)(zoom * 100));
+		drawPanel.setZoom(zoom);
 	}
 }

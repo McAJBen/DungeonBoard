@@ -27,6 +27,19 @@ public class PictureLayerPanel extends JPanel implements ActionListener {
 		setBorder(BorderFactory.createEmptyBorder());
 		this.window = window;
 	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		JButton button = (JButton) (e.getSource());
+		if (button.getBackground() == Settings.DISABLE_COLOR) {
+			button.setBackground(Settings.ENABLE_COLOR);
+			window.addImage(button.getText());
+		}
+		else if (button.getBackground() == Settings.ENABLE_COLOR) {
+			button.setBackground(Settings.DISABLE_COLOR);
+			window.removeImage(button.getText());
+		}
+	}
 
 	public void addImage(File f) {
 		try {
@@ -54,21 +67,4 @@ public class PictureLayerPanel extends JPanel implements ActionListener {
 			}
 		}
 	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		JButton button = (JButton) (e.getSource());
-		if (button.getBackground() == Settings.DISABLE_COLOR) {
-			button.setBackground(Settings.ENABLE_COLOR);
-			window.addImage(button.getText());
-		}
-		else if (button.getBackground() == Settings.ENABLE_COLOR) {
-			button.setBackground(Settings.DISABLE_COLOR);
-			window.removeImage(button.getText());
-		}
-	}
-	
-	
-	
-	
 }
