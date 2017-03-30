@@ -141,14 +141,6 @@ public class DrawPanel extends JComponent {
 		repaint();
 	}
 	
-	public Point getWindowPos() {
-		return new Point((int)(windowPos.x / displayZoom), (int) (windowPos.y / displayZoom));
-	}
-
-	public BufferedImage getMask() {
-		return toMask(drawingLayer);
-	}
-	
 	public void setImage(BufferedImage image) {
 		if (g2 == null ||
 				this.image.getWidth() != image.getWidth() ||
@@ -181,13 +173,14 @@ public class DrawPanel extends JComponent {
 	public void setUpdateButton(JButton updateScreen) {
 		updateButton = updateScreen;
 	}
+	
+	public void togglePen() {
+		penType = Pen.values()[(penType.ordinal() + 1) % Pen.values().length];
+		repaint();
+	}
 
 	public void toggleStyle() {
 		style = Direction.values()[(style.ordinal() + 1) % Direction.values().length];
-	}
-
-	public int getStyle() {
-		return style.ordinal();
 	}
 	
 	public void toggleDrawMode() {
@@ -211,22 +204,29 @@ public class DrawPanel extends JComponent {
 		}
 	}
 	
+	public void setImageLoading() {
+		loading = true;
+		repaint();
+	}
+	
+	public int getPen() {
+		return penType.ordinal();
+	}
+	
+	public int getStyle() {
+		return style.ordinal();
+	}
+	
 	public int getDrawMode() {
 		return drawMode.ordinal();
 	}
 	
-	public void togglePen() {
-		penType = Pen.values()[(penType.ordinal() + 1) % Pen.values().length];
-		repaint();
+	public BufferedImage getMask() {
+		return toMask(drawingLayer);
 	}
-
-	public int getPen() {
-		return penType.ordinal();
-	}
-
-	public void setImageLoading() {
-		loading = true;
-		repaint();
+	
+	public Point getWindowPos() {
+		return new Point((int)(windowPos.x / displayZoom), (int) (windowPos.y / displayZoom));
 	}
 	
 	protected void paintComponent(Graphics g) {
@@ -253,10 +253,6 @@ public class DrawPanel extends JComponent {
 		}
 	}
 
-	private void clear() {
-		fillAll(Settings.OPAQUE);
-	}
-	
 	private Point toDrawingPoint(Point p) {
 		return new Point(
 				p.x * drawingLayer.getWidth() / controlSize.width,
@@ -371,5 +367,9 @@ public class DrawPanel extends JComponent {
 			repaint();
 			updateButton.setEnabled(true);
 		}
+	}
+	
+	private void clear() {
+		fillAll(Settings.OPAQUE);
 	}
 }
