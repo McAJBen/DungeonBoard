@@ -38,11 +38,14 @@ public class ControlPaint extends ControlPanel {
 	private JTextField zoomText;
 	private JSlider zoomSlider;
 	
+	private double maxZoom;
+	
 	public ControlPaint(Dimension displaySize, DisplayPaintPanel disp) {
 		setLayout(new BorderLayout());
 		setBorder(BorderFactory.createLineBorder(Settings.BACKGROUND, 5));
 		
 		paintDisplay = disp;
+		maxZoom = 10.0;
 		
 		drawPanel = new DrawPanel(displaySize, disp);
 		
@@ -141,8 +144,8 @@ public class ControlPaint extends ControlPanel {
 					if (zoom < 0.01) {
 						zoom = 0.01;
 					}
-					else if (zoom > 10.0) {
-						zoom = 10.0;
+					else if (zoom > maxZoom) {
+						zoom = maxZoom;
 					}
 					drawPanel.setZoom(zoom);
 				}
@@ -154,15 +157,15 @@ public class ControlPaint extends ControlPanel {
 		});
 		westPanel.add(zoomText);
 		
-		zoomSlider = new JSlider(SwingConstants.VERTICAL, 1, 1000, 100);
+		zoomSlider = new JSlider(SwingConstants.VERTICAL, 1, (int)(maxZoom * 100), 100);
 		zoomSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent arg0) {
 				double zoom = zoomSlider.getValue() / 100.0;
 				if (zoom < 0.01) {
 					zoom = 0.01;
 				}
-				else if (zoom > 10.0) {
-					zoom = 10.0;
+				else if (zoom > maxZoom) {
+					zoom = maxZoom;
 				}
 				zoomText.setText(String.format("%.2f", zoom));
 				drawPanel.setZoom(zoom);
@@ -188,11 +191,13 @@ public class ControlPaint extends ControlPanel {
 							drawPanel.setImage(image);
 							paintDisplay.setMask(drawPanel.getMask());
 							paintDisplay.setImage(image);
+							setZoomMax(image.getWidth(), image.getHeight());
 						}
 					} catch (IOException | OutOfMemoryError error) {
 						drawPanel.resetImage();
 						paintDisplay.resetImage();
 						System.out.println("Cannot load image, too big");
+						paintDisplay.repaint();
 						JOptionPane.showMessageDialog(drawPanel, "Cannot load Image, file is too large");
 					}
 				}
@@ -205,5 +210,12 @@ public class ControlPaint extends ControlPanel {
 		setFile(new File(
 				Settings.FOLDERS[Mode.PAINT.ordinal()].getAbsolutePath() + "\\" + selectedItem
 		));
+	}
+	
+	private void setZoomMax(double width, double height) {
+		double w = width / drawPanel.getDisplaySize().getWidth();
+		double h = height / drawPanel.getDisplaySize().getHeight();
+		double maxZoom = h > w ? h : w;
+		zoomSlider.setMaximum((int) (maxZoom * 100));
 	}
 }
