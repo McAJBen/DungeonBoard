@@ -66,11 +66,13 @@ public class DisplayPaintPanel extends DisplayPanel {
 	public void setWindowPos(Point p) {
 		synchronized (lock) {
 			windowPos = p;
-			if (imageSize.width < getSize().width) {
-				windowPos.x = (imageSize.width - getSize().width) / 2;
-			}
-			if (imageSize.height < getSize().height) {
-				windowPos.y = (imageSize.height - getSize().height) / 2;
+			if (imageSize != null) {
+				if (imageSize.width < getSize().width) {
+					windowPos.x = (imageSize.width - getSize().width) / 2;
+				}
+				if (imageSize.height < getSize().height) {
+						windowPos.y = (imageSize.height - getSize().height) / 2;
+				}	
 			}
 		}
 		repaint();
@@ -79,9 +81,11 @@ public class DisplayPaintPanel extends DisplayPanel {
 	public void setWindowScale(double scale) {
 		synchronized (lock) {
 			this.scale = scale;
-			imageSize = new Dimension(
-				(int)(image.getWidth() / scale),
-				(int)(image.getHeight() / scale));
+			if (image != null) {
+				imageSize = new Dimension(
+						(int)(image.getWidth() / scale),
+						(int)(image.getHeight() / scale));
+			}
 		}
 		repaint();
 	}

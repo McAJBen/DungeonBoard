@@ -135,14 +135,21 @@ public class ControlPaint extends ControlPanel {
 		zoomText.setMaximumSize(new Dimension(5000, 25));
 		zoomText.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				double result = 1;
+				double zoom = 1;
 				try {
-					result = Double.parseDouble(zoomText.getText());
+					zoom = Double.parseDouble(zoomText.getText());
+					if (zoom < 0.01) {
+						zoom = 0.01;
+					}
+					else if (zoom > 10.0) {
+						zoom = 10.0;
+					}
+					drawPanel.setZoom(zoom);
 				}
 				catch (NumberFormatException nfe) {
-					result = zoomSlider.getValue() / 100.0;
+					zoom = zoomSlider.getValue() / 100.0;
 				}
-				setZoom(result);
+				zoomText.setText(String.format("%.2f", zoom));
 			}
 		});
 		westPanel.add(zoomText);
@@ -150,7 +157,15 @@ public class ControlPaint extends ControlPanel {
 		zoomSlider = new JSlider(SwingConstants.VERTICAL, 1, 1000, 100);
 		zoomSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent arg0) {
-				setZoom(zoomSlider.getValue() / 100.0);
+				double zoom = zoomSlider.getValue() / 100.0;
+				if (zoom < 0.01) {
+					zoom = 0.01;
+				}
+				else if (zoom > 10.0) {
+					zoom = 10.0;
+				}
+				zoomText.setText(String.format("%.2f", zoom));
+				drawPanel.setZoom(zoom);
 			}
 		});
 		westPanel.add(zoomSlider);
@@ -187,19 +202,8 @@ public class ControlPaint extends ControlPanel {
 	}
 	
 	protected void setFile(String selectedItem) {
-		File f = new File(Settings.FOLDERS[Mode.PAINT.ordinal()].getAbsolutePath() + "\\" + selectedItem);
-		setFile(f);
-	}
-	
-	private void setZoom(double zoom) {
-		if (zoom < 0.01) {
-			zoom = 0.01;
-		}
-		else if (zoom > 10.0) {
-			zoom = 10.0;
-		}
-		zoomText.setText(String.format("%.2f", zoom));
-		zoomSlider.setValue((int)(zoom * 100));
-		drawPanel.setZoom(zoom);
+		setFile(new File(
+				Settings.FOLDERS[Mode.PAINT.ordinal()].getAbsolutePath() + "\\" + selectedItem
+		));
 	}
 }
