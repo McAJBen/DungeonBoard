@@ -15,17 +15,18 @@ public class DisplayPaintPanel extends DisplayPanel {
 	
 	private static final long serialVersionUID = -8389531693546434519L;
 	
+	private Object lock;
 	private BufferedImage mask;
 	private BufferedImage image;
+	private Dimension imageSize;
 	private Point windowPos;
-	private double imageScale;
+	private double scale;
 	
 	public DisplayPaintPanel(DisplayWindow window) {
 		super(window);
-		image = Settings.BLANK_CURSOR;
+		lock = new Object();
 		windowPos = new Point(0, 0);
-		imageScale = 1;
-		mask = Settings.BLANK_CURSOR;
+		scale = 1;
 		setVisible(true);
 	}
 	
@@ -35,48 +36,60 @@ public class DisplayPaintPanel extends DisplayPanel {
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, getSize().width, getSize().width);
-		Dimension size = new Dimension((int)(image.getWidth() / imageScale), (int) (image.getHeight() / imageScale));
-		g.drawImage(image, -windowPos.x, -windowPos.y, size.width, size.height, null);
-		g.drawImage(mask, -windowPos.x, -windowPos.y, size.width, size.height, null);
+		
+		synchronized (lock) {
+			if (image != null && mask != null && imageSize != null) {
+				g.drawImage(image, -windowPos.x, -windowPos.y, imageSize.width, imageSize.height, null);
+				g.drawImage(mask, -windowPos.x, -windowPos.y, imageSize.width, imageSize.height, null);
+			}
+		}
+		
 		window.paintMouse(g);
 		g.dispose();
 	}
 	
 	public void setMask(BufferedImage newMask) {
-		if (newMask != null) {
-			mask = new BufferedImage(newMask.getWidth(), newMask.getHeight(), BufferedImage.TYPE_INT_ARGB);
-			for (int i = 0; i < newMask.getWidth(); i++) {
-				for (int j = 0; j < newMask.getHeight(); j++) {
-					mask.setRGB(i, j, newMask.getRGB(i, j) + 1);
-				}
-			}
-			repaint();
+		synchronized (lock) {
+			mask = newMask;
 		}
+		repaint();
 	}
 	
 	public void setImage(BufferedImage image) {
-		this.image = image;
-		repaint();
-	}
-	
-	public void changeWindowPos(Point p) {
-		windowPos = p;
-		if (image.getWidth() < getSize().width) {
-			windowPos.x = (image.getWidth() - getSize().width) / 2;
-		}
-		if (image.getHeight() < getSize().height) {
-			windowPos.y = (image.getHeight() - getSize().height) / 2;
+		synchronized (lock) {
+			this.image = image;
+			setWindowScale(scale);
 		}
 		repaint();
 	}
 	
-	public void changeWindowScale(double scale) {
-		imageScale = scale;
+	public void setWindowPos(Point p) {
+		synchronized (lock) {
+			windowPos = p;
+			if (imageSize.width < getSize().width) {
+				windowPos.x = (imageSize.width - getSize().width) / 2;
+			}
+			if (imageSize.height < getSize().height) {
+				windowPos.y = (imageSize.height - getSize().height) / 2;
+			}
+		}
+		repaint();
+	}
+	
+	public void setWindowScale(double scale) {
+		synchronized (lock) {
+			this.scale = scale;
+			imageSize = new Dimension(
+				(int)(image.getWidth() / scale),
+				(int)(image.getHeight() / scale));
+		}
 		repaint();
 	}
 
 	public void resetImage() {
-		image = Settings.BLANK_CURSOR;
-		mask = Settings.BLANK_CURSOR;
+		synchronized (lock) {
+			image = Settings.BLANK_CURSOR;
+			mask = Settings.BLANK_CURSOR;
+		}
 	}
 }

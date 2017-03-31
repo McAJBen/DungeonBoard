@@ -119,7 +119,7 @@ public class ControlPaint extends ControlPanel {
 		updateScreen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				paintDisplay.setMask(drawPanel.getMask());
-				paintDisplay.changeWindowPos(drawPanel.getWindowPos());
+				paintDisplay.setWindowPos(drawPanel.getWindowPos());
 				updateScreen.setEnabled(false);
 			}
 		});

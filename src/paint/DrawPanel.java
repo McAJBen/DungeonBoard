@@ -74,7 +74,7 @@ public class DrawPanel extends JComponent {
 					if (drawMode == DrawMode.ANY) {
 						if (e.getButton() == MouseEvent.BUTTON2) {
 							setWindowPos(lastP);
-							display.changeWindowPos(getWindowPos());
+							display.setWindowPos(getWindowPos());
 							canDraw = false;
 						}
 						else {
@@ -97,7 +97,7 @@ public class DrawPanel extends JComponent {
 					}
 					else if (drawMode == DrawMode.WINDOW) {
 						setWindowPos(lastP);
-						display.changeWindowPos(getWindowPos());
+						display.setWindowPos(getWindowPos());
 					}
 					repaint();
 				}
@@ -111,7 +111,7 @@ public class DrawPanel extends JComponent {
 					}
 					else {
 						setWindowPos(toDrawingPoint(e.getPoint()));
-						display.changeWindowPos(getWindowPos());
+						display.setWindowPos(getWindowPos());
 					}
 					mousePos = e.getPoint();
 					repaint();
@@ -136,9 +136,9 @@ public class DrawPanel extends JComponent {
 	
 	public void setZoom(double zoom) {
 		displayZoom = zoom;
-		display.changeWindowScale(zoom);
+		display.setWindowScale(zoom);
 		setWindowPos(lastWindowClick);
-		display.changeWindowPos(getWindowPos());
+		display.setWindowPos(getWindowPos());
 		repaint();
 	}
 	
@@ -230,7 +230,26 @@ public class DrawPanel extends JComponent {
 	}
 	
 	public BufferedImage getMask() {
-		return toMask(drawingLayer);
+		BufferedImage mask = new BufferedImage(
+				drawingLayer.getWidth(),
+				drawingLayer.getHeight(),
+				BufferedImage.TYPE_INT_ARGB);
+		
+		for (int i = 0; i < drawingLayer.getWidth(); i++) {
+			for (int j = 0; j < drawingLayer.getHeight(); j++) {
+				int dl = drawingLayer.getRGB(i, j);
+				if (dl == -1721434268) { // CLEAR
+					mask.setRGB(i, j, 0);
+				}
+				else if (dl == -1711315868) { // OPAQUE
+					mask.setRGB(i, j, -16777215);
+				}
+				else {
+					System.out.println(dl);
+				}
+			}
+		}
+		return mask;
 	}
 	
 	public Point getWindowPos() {
@@ -346,29 +365,6 @@ public class DrawPanel extends JComponent {
 						oldP.y - sinN,
 						oldP.y - sinP}, 4);
 		
-	}
-	
-	private BufferedImage toMask(BufferedImage img) {
-		BufferedImage mask = new BufferedImage(
-				img.getWidth(),
-				img.getHeight(),
-				BufferedImage.TYPE_INT_ARGB);
-		
-		for (int i = 0; i < img.getWidth(); i++) {
-			for (int j = 0; j < img.getHeight(); j++) {
-				int dl = img.getRGB(i, j);
-				if (dl == -1721434268) { // CLEAR
-					mask.setRGB(i, j, -1);
-				}
-				else if (dl == -1711315868) { // OPAQUE
-					mask.setRGB(i, j, -16777216);
-				}
-				else {
-					System.out.println(dl);
-				}
-			}
-		}
-		return mask;
 	}
 	
 	private void fillAll(Color c) {
