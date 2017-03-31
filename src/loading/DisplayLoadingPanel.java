@@ -59,6 +59,7 @@ public class DisplayLoadingPanel extends DisplayPanel {
 			g2d.fillRect(0, 0, s.width, s.height);
 			
 			if (timer <= FADE_IN && oldImage != null) {
+				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1 - fade));
 				g2d.drawImage(oldImage, (s.width - oldImage.getWidth()) / 2,
 						(s.height - oldImage.getHeight()) / 2, null);
 			}
