@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
+
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -174,6 +175,13 @@ public class DrawPanel extends JComponent {
 		updateButton = updateScreen;
 	}
 	
+	public void resetImage() {
+		image = null;
+		g2 = null;
+		drawingLayer = null;
+		loading = false;
+	}
+	
 	public void togglePen() {
 		penType = Pen.values()[(penType.ordinal() + 1) % Pen.values().length];
 		repaint();
@@ -250,6 +258,9 @@ public class DrawPanel extends JComponent {
 					windowPos.y * controlSize.height / image.getHeight(),
 					(int) (displaySize.width * displayZoom * controlSize.width / image.getWidth()),
 					(int) (displaySize.height * displayZoom * controlSize.height / image.getHeight()));
+		}
+		else if (controlSize != null) {
+			g.drawString("No image loaded", controlSize.width / 2, controlSize.height / 2);
 		}
 	}
 

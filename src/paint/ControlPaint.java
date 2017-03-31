@@ -6,12 +6,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
@@ -171,8 +174,11 @@ public class ControlPaint extends ControlPanel {
 							paintDisplay.setMask(drawPanel.getMask());
 							paintDisplay.setImage(image);
 						}
-					} catch (Exception error) {
-						error.printStackTrace();
+					} catch (IOException | OutOfMemoryError error) {
+						drawPanel.resetImage();
+						paintDisplay.resetImage();
+						System.out.println("Cannot load image, too big");
+						JOptionPane.showMessageDialog(drawPanel, "Cannot load Image, file is too large");
 					}
 				}
 			};

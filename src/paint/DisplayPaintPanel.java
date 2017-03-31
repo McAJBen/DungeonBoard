@@ -74,4 +74,9 @@ public class DisplayPaintPanel extends DisplayPanel {
 		imageScale = scale;
 		repaint();
 	}
+
+	public void resetImage() {
+		image = Settings.BLANK_CURSOR;
+		mask = Settings.BLANK_CURSOR;
+	}
 }
