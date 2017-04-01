@@ -197,9 +197,10 @@ public class ControlPaint extends ControlPanel {
 						drawPanel.resetImage();
 						paintDisplay.resetImage();
 						System.out.println("Cannot load image, too big");
-						paintDisplay.repaint();
 						JOptionPane.showMessageDialog(drawPanel, "Cannot load Image, file is too large");
 					}
+					paintDisplay.repaint();
+					drawPanel.repaint();
 				}
 			};
 			fileLoadingThread.start();

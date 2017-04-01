@@ -125,9 +125,7 @@ public class DrawPanel extends JComponent {
 				}
 			}
 			public void mouseMoved(MouseEvent e) {
-				synchronized (lock) {
-					mousePos = e.getPoint();
-				}
+				mousePos = e.getPoint();
 				repaint();
 			}
 		});
@@ -154,29 +152,29 @@ public class DrawPanel extends JComponent {
 		repaint();
 	}
 	
-	public void setImage(BufferedImage image) {
-		synchronized (lock) {
-			if (g2 == null ||
-					this.image.getWidth() != image.getWidth() ||
-					this.image.getHeight() != image.getHeight() ||
-					JOptionPane.showConfirmDialog(this,
-						"Would you like to keep the same visibility mask?",
-						"Paint Image has been changed",
-						JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
-				
-				drawingLayer = new BufferedImage(
-					image.getWidth() / Settings.PIXELS_PER_MASK,
-					image.getHeight() / Settings.PIXELS_PER_MASK,
-					BufferedImage.TYPE_INT_ARGB);
-				
-				g2 = (Graphics2D) drawingLayer.getGraphics();
-				g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.6f));
-				g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-				clear();
-			}
-			this.image = image;
-			loading = false;
+	public synchronized void setImage(BufferedImage image) {
+		if (g2 == null ||
+				this.image.getWidth() != image.getWidth() ||
+				this.image.getHeight() != image.getHeight() ||
+				JOptionPane.showConfirmDialog(this,
+					"Would you like to keep the same visibility mask?",
+					"Paint Image has been changed",
+					JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+			
+			
+			
+			drawingLayer = new BufferedImage(
+				image.getWidth() / Settings.PIXELS_PER_MASK,
+				image.getHeight() / Settings.PIXELS_PER_MASK,
+				BufferedImage.TYPE_INT_ARGB);
+			
+			g2 = (Graphics2D) drawingLayer.getGraphics();
+			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.6f));
+			g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+			clear();
 		}
+		this.image = image;
+		loading = false;
 	}
 
 	public void setRadius(int value) {
