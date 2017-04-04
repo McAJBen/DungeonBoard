@@ -23,6 +23,7 @@ public class Settings {
 			new File(FOLDER + "\\Loading")
 	};
 	
+	public static final ImageIcon ICON = load("icon.gif");
 	public static final ImageIcon ICON_FOLDER = load("open.gif");
 	public static final ImageIcon DRAW_STYLE[] = {
 			load("squigle.gif"),

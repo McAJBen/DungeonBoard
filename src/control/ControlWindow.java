@@ -42,6 +42,7 @@ public class ControlWindow extends JFrame {
 	
 	public ControlWindow(Rectangle display, Rectangle control) {
 		
+		setIconImage(Settings.ICON.getImage());
 		setTitle(Settings.NAME);
 		setSize(Settings.CONTROL_SIZE);
 		setLocation(
