@@ -18,6 +18,7 @@ public class DisplayWindow extends JFrame {
 	
 	public DisplayWindow(Rectangle r) {
 		super();
+		setTitle("Display");
 		setUndecorated(true);
 		setIconImage(Settings.ICON.getImage());
 		setSize(r.getSize());

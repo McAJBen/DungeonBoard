@@ -1,12 +1,14 @@
 package image;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -42,12 +44,21 @@ public class ControlImage extends ControlPanel {
 		northPanel.add(fc);
 		
 		JComboBox<Scale> scaleComboBox = new JComboBox<>(Scale.values());
+		scaleComboBox.setMaximumSize(new Dimension(100, 5000));
 		scaleComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				imageDisplay.setScaleMode((Scale) scaleComboBox.getSelectedItem());
 			}
 		});
 		northPanel.add(scaleComboBox);
+		
+		JButton flipButton = new JButton(Settings.ICON_FLIP);
+		flipButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				imageDisplay.flip();
+			}
+		});
+		northPanel.add(flipButton);
 		
 		folder = new JLabel();
 		northPanel.add(folder);

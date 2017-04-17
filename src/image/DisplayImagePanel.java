@@ -3,6 +3,9 @@ package image;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.File;
 
 import display.DisplayPanel;
@@ -17,10 +20,12 @@ public class DisplayImagePanel extends DisplayPanel {
 	private AlphaImage image;
 	private File folder;
 	private Scale scaleMode;
+	private boolean flip;
 	
 	public DisplayImagePanel(DisplayWindow window) {
 		super(window);
 		scaleMode = Scale.FILL;
+		flip = false;
 		setVisible(true);
 	}
 	
@@ -28,31 +33,35 @@ public class DisplayImagePanel extends DisplayPanel {
 	public void paint(Graphics g) {
 		super.paint(g);
 		Dimension s = getSize();
-		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, s.width, s.height);
+		Graphics2D g2d = (Graphics2D) g;
+		g2d.setColor(Color.BLACK);
+		g2d.fillRect(0, 0, s.width, s.height);
 		
 		if (image != null && image.getImage() != null) {
-			paintImage(g, image, s);
+			paintImage(g2d, image.getImage(), s);
 		}
-		window.paintMouse(g);
-		g.dispose();
+		window.paintMouse(g2d);
+		g2d.dispose();
 	}
 	
-	public void paintImage(Graphics g, AlphaImage image, Dimension s) {
+	public void paintImage(Graphics2D g2d, BufferedImage image, Dimension s) {
+		
 		switch (scaleMode) {
 		case FILL:
-			g.drawImage(image.getImage(), 0, 0, s.width, s.height, null);
+			drawImage(g2d, image, 0, 0, s.width, s.height);
 			break;
 		case REAL_SIZE:
-			g.setColor(new Color(image.getImage().getRGB(0, 0)));
-			g.fillRect(0, 0, s.width, s.height);
-			g.drawImage(image.getImage(),
+			g2d.setColor(new Color(image.getRGB(0, 0)));
+			g2d.fillRect(0, 0, s.width, s.height);
+			drawImage(g2d, image,
 					(s.width - image.getWidth()) / 2,
-					(s.height - image.getHeight()) / 2, null);
+					(s.height - image.getHeight()) / 2,
+					image.getWidth(),
+					image.getHeight());
 			break;
 		case UP_SCALE:
-			g.setColor(new Color(image.getImage().getRGB(0, 0)));
-			g.fillRect(0, 0, s.width, s.height);
+			g2d.setColor(new Color(image.getRGB(0, 0)));
+			g2d.fillRect(0, 0, s.width, s.height);
 			double screenRatio = s.getWidth() / s.getHeight();
 			double imageRatio = (double)image.getWidth() / image.getHeight();
 			Dimension imageScale;
@@ -64,13 +73,26 @@ public class DisplayImagePanel extends DisplayPanel {
 				// width < height
 				imageScale = new Dimension((int) (s.height * imageRatio), s.height);
 			}
-			g.drawImage(image.getImage(),
+			drawImage(g2d, image,
 					(s.width - imageScale.width) / 2,
 					(s.height - imageScale.height) / 2,
 					imageScale.width,
-					imageScale.height,
-					null);
+					imageScale.height);
 			break;
+		}
+	}
+	
+	private void drawImage(Graphics2D g2d, BufferedImage img, int x, int y, int w, int h) {
+		if (flip) {
+			AffineTransform oldAT = g2d.getTransform();
+			AffineTransform at = new AffineTransform();
+			at.rotate(Math.PI, getWidth() / 2, getHeight() / 2);
+			g2d.setTransform(at);
+			g2d.drawImage(img, x, y, w, h, null);
+			g2d.setTransform(oldAT);
+		}
+		else {
+			g2d.drawImage(img, x, y, w, h, null);
 		}
 	}
 	
@@ -87,6 +109,11 @@ public class DisplayImagePanel extends DisplayPanel {
 
 	public void setScaleMode(Scale selectedItem) {
 		scaleMode = selectedItem;
+		repaint();
+	}
+
+	public void flip() {
+		flip = !flip;
 		repaint();
 	}
 }

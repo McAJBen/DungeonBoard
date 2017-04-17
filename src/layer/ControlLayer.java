@@ -1,6 +1,7 @@
 package layer;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -39,6 +40,7 @@ public class ControlLayer extends ControlPanel {
 		northPanel.add(fc);
 		
 		JComboBox<Scale> scaleComboBox = new JComboBox<>(Scale.values());
+		scaleComboBox.setMaximumSize(new Dimension(100, 5000));
 		scaleComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				layerDisplay.setScaleMode((Scale) scaleComboBox.getSelectedItem());
