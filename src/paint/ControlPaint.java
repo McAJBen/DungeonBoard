@@ -51,10 +51,11 @@ public class ControlPaint extends ControlPanel {
 		
 		JPanel northPanel = new JPanel();
 		northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.X_AXIS));
+		northPanel.setBackground(Settings.CONTROL_BACKGROUND);
 		
 		setFocusable(true);
 		
-		FileChooser fc = new FileChooser();
+		FileChooser fc = Settings.createFileChooser();
 		fc.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setFile(fc.getFile());
@@ -64,6 +65,7 @@ public class ControlPaint extends ControlPanel {
 		
 		fileBox = new JComboBox<>();
 		fileBox.addItem("");
+		fileBox.setBackground(Settings.CONTROL_BACKGROUND);
 		File folder = Settings.FOLDERS[Mode.PAINT.ordinal()];
 		if (folder.exists()) {
 			for (File f: folder.listFiles()) {
@@ -83,7 +85,7 @@ public class ControlPaint extends ControlPanel {
 		});
 		northPanel.add(fileBox);
 		
-		JButton drawStyleButton = new JButton(Settings.DRAW_STYLE[0]);
+		JButton drawStyleButton = Settings.createButton(Settings.DRAW_STYLE[0]);
 		drawStyleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				drawPanel.toggleStyle();
@@ -92,7 +94,7 @@ public class ControlPaint extends ControlPanel {
 		});
 		northPanel.add(drawStyleButton);
 		
-		JButton shape = new JButton(Settings.PEN_TYPE[0]);
+		JButton shape = Settings.createButton(Settings.PEN_TYPE[0]);
 		shape.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				drawPanel.togglePen();
@@ -101,7 +103,7 @@ public class ControlPaint extends ControlPanel {
 		});
 		northPanel.add(shape);
 		
-		JButton drawModeButton = new JButton(Settings.DRAW_MODE[0]);
+		JButton drawModeButton = Settings.createButton(Settings.DRAW_MODE[0]);
 		drawModeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				drawPanel.toggleDrawMode();
@@ -111,6 +113,7 @@ public class ControlPaint extends ControlPanel {
 		northPanel.add(drawModeButton);
 		
 		JSlider slider = new JSlider(SwingConstants.HORIZONTAL, 10, 100, 25);
+		slider.setBackground(Settings.CONTROL_BACKGROUND);
 		slider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent arg0) {
 				drawPanel.setRadius(slider.getValue());
@@ -118,18 +121,22 @@ public class ControlPaint extends ControlPanel {
 		});
 		northPanel.add(slider);
 		
-		updateScreen = new JButton("Update Screen");
+		updateScreen = Settings.createButton("Update Screen");
 		updateScreen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				paintDisplay.setMask(drawPanel.getMask());
-				paintDisplay.setWindowPos(drawPanel.getWindowPos());
-				updateScreen.setEnabled(false);
+				if (drawPanel.hasImage()) {
+					paintDisplay.setMask(drawPanel.getMask());
+					paintDisplay.setWindowPos(drawPanel.getWindowPos());
+					updateScreen.setEnabled(false);
+					updateScreen.setBackground(Settings.CONTROL_BACKGROUND);
+				}
 			}
 		});
 		northPanel.add(updateScreen);
 		drawPanel.setUpdateButton(updateScreen);
 		
 		JPanel westPanel = new JPanel();
+		westPanel.setBackground(Settings.CONTROL_BACKGROUND);
 		westPanel.setLayout(new BoxLayout(westPanel, BoxLayout.Y_AXIS));
 		
 		westPanel.add(new JLabel("Zoom", SwingConstants.LEFT));
@@ -158,6 +165,7 @@ public class ControlPaint extends ControlPanel {
 		westPanel.add(zoomText);
 		
 		zoomSlider = new JSlider(SwingConstants.VERTICAL, 1, (int)(maxZoom * 100), 100);
+		zoomSlider.setBackground(Settings.CONTROL_BACKGROUND);
 		zoomSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent arg0) {
 				double zoom = zoomSlider.getValue() / 100.0;

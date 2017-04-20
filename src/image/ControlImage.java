@@ -33,9 +33,10 @@ public class ControlImage extends ControlPanel {
 		setLayout(new BorderLayout());
 		setBorder(BorderFactory.createLineBorder(Settings.BACKGROUND, 5));
 		JPanel northPanel = new JPanel();
+		northPanel.setBackground(Settings.CONTROL_BACKGROUND);
 		northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.X_AXIS));
 		
-		FileChooser fc = new FileChooser();
+		FileChooser fc = Settings.createFileChooser();
 		fc.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setDirectory(fc.getFolder());
@@ -44,6 +45,7 @@ public class ControlImage extends ControlPanel {
 		northPanel.add(fc);
 		
 		JComboBox<Scale> scaleComboBox = new JComboBox<>(Scale.values());
+		scaleComboBox.setBackground(Settings.CONTROL_BACKGROUND);
 		scaleComboBox.setMaximumSize(new Dimension(100, 5000));
 		scaleComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -52,7 +54,8 @@ public class ControlImage extends ControlPanel {
 		});
 		northPanel.add(scaleComboBox);
 		
-		JButton flipButton = new JButton(Settings.ICON_FLIP);
+		JButton flipButton = Settings.createButton(Settings.ICON_FLIP);
+		flipButton.setBackground(Settings.CONTROL_BACKGROUND);
 		flipButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				imageDisplay.flip();
@@ -61,6 +64,7 @@ public class ControlImage extends ControlPanel {
 		northPanel.add(flipButton);
 		
 		folder = new JLabel();
+		folder.setBackground(Settings.CONTROL_BACKGROUND);
 		northPanel.add(folder);
 		
 		pp = new PictureImagePanel(imageDisplay);
@@ -68,6 +72,7 @@ public class ControlImage extends ControlPanel {
 		add(northPanel, BorderLayout.NORTH);
 		
 		JScrollPane jsp = new JScrollPane(pp);
+		jsp.setBackground(Settings.CONTROL_BACKGROUND);
 		jsp.setBorder(BorderFactory.createEmptyBorder());
 		add(jsp, BorderLayout.CENTER);
 		

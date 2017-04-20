@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+
 import display.DisplayPanel;
 import display.DisplayWindow;
 import image.ControlImage;
@@ -53,9 +54,10 @@ public class ControlWindow extends JFrame {
 		controlButtons = new JButton[Mode.values().length];
 		displayButtons = new JButton[Mode.values().length];
 		for (int i = 0; i < controlButtons.length; i++) {
-			controlButtons[i] = new JButton(Mode.values()[i].name());
+			controlButtons[i] = Settings.createButton(Mode.values()[i].name());
 			controlButtons[i].addActionListener(new ButtonListener(Display.CONTROL, Mode.values()[i]));
-			displayButtons[i] = new JButton(Mode.values()[i].name());
+			
+			displayButtons[i] = Settings.createButton(Mode.values()[i].name());
 			displayButtons[i].addActionListener(new ButtonListener(Display.DISPLAY, Mode.values()[i]));
 		}
 		

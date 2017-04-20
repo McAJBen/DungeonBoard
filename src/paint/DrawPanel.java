@@ -284,6 +284,12 @@ public class DrawPanel extends JComponent {
 		return displaySize;
 	}
 	
+	public boolean hasImage() {
+		synchronized (lock) {
+			return drawingLayer != null;
+		}
+	}
+	
 	protected void paintComponent(Graphics g) {
 		synchronized (lock) {
 			if (loading) {
@@ -375,6 +381,7 @@ public class DrawPanel extends JComponent {
 				}
 				lastP = newP;
 				updateButton.setEnabled(true);
+				updateButton.setBackground(Settings.ACTIVE);
 			}
 		}
 	}
@@ -407,6 +414,7 @@ public class DrawPanel extends JComponent {
 				g2.fillRect(0, 0, drawingLayer.getWidth(), drawingLayer.getHeight());
 				repaint();
 				updateButton.setEnabled(true);
+				updateButton.setBackground(Settings.ACTIVE);
 			}
 		}
 	}

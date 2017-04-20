@@ -3,12 +3,17 @@ package main;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 
 public class Settings {
 	
@@ -73,6 +78,30 @@ public class Settings {
 				e.printStackTrace();
 			}
     	}
+	}
+	
+	public static FileChooser createFileChooser() {
+		FileChooser fc = new FileChooser();
+		fc.setFocusPainted(false);
+		fc.setRolloverEnabled(false);
+		fc.setBackground(CONTROL_BACKGROUND);
+		return fc;
+	}
+	
+	public static JButton createButton(String label) {
+		JButton button = new JButton(label);
+		button.setFocusPainted(false);
+		button.setRolloverEnabled(false);
+		button.setBackground(CONTROL_BACKGROUND);
+		return button;
+	}
+	
+	public static JButton createButton(ImageIcon imageIcon) {
+		JButton button = new JButton(imageIcon);
+		button.setFocusPainted(false);
+		button.setRolloverEnabled(false);
+		button.setBackground(CONTROL_BACKGROUND);
+		return button;
 	}
 	
 	private static ImageIcon load(String res) {
