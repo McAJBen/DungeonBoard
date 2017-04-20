@@ -21,6 +21,8 @@ public class DisplayLoadingPanel extends DisplayPanel {
 	private static final int FADE_IN = 20;
 	private int totalWait = 400;
 	
+	private LinkedList<Cube> cubePositions;
+	
 	private File folder;
 	private LinkedList<String> fileNames;
 	private BufferedImage oldImage;
@@ -34,6 +36,7 @@ public class DisplayLoadingPanel extends DisplayPanel {
 	
 	public DisplayLoadingPanel(DisplayWindow window) {
 		super(window);
+		cubePositions = new LinkedList<>();
 		paintThread = new Thread();
 		fileNames = new LinkedList<>();
 		upScale = false;
@@ -67,6 +70,10 @@ public class DisplayLoadingPanel extends DisplayPanel {
 			g2d.drawImage(currentImage, (s.width - currentImage.getWidth()) / 2,
 					(s.height - currentImage.getHeight()) / 2, null);
 		}
+		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+		for (Cube c: cubePositions) {
+			c.paint(g2d, s);
+		}
 		window.paintMouse(g);
 		g.dispose();
 	}
@@ -96,17 +103,30 @@ public class DisplayLoadingPanel extends DisplayPanel {
 		upScale = b;
 		repaint();
 	}
+	
+	public void addCube() {
+		cubePositions.add(new Cube(getSize()));
+		repaint();
+	}
+
+	public void clearCubes() {
+		synchronized (cubePositions) {
+			cubePositions.clear();
+		}
+	}
 
 	private void motion() {
 		timer++;
+		repaint();
 		if (timer <= FADE_IN) {
-			repaint();
 			fade = (float)timer / FADE_IN;
 		}
 		else if (timer > totalWait) {
-			repaint();
 			timer = 0;
 			getImage();
+		}
+		for (Cube c: cubePositions) {
+			c.move(getSize());
 		}
 	}
 	

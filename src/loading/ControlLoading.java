@@ -58,6 +58,22 @@ public class ControlLoading extends ControlPanel {
 		});
 		northPanel.add(upScaleButton);
 		
+		JButton addCubeButton = Settings.createButton("Add Cube");
+		addCubeButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				loadingDisplay.addCube();
+			}
+		});
+		northPanel.add(addCubeButton);
+		
+		JButton clearCubeButton = Settings.createButton("Clear Cubes");
+		clearCubeButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				loadingDisplay.clearCubes();
+			}
+		});
+		northPanel.add(clearCubeButton);
+		
 		JLabel timeLabel = new JLabel("8");
 		timeLabel.setBackground(Settings.CONTROL_BACKGROUND);
 		timeLabel.setMinimumSize(new Dimension(20, 0));

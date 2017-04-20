@@ -3,8 +3,6 @@ package main;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -12,8 +10,6 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 
 public class Settings {
 	
@@ -31,6 +27,8 @@ public class Settings {
 	public static final ImageIcon ICON = load("icon.gif");
 	public static final ImageIcon ICON_FOLDER = load("open.gif");
 	public static final ImageIcon ICON_FLIP = load("flip.gif");
+	public static final ImageIcon cube = load("dvdlogo.gif");
+	public static final ImageIcon cube2 = load("dvdlogo2.gif");
 	public static final ImageIcon DRAW_STYLE[] = {
 			load("squigle.gif"),
 			load("vertical.gif"),
