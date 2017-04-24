@@ -8,13 +8,17 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -64,6 +68,26 @@ public class DrawPanel extends JComponent {
 		penType = Pen.CIRCLE;
 		style = Direction.NONE;
 		drawMode = DrawMode.ANY;
+		updateButton = Settings.createButton("Update Screen");
+		updateButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (hasImage()) {
+					Thread updateThread = new Thread("updateThread") {
+						public void run() {
+							try {
+								display.setMask(getMask());
+							} catch (OutOfMemoryError error) {
+								JOptionPane.showMessageDialog(null, "Cannot update Image, file is too large");
+							}
+							updateButton.setBackground(Settings.CONTROL_BACKGROUND);
+						}
+					};
+					updateButton.setEnabled(false);
+					updateButton.setBackground(Settings.DISABLE_COLOR);
+					updateThread.start();
+				}
+			}
+		});
 		
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -133,9 +157,8 @@ public class DrawPanel extends JComponent {
 	
 	public void setZoom(double zoom) {
 		displayZoom = zoom;
-		display.setWindowScale(zoom);
 		setWindowPos(lastWindowClick);
-		display.setWindowPos(getWindowPos());
+		display.setWindow(zoom, getWindowPos());
 		repaint();
 	}
 	
@@ -172,8 +195,8 @@ public class DrawPanel extends JComponent {
 		repaint();
 	}
 
-	public void setUpdateButton(JButton updateScreen) {
-		updateButton = updateScreen;
+	public JButton getUpdateButton() {
+		return updateButton;
 	}
 	
 	public void resetImage() {
@@ -231,7 +254,7 @@ public class DrawPanel extends JComponent {
 		return drawMode.ordinal();
 	}
 	
-	public BufferedImage getMask() {
+	public BufferedImage getMask() throws OutOfMemoryError {
 		BufferedImage mask = new BufferedImage(
 				drawingLayer.getWidth(),
 				drawingLayer.getHeight(),

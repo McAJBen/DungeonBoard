@@ -15,56 +15,100 @@ public class DisplayPaintPanel extends DisplayPanel {
 	
 	private static final long serialVersionUID = -8389531693546434519L;
 	
-	private Object lock;
 	private BufferedImage mask;
 	private BufferedImage image;
+	private BufferedImage currentScreen;
 	private Dimension imageSize;
 	private Point windowPos;
 	private double scale;
+	private Thread screenCreatorThread;
 	
 	public DisplayPaintPanel(DisplayWindow window) {
 		super(window);
-		lock = new Object();
 		windowPos = new Point(0, 0);
 		scale = 1;
+		currentScreen = new BufferedImage(
+				Settings.DISPLAY_SIZE.width,
+				Settings.DISPLAY_SIZE.height,
+				BufferedImage.TYPE_INT_RGB);
+		setCurrentScreen();
 		setVisible(true);
 	}
 	
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, getSize().width, getSize().width);
-		
-		synchronized (lock) {
-			if (image != null && mask != null && imageSize != null) {
-				g.drawImage(image, -windowPos.x, -windowPos.y, imageSize.width, imageSize.height, null);
-				g.drawImage(mask, -windowPos.x, -windowPos.y, imageSize.width, imageSize.height, null);
-			}
+		synchronized (currentScreen) {
+			g.drawImage(currentScreen, 0, 0, null);
 		}
 		
 		window.paintMouse(g);
 		g.dispose();
 	}
 	
+	private void setCurrentScreen() {
+		
+		
+		screenCreatorThread = new Thread("screenCreatorThread") {
+			@Override
+			public void run() {
+				synchronized (currentScreen) {
+					Graphics2D g2d = currentScreen.createGraphics();
+					g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+					if (image != null && mask != null && imageSize != null) {
+						g2d.setColor(new Color(image.getRGB(0, 0)));
+						g2d.fillRect(0, 0, Settings.DISPLAY_SIZE.width, Settings.DISPLAY_SIZE.height);
+						g2d.drawImage(image, -windowPos.x, -windowPos.y, imageSize.width, imageSize.height, null);
+						g2d.drawImage(mask, -windowPos.x, -windowPos.y, imageSize.width, imageSize.height, null);
+					}
+					g2d.dispose();
+					repaint();
+				}
+			}
+		};
+		screenCreatorThread.start();
+	}
+	
 	public void setMask(BufferedImage newMask) {
-		synchronized (lock) {
+		synchronized (currentScreen) {
 			mask = newMask;
+			setCurrentScreen();
 		}
-		repaint();
 	}
 	
 	public void setImage(BufferedImage image) {
-		synchronized (lock) {
+		synchronized (currentScreen) {
 			this.image = image;
-			setWindowScale(scale);
+			if (image != null) {
+				imageSize = new Dimension(
+						(int)(image.getWidth() / scale),
+						(int)(image.getHeight() / scale));
+			}
+			setCurrentScreen();
 		}
-		repaint();
+	}
+	
+	public void setWindow(double scale, Point p) {
+		synchronized (currentScreen) {
+			this.scale = scale;
+			if (image != null) {
+				imageSize = new Dimension(
+						(int)(image.getWidth() / scale),
+						(int)(image.getHeight() / scale));
+			}
+			windowPos = p;
+			if (imageSize.width < getSize().width) {
+				windowPos.x = (imageSize.width - getSize().width) / 2;
+			}
+			if (imageSize.height < getSize().height) {
+					windowPos.y = (imageSize.height - getSize().height) / 2;
+			}
+			setCurrentScreen();
+		}
 	}
 	
 	public void setWindowPos(Point p) {
-		synchronized (lock) {
+		synchronized (currentScreen) {
 			windowPos = p;
 			if (imageSize != null) {
 				if (imageSize.width < getSize().width) {
@@ -74,26 +118,27 @@ public class DisplayPaintPanel extends DisplayPanel {
 						windowPos.y = (imageSize.height - getSize().height) / 2;
 				}	
 			}
+			setCurrentScreen();
 		}
-		repaint();
 	}
 	
 	public void setWindowScale(double scale) {
-		synchronized (lock) {
+		synchronized (currentScreen) {
 			this.scale = scale;
 			if (image != null) {
 				imageSize = new Dimension(
 						(int)(image.getWidth() / scale),
 						(int)(image.getHeight() / scale));
 			}
+			setCurrentScreen();
 		}
-		repaint();
 	}
 
 	public void resetImage() {
-		synchronized (lock) {
+		synchronized (currentScreen) {
 			image = Settings.BLANK_CURSOR;
 			mask = Settings.BLANK_CURSOR;
+			setCurrentScreen();
 		}
 	}
 }

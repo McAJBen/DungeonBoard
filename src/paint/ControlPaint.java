@@ -34,7 +34,6 @@ public class ControlPaint extends ControlPanel {
 	private DisplayPaintPanel paintDisplay;
 	
 	private JComboBox<String> fileBox;
-	private JButton updateScreen;
 	private JTextField zoomText;
 	private JSlider zoomSlider;
 	
@@ -121,19 +120,7 @@ public class ControlPaint extends ControlPanel {
 		});
 		northPanel.add(slider);
 		
-		updateScreen = Settings.createButton("Update Screen");
-		updateScreen.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (drawPanel.hasImage()) {
-					paintDisplay.setMask(drawPanel.getMask());
-					paintDisplay.setWindowPos(drawPanel.getWindowPos());
-					updateScreen.setEnabled(false);
-					updateScreen.setBackground(Settings.CONTROL_BACKGROUND);
-				}
-			}
-		});
-		northPanel.add(updateScreen);
-		drawPanel.setUpdateButton(updateScreen);
+		northPanel.add(drawPanel.getUpdateButton());
 		
 		JPanel westPanel = new JPanel();
 		westPanel.setBackground(Settings.CONTROL_BACKGROUND);
@@ -204,7 +191,6 @@ public class ControlPaint extends ControlPanel {
 					} catch (IOException | OutOfMemoryError error) {
 						drawPanel.resetImage();
 						paintDisplay.resetImage();
-						System.out.println("Cannot load image, too big");
 						JOptionPane.showMessageDialog(drawPanel, "Cannot load Image, file is too large");
 					}
 					paintDisplay.repaint();
