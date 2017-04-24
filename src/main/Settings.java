@@ -66,6 +66,7 @@ public class Settings {
 	public static final int[] HANDS_OFFSET = {-5, -100, -45, 0};
 	
 	public static final int PIXELS_PER_MASK = 2;
+	public static final int CONTROL_IMAGE_DOWNSCALE = 4;
 	
 	public static final Point NULL_POS = new Point(-100, -100);
 	

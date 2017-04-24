@@ -24,8 +24,6 @@ public class DrawPanel extends JComponent {
 	
 	private static final long serialVersionUID = -3142625453462827948L;
 	
-	private Object lock;
-	
 	// Pen variables
 	private int radius;
 	private int diameter;
@@ -36,6 +34,7 @@ public class DrawPanel extends JComponent {
 	private BufferedImage image;
 	private Graphics2D g2;
 	private Dimension controlSize;
+	private Dimension imageSize;
 	private double displayZoom;
 	
 	// drawing variables
@@ -55,7 +54,6 @@ public class DrawPanel extends JComponent {
 	private DisplayPaintPanel display;
 	
 	public DrawPanel(DisplayPaintPanel disp) {
-		lock = new Object();
 		setDoubleBuffered(false);
 		setRadius(25);
 		mousePos = new Point(-100, -100);
@@ -69,56 +67,52 @@ public class DrawPanel extends JComponent {
 		
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				synchronized (lock) {
-					if (image != null) {
-						lastP = toDrawingPoint(e.getPoint());
-						switch (drawMode) {
-						case ANY:
-							if (e.getButton() == MouseEvent.BUTTON2) {
-								setWindowPos(lastP);
-								display.setWindowPos(getWindowPos());
-								canDraw = false;
-							}
-							else {
-								if (e.getButton() == MouseEvent.BUTTON1) {
-									g2.setPaint(Settings.CLEAR);
-									canDraw = true;
-								}
-								else if (e.getButton() == MouseEvent.BUTTON3) {
-									g2.setPaint(Settings.OPAQUE);
-									canDraw = true;
-								}
-								addPoint(lastP);
-							}
-							break;
-						case INVISIBLE:
-						case VISIBLE:
-							addPoint(lastP);
-							break;
-						case WINDOW:
+				if (image != null) {
+					lastP = toDrawingPoint(e.getPoint());
+					switch (drawMode) {
+					case ANY:
+						if (e.getButton() == MouseEvent.BUTTON2) {
 							setWindowPos(lastP);
 							display.setWindowPos(getWindowPos());
-							break;
+							canDraw = false;
 						}
-						repaint();
+						else {
+							if (e.getButton() == MouseEvent.BUTTON1) {
+								g2.setPaint(Settings.CLEAR);
+								canDraw = true;
+							}
+							else if (e.getButton() == MouseEvent.BUTTON3) {
+								g2.setPaint(Settings.OPAQUE);
+								canDraw = true;
+							}
+							addPoint(lastP);
+						}
+						break;
+					case INVISIBLE:
+					case VISIBLE:
+						addPoint(lastP);
+						break;
+					case WINDOW:
+						setWindowPos(lastP);
+						display.setWindowPos(getWindowPos());
+						break;
 					}
+					repaint();
 				}
 			}
 		});
 		addMouseMotionListener(new MouseMotionAdapter() {
 			public void mouseDragged(MouseEvent e) {
-				synchronized (lock) {
-					if (image != null) {
-						if (canDraw) {
-							addPoint(toDrawingPoint(e.getPoint()));
-						}
-						else {
-							setWindowPos(toDrawingPoint(e.getPoint()));
-							display.setWindowPos(getWindowPos());
-						}
-						mousePos = e.getPoint();
-						repaint();
+				if (image != null) {
+					if (canDraw) {
+						addPoint(toDrawingPoint(e.getPoint()));
 					}
+					else {
+						setWindowPos(toDrawingPoint(e.getPoint()));
+						display.setWindowPos(getWindowPos());
+					}
+					mousePos = e.getPoint();
+					repaint();
 				}
 			}
 			public void mouseMoved(MouseEvent e) {
@@ -129,9 +123,7 @@ public class DrawPanel extends JComponent {
 		addComponentListener(new ComponentListener() {
 			public void componentShown(ComponentEvent e) {}
 			public void componentResized(ComponentEvent e) {
-				synchronized (lock) {
-					controlSize = getSize();
-				}
+				controlSize = getSize();
 			}
 			public void componentMoved(ComponentEvent e) {}
 			public void componentHidden(ComponentEvent e) {}
@@ -140,19 +132,17 @@ public class DrawPanel extends JComponent {
 	}
 	
 	public void setZoom(double zoom) {
-		synchronized (lock) {
-			displayZoom = zoom;
-			display.setWindowScale(zoom);
-			setWindowPos(lastWindowClick);
-			display.setWindowPos(getWindowPos());
-		}
+		displayZoom = zoom;
+		display.setWindowScale(zoom);
+		setWindowPos(lastWindowClick);
+		display.setWindowPos(getWindowPos());
 		repaint();
 	}
 	
 	public synchronized void setImage(BufferedImage image) {
 		if (g2 == null ||
-				this.image.getWidth() != image.getWidth() ||
-				this.image.getHeight() != image.getHeight() ||
+				imageSize.width != image.getWidth() ||
+				imageSize.height != image.getHeight() ||
 				JOptionPane.showConfirmDialog(this,
 					"Would you like to keep the same visibility mask?",
 					"Paint Image has been changed",
@@ -170,15 +160,15 @@ public class DrawPanel extends JComponent {
 			g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 			clear();
 		}
-		this.image = image;
+		imageSize = new Dimension(image.getWidth(), image.getHeight());
+		this.image = scale(image);
+		
 		loading = false;
 	}
 
 	public void setRadius(int value) {
-		synchronized (lock) {
-			radius = value;
-			diameter = radius * 2;
-		}
+		radius = value;
+		diameter = radius * 2;
 		repaint();
 	}
 
@@ -187,54 +177,45 @@ public class DrawPanel extends JComponent {
 	}
 	
 	public void resetImage() {
-		synchronized (lock) {
-			image = null;
-			g2 = null;
-			drawingLayer = null;
-			loading = false;
-		}
+		image = null;
+		imageSize = null;
+		g2 = null;
+		drawingLayer = null;
+		loading = false;
 	}
 	
 	public void togglePen() {
-		synchronized (lock) {
-			penType = Pen.values()[(penType.ordinal() + 1) % Pen.values().length];
-		}
+		penType = Pen.values()[(penType.ordinal() + 1) % Pen.values().length];
 		repaint();
 	}
 
 	public void toggleStyle() {
-		synchronized (lock) {
-			style = Direction.values()[(style.ordinal() + 1) % Direction.values().length];
-		}
+		style = Direction.values()[(style.ordinal() + 1) % Direction.values().length];
 	}
 	
 	public void toggleDrawMode() {
-		synchronized (lock) {
-			drawMode = DrawMode.values()[(drawMode.ordinal() + 1) % DrawMode.values().length];
-			if (g2 != null) {
-				switch (drawMode) {
-				case ANY:
-					break;
-				case VISIBLE:
-					g2.setPaint(Settings.CLEAR);
-					canDraw = true;
-					break;
-				case INVISIBLE:
-					g2.setPaint(Settings.OPAQUE);
-					canDraw = true;
-					break;
-				case WINDOW:
-					canDraw = false;
-					break;
-				}
+		drawMode = DrawMode.values()[(drawMode.ordinal() + 1) % DrawMode.values().length];
+		if (g2 != null) {
+			switch (drawMode) {
+			case ANY:
+				break;
+			case VISIBLE:
+				g2.setPaint(Settings.CLEAR);
+				canDraw = true;
+				break;
+			case INVISIBLE:
+				g2.setPaint(Settings.OPAQUE);
+				canDraw = true;
+				break;
+			case WINDOW:
+				canDraw = false;
+				break;
 			}
 		}
 	}
 	
 	public void setImageLoading() {
-		synchronized (lock) {
-			loading = true;
-		}
+		loading = true;
 		repaint();
 	}
 	
@@ -265,9 +246,6 @@ public class DrawPanel extends JComponent {
 				else if (dl == -1711315868) { // OPAQUE
 					mask.setRGB(i, j, -16777215);
 				}
-				else {
-					System.out.println(dl);
-				}
 			}
 		}
 		return mask;
@@ -278,38 +256,48 @@ public class DrawPanel extends JComponent {
 	}
 	
 	public boolean hasImage() {
-		synchronized (lock) {
-			return drawingLayer != null;
-		}
+		return drawingLayer != null;
 	}
 	
 	protected void paintComponent(Graphics g) {
-		synchronized (lock) {
-			if (loading) {
-				g.drawString("Loading...", controlSize.width / 2, controlSize.height / 2);
-			}
-			else if (image != null) {
-				g.drawImage(image, 0, 0, controlSize.width, controlSize.height, null);
-				g.drawImage(drawingLayer, 0, 0, controlSize.width, controlSize.height, null);
-				g.setColor(Settings.PINK);
-				switch (penType) {
-				case CIRCLE:
-					g.drawOval(mousePos.x - radius, mousePos.y - radius, diameter, diameter);
-					break;
-				case SQUARE:
-					g.drawRect(mousePos.x - radius, mousePos.y - radius, diameter, diameter);
-					break;
-				}
-				g.drawRect(
-						windowPos.x * controlSize.width / image.getWidth(),
-						windowPos.y * controlSize.height / image.getHeight(),
-						(int) (Settings.DISPLAY_SIZE.width * displayZoom * controlSize.width / image.getWidth()),
-						(int) (Settings.DISPLAY_SIZE.height * displayZoom * controlSize.height / image.getHeight()));
-			}
-			else if (controlSize != null) {
-				g.drawString("No image loaded", controlSize.width / 2, controlSize.height / 2);
-			}
+		if (loading) {
+			g.drawString("Loading...", controlSize.width / 2, controlSize.height / 2);
 		}
+		else if (image != null) {
+			g.drawImage(image, 0, 0, controlSize.width, controlSize.height, null);
+			g.drawImage(drawingLayer, 0, 0, controlSize.width, controlSize.height, null);
+			g.setColor(Settings.PINK);
+			switch (penType) {
+			case CIRCLE:
+				g.drawOval(mousePos.x - radius, mousePos.y - radius, diameter, diameter);
+				break;
+			case SQUARE:
+				g.drawRect(mousePos.x - radius, mousePos.y - radius, diameter, diameter);
+				break;
+			}
+			g.drawRect(
+					windowPos.x * controlSize.width / imageSize.width,
+					windowPos.y * controlSize.height / imageSize.height,
+					(int) (Settings.DISPLAY_SIZE.width * displayZoom * controlSize.width / imageSize.width),
+					(int) (Settings.DISPLAY_SIZE.height * displayZoom * controlSize.height / imageSize.height));
+		}
+		else if (controlSize != null) {
+			g.drawString("No image loaded", controlSize.width / 2, controlSize.height / 2);
+		}
+	}
+	
+	private static BufferedImage scale(BufferedImage image) {
+	    BufferedImage newImage = new BufferedImage(
+	    		image.getWidth() / Settings.CONTROL_IMAGE_DOWNSCALE,
+	    		image.getHeight() / Settings.CONTROL_IMAGE_DOWNSCALE,
+	    		image.getType());
+	    Graphics g = newImage.createGraphics();
+	    g.drawImage(image, 0, 0,
+	    		image.getWidth() / Settings.CONTROL_IMAGE_DOWNSCALE,
+	    		image.getHeight() / Settings.CONTROL_IMAGE_DOWNSCALE,
+	    		null);
+	    g.dispose();
+	    return newImage;
 	}
 
 	private Point toDrawingPoint(Point p) {
@@ -319,63 +307,59 @@ public class DrawPanel extends JComponent {
 	}
 	
 	private void setWindowPos(Point p) {
-		synchronized (lock) {
-			lastWindowClick = p;
-			
-			windowPos.x = (int) (p.x * Settings.PIXELS_PER_MASK - (Settings.DISPLAY_SIZE.width * displayZoom) / 2);
-			windowPos.y = (int) (p.y * Settings.PIXELS_PER_MASK - (Settings.DISPLAY_SIZE.height * displayZoom) / 2);
-			
-			if (image != null) {
-				if (windowPos.x > image.getWidth() - Settings.DISPLAY_SIZE.width * displayZoom) {
-					windowPos.x = (int) (image.getWidth() - Settings.DISPLAY_SIZE.width * displayZoom);
-				}
-				if (windowPos.x < 0) {
-					windowPos.x = 0;
-				}
-				if (windowPos.y > image.getHeight() - Settings.DISPLAY_SIZE.height * displayZoom) {
-					windowPos.y = (int) (image.getHeight() - Settings.DISPLAY_SIZE.height * displayZoom);
-				}
-				if (windowPos.y < 0) {
-					windowPos.y = 0;
-				}
+		lastWindowClick = p;
+		
+		windowPos.x = (int) (p.x * Settings.PIXELS_PER_MASK - (Settings.DISPLAY_SIZE.width * displayZoom) / 2);
+		windowPos.y = (int) (p.y * Settings.PIXELS_PER_MASK - (Settings.DISPLAY_SIZE.height * displayZoom) / 2);
+		
+		if (image != null) {
+			if (windowPos.x > imageSize.width - Settings.DISPLAY_SIZE.width * displayZoom) {
+				windowPos.x = (int) (imageSize.width - Settings.DISPLAY_SIZE.width * displayZoom);
+			}
+			if (windowPos.x < 0) {
+				windowPos.x = 0;
+			}
+			if (windowPos.y > imageSize.height - Settings.DISPLAY_SIZE.height * displayZoom) {
+				windowPos.y = (int) (imageSize.height - Settings.DISPLAY_SIZE.height * displayZoom);
+			}
+			if (windowPos.y < 0) {
+				windowPos.y = 0;
 			}
 		}
 	}
 	
 	private void addPoint(Point newP) {
-		synchronized (lock) {
-			if (g2 != null) {
-				switch (style) {
-					case HORIZONTAL:
-						newP.y = lastP.y;
-						break;
-					case VERTICAL:
-						newP.x = lastP.x;
-						break;
-					default:
-						break;
-				}
-				switch (penType) {
-				case CIRCLE:
-					g2.fillPolygon(getPolygon(newP, lastP));
-					g2.fillOval(
-							newP.x - radius * drawingLayer.getWidth() / controlSize.width,
-							newP.y - radius * drawingLayer.getHeight() / controlSize.height,
-							diameter * drawingLayer.getWidth() / controlSize.width,
-							diameter * drawingLayer.getHeight() / controlSize.height);
+		if (g2 != null) {
+			switch (style) {
+				case HORIZONTAL:
+					newP.y = lastP.y;
 					break;
-				case SQUARE:
-					g2.fillRect(
-							newP.x - radius * drawingLayer.getWidth() / controlSize.width,
-							newP.y - radius * drawingLayer.getHeight() / controlSize.height,
-							diameter * drawingLayer.getWidth() / controlSize.width,
-							diameter * drawingLayer.getHeight() / controlSize.height);
+				case VERTICAL:
+					newP.x = lastP.x;
 					break;
-				}
-				lastP = newP;
-				updateButton.setEnabled(true);
-				updateButton.setBackground(Settings.ACTIVE);
+				default:
+					break;
 			}
+			switch (penType) {
+			case CIRCLE:
+				g2.fillPolygon(getPolygon(newP, lastP));
+				g2.fillOval(
+						newP.x - radius * drawingLayer.getWidth() / controlSize.width,
+						newP.y - radius * drawingLayer.getHeight() / controlSize.height,
+						diameter * drawingLayer.getWidth() / controlSize.width,
+						diameter * drawingLayer.getHeight() / controlSize.height);
+				break;
+			case SQUARE:
+				g2.fillRect(
+						newP.x - radius * drawingLayer.getWidth() / controlSize.width,
+						newP.y - radius * drawingLayer.getHeight() / controlSize.height,
+						diameter * drawingLayer.getWidth() / controlSize.width,
+						diameter * drawingLayer.getHeight() / controlSize.height);
+				break;
+			}
+			lastP = newP;
+			updateButton.setEnabled(true);
+			updateButton.setBackground(Settings.ACTIVE);
 		}
 	}
 	
