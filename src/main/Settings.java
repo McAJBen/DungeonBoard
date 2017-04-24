@@ -46,6 +46,7 @@ public class Settings {
 	};
 	
 	public static final Dimension CONTROL_SIZE = new Dimension(800, 700);
+	public static Dimension DISPLAY_SIZE;
 	
 	public static final Color ACTIVE = new Color(153, 255, 187);
 	public static final Color INACTIVE = new Color(255, 128, 128);

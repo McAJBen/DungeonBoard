@@ -79,8 +79,7 @@ public class ControlWindow extends JFrame {
 		controls[Mode.IMAGE.ordinal()] = new ControlImage((DisplayImagePanel)displays[Mode.IMAGE.ordinal()]);
 		
 		displays[Mode.PAINT.ordinal()] = new DisplayPaintPanel(window);
-		controls[Mode.PAINT.ordinal()] = new ControlPaint(
-				display.getSize(), (DisplayPaintPanel) displays[Mode.PAINT.ordinal()]);
+		controls[Mode.PAINT.ordinal()] = new ControlPaint((DisplayPaintPanel) displays[Mode.PAINT.ordinal()]);
 		
 		displays[Mode.LOADING.ordinal()] = new DisplayLoadingPanel(window);
 		controls[Mode.LOADING.ordinal()] = new ControlLoading((DisplayLoadingPanel) displays[Mode.LOADING.ordinal()]);

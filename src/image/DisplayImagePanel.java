@@ -12,6 +12,7 @@ import display.DisplayPanel;
 import display.DisplayWindow;
 import layer.AlphaImage;
 import layer.Scale;
+import main.Settings;
 
 public class DisplayImagePanel extends DisplayPanel {
 
@@ -32,50 +33,49 @@ public class DisplayImagePanel extends DisplayPanel {
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		Dimension s = getSize();
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setColor(Color.BLACK);
-		g2d.fillRect(0, 0, s.width, s.height);
+		g2d.fillRect(0, 0, Settings.DISPLAY_SIZE.width, Settings.DISPLAY_SIZE.height);
 		
 		if (image != null && image.getImage() != null) {
-			paintImage(g2d, image.getImage(), s);
+			paintImage(g2d, image.getImage());
 		}
 		window.paintMouse(g2d);
 		g2d.dispose();
 	}
 	
-	public void paintImage(Graphics2D g2d, BufferedImage image, Dimension s) {
+	public void paintImage(Graphics2D g2d, BufferedImage image) {
 		
 		switch (scaleMode) {
 		case FILL:
-			drawImage(g2d, image, 0, 0, s.width, s.height);
+			drawImage(g2d, image, 0, 0, Settings.DISPLAY_SIZE.width, Settings.DISPLAY_SIZE.height);
 			break;
 		case REAL_SIZE:
 			g2d.setColor(new Color(image.getRGB(0, 0)));
-			g2d.fillRect(0, 0, s.width, s.height);
+			g2d.fillRect(0, 0, Settings.DISPLAY_SIZE.width, Settings.DISPLAY_SIZE.height);
 			drawImage(g2d, image,
-					(s.width - image.getWidth()) / 2,
-					(s.height - image.getHeight()) / 2,
+					(Settings.DISPLAY_SIZE.width - image.getWidth()) / 2,
+					(Settings.DISPLAY_SIZE.height - image.getHeight()) / 2,
 					image.getWidth(),
 					image.getHeight());
 			break;
 		case UP_SCALE:
 			g2d.setColor(new Color(image.getRGB(0, 0)));
-			g2d.fillRect(0, 0, s.width, s.height);
-			double screenRatio = s.getWidth() / s.getHeight();
+			g2d.fillRect(0, 0, Settings.DISPLAY_SIZE.width, Settings.DISPLAY_SIZE.height);
+			double screenRatio = Settings.DISPLAY_SIZE.getWidth() / Settings.DISPLAY_SIZE.getHeight();
 			double imageRatio = (double)image.getWidth() / image.getHeight();
 			Dimension imageScale;
 			if (imageRatio > screenRatio) {
 				// width > height
-				imageScale = new Dimension(s.width, (int) (s.width / imageRatio));
+				imageScale = new Dimension(Settings.DISPLAY_SIZE.width, (int) (Settings.DISPLAY_SIZE.width / imageRatio));
 			}
 			else {
 				// width < height
-				imageScale = new Dimension((int) (s.height * imageRatio), s.height);
+				imageScale = new Dimension((int) (Settings.DISPLAY_SIZE.height * imageRatio), Settings.DISPLAY_SIZE.height);
 			}
 			drawImage(g2d, image,
-					(s.width - imageScale.width) / 2,
-					(s.height - imageScale.height) / 2,
+					(Settings.DISPLAY_SIZE.width - imageScale.width) / 2,
+					(Settings.DISPLAY_SIZE.height - imageScale.height) / 2,
 					imageScale.width,
 					imageScale.height);
 			break;

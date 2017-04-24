@@ -23,7 +23,7 @@ public class PictureLayerPanel extends JPanel implements ActionListener {
 	private DisplayLayerPanel window;
 	
 	public PictureLayerPanel(DisplayLayerPanel window) {
-		setLayout(new GridLayout(0, 3));
+		setLayout(new GridLayout(0, 6));
 		setBorder(BorderFactory.createEmptyBorder());
 		this.window = window;
 	}
@@ -43,8 +43,7 @@ public class PictureLayerPanel extends JPanel implements ActionListener {
 
 	public void addImage(File f) {
 		try {
-		    BufferedImage img = ImageIO.read(f);
-		    ImageIcon icon = new ImageIcon(img.getScaledInstance(192, 108, BufferedImage.SCALE_FAST));
+		    ImageIcon icon = new ImageIcon(ImageIO.read(f).getScaledInstance(100, 100, BufferedImage.SCALE_SMOOTH));
 		    JButton jcb = new JButton(icon);
 		    jcb.setBackground(Settings.DISABLE_COLOR);
 		    jcb.setMargin(new Insets(0, 0, 0, 0));

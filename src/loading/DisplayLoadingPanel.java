@@ -50,25 +50,27 @@ public class DisplayLoadingPanel extends DisplayPanel {
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
 		Dimension s = getSize();
-		if (upScale) {
-			if (timer <= FADE_IN) {
-				g2d.drawImage(oldImage, 0, 0, s.width, s.height, null);
+		if (currentImage != null) {
+			if (upScale) {
+				if (timer <= FADE_IN) {
+					g2d.drawImage(oldImage, 0, 0, s.width, s.height, null);
+				}
+				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade));
+				g2d.drawImage(currentImage, 0, 0, s.width, s.height, null);
 			}
-			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade));
-			g2d.drawImage(currentImage, 0, 0, s.width, s.height, null);
-		}
-		else {
-			g2d.setColor(new Color(currentImage.getRGB(0, 0)));
-			g2d.fillRect(0, 0, s.width, s.height);
-			
-			if (timer <= FADE_IN && oldImage != null) {
-				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1 - fade));
-				g2d.drawImage(oldImage, (s.width - oldImage.getWidth()) / 2,
-						(s.height - oldImage.getHeight()) / 2, null);
+			else {
+				g2d.setColor(new Color(currentImage.getRGB(0, 0)));
+				g2d.fillRect(0, 0, s.width, s.height);
+				
+				if (timer <= FADE_IN && oldImage != null) {
+					g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1 - fade));
+					g2d.drawImage(oldImage, (s.width - oldImage.getWidth()) / 2,
+							(s.height - oldImage.getHeight()) / 2, null);
+				}
+				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade));
+				g2d.drawImage(currentImage, (s.width - currentImage.getWidth()) / 2,
+						(s.height - currentImage.getHeight()) / 2, null);
 			}
-			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade));
-			g2d.drawImage(currentImage, (s.width - currentImage.getWidth()) / 2,
-					(s.height - currentImage.getHeight()) / 2, null);
 		}
 		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 		for (Cube c: cubePositions) {

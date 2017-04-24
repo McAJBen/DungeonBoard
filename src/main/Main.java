@@ -19,21 +19,17 @@ public class Main {
 		
 		GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 		
-		if (screens.length > 1) {
-			int displayIndex = JOptionPane.showOptionDialog(null, "Select Display Window", Settings.NAME,
-					JOptionPane.DEFAULT_OPTION,
-					JOptionPane.QUESTION_MESSAGE,
-					null, toLabels(screens), 0);
-			
-			if (displayIndex >= 0 && displayIndex < screens.length) {
-				int controlIndex = displayIndex == 0 ? 1 : 0;
-				new ControlWindow(
-						screens[displayIndex].getDefaultConfiguration().getBounds(), 
-						screens[controlIndex].getDefaultConfiguration().getBounds());
-			}
-		}
-		else {
-			JOptionPane.showMessageDialog(null, "Not enough screens!");
+		int displayIndex = JOptionPane.showOptionDialog(null, "Select Display Window", Settings.NAME,
+				JOptionPane.DEFAULT_OPTION,
+				JOptionPane.QUESTION_MESSAGE,
+				null, toLabels(screens), 0);
+		
+		if (displayIndex >= 0 && displayIndex < screens.length) {
+			int controlIndex = (displayIndex == 0 ? screens.length - 1 : 0);
+			Settings.DISPLAY_SIZE = screens[displayIndex].getDefaultConfiguration().getBounds().getSize();
+			new ControlWindow(
+					screens[displayIndex].getDefaultConfiguration().getBounds(), 
+					screens[controlIndex].getDefaultConfiguration().getBounds());
 		}
 	}
 	

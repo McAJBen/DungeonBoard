@@ -24,8 +24,6 @@ public class DrawPanel extends JComponent {
 	
 	private static final long serialVersionUID = -3142625453462827948L;
 	
-	private final Dimension displaySize;
-	
 	private Object lock;
 	
 	// Pen variables
@@ -56,12 +54,11 @@ public class DrawPanel extends JComponent {
 	private JButton updateButton;
 	private DisplayPaintPanel display;
 	
-	public DrawPanel(Dimension displaySize, DisplayPaintPanel disp) {
+	public DrawPanel(DisplayPaintPanel disp) {
 		lock = new Object();
 		setDoubleBuffered(false);
 		setRadius(25);
 		mousePos = new Point(-100, -100);
-		this.displaySize = displaySize;
 		displayZoom = 1;
 		this.display = disp;
 		windowPos = new Point(0, 0);
@@ -280,10 +277,6 @@ public class DrawPanel extends JComponent {
 		return new Point((int)(windowPos.x / displayZoom), (int) (windowPos.y / displayZoom));
 	}
 	
-	public Dimension getDisplaySize() {
-		return displaySize;
-	}
-	
 	public boolean hasImage() {
 		synchronized (lock) {
 			return drawingLayer != null;
@@ -310,8 +303,8 @@ public class DrawPanel extends JComponent {
 				g.drawRect(
 						windowPos.x * controlSize.width / image.getWidth(),
 						windowPos.y * controlSize.height / image.getHeight(),
-						(int) (displaySize.width * displayZoom * controlSize.width / image.getWidth()),
-						(int) (displaySize.height * displayZoom * controlSize.height / image.getHeight()));
+						(int) (Settings.DISPLAY_SIZE.width * displayZoom * controlSize.width / image.getWidth()),
+						(int) (Settings.DISPLAY_SIZE.height * displayZoom * controlSize.height / image.getHeight()));
 			}
 			else if (controlSize != null) {
 				g.drawString("No image loaded", controlSize.width / 2, controlSize.height / 2);
@@ -329,18 +322,18 @@ public class DrawPanel extends JComponent {
 		synchronized (lock) {
 			lastWindowClick = p;
 			
-			windowPos.x = (int) (p.x * Settings.PIXELS_PER_MASK - (displaySize.width * displayZoom) / 2);
-			windowPos.y = (int) (p.y * Settings.PIXELS_PER_MASK - (displaySize.height * displayZoom) / 2);
+			windowPos.x = (int) (p.x * Settings.PIXELS_PER_MASK - (Settings.DISPLAY_SIZE.width * displayZoom) / 2);
+			windowPos.y = (int) (p.y * Settings.PIXELS_PER_MASK - (Settings.DISPLAY_SIZE.height * displayZoom) / 2);
 			
 			if (image != null) {
-				if (windowPos.x > image.getWidth() - displaySize.width * displayZoom) {
-					windowPos.x = (int) (image.getWidth() - displaySize.width * displayZoom);
+				if (windowPos.x > image.getWidth() - Settings.DISPLAY_SIZE.width * displayZoom) {
+					windowPos.x = (int) (image.getWidth() - Settings.DISPLAY_SIZE.width * displayZoom);
 				}
 				if (windowPos.x < 0) {
 					windowPos.x = 0;
 				}
-				if (windowPos.y > image.getHeight() - displaySize.height * displayZoom) {
-					windowPos.y = (int) (image.getHeight() - displaySize.height * displayZoom);
+				if (windowPos.y > image.getHeight() - Settings.DISPLAY_SIZE.height * displayZoom) {
+					windowPos.y = (int) (image.getHeight() - Settings.DISPLAY_SIZE.height * displayZoom);
 				}
 				if (windowPos.y < 0) {
 					windowPos.y = 0;
@@ -408,14 +401,12 @@ public class DrawPanel extends JComponent {
 	}
 	
 	private void fillAll(Color c) {
-		synchronized (lock) {
-			if (g2 != null) {
-				g2.setPaint(c);
-				g2.fillRect(0, 0, drawingLayer.getWidth(), drawingLayer.getHeight());
-				repaint();
-				updateButton.setEnabled(true);
-				updateButton.setBackground(Settings.ACTIVE);
-			}
+		if (g2 != null) {
+			g2.setPaint(c);
+			g2.fillRect(0, 0, drawingLayer.getWidth(), drawingLayer.getHeight());
+			repaint();
+			updateButton.setEnabled(true);
+			updateButton.setBackground(Settings.ACTIVE);
 		}
 	}
 	

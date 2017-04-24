@@ -40,14 +40,14 @@ public class ControlPaint extends ControlPanel {
 	
 	private double maxZoom;
 	
-	public ControlPaint(Dimension displaySize, DisplayPaintPanel disp) {
+	public ControlPaint(DisplayPaintPanel disp) {
 		setLayout(new BorderLayout());
 		setBorder(BorderFactory.createLineBorder(Settings.BACKGROUND, 5));
 		
 		paintDisplay = disp;
 		maxZoom = 10.0;
 		
-		drawPanel = new DrawPanel(displaySize, disp);
+		drawPanel = new DrawPanel(disp);
 		
 		JPanel northPanel = new JPanel();
 		northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.X_AXIS));
@@ -222,8 +222,8 @@ public class ControlPaint extends ControlPanel {
 	}
 	
 	private void setZoomMax(double width, double height) {
-		double w = width / drawPanel.getDisplaySize().getWidth();
-		double h = height / drawPanel.getDisplaySize().getHeight();
+		double w = width / Settings.DISPLAY_SIZE.getWidth();
+		double h = height / Settings.DISPLAY_SIZE.getHeight();
 		double maxZoom = h > w ? h : w;
 		zoomSlider.setMaximum((int) (maxZoom * 100));
 	}
