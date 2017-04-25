@@ -61,6 +61,14 @@ public class ControlPaint extends ControlPanel {
 		});
 		northPanel.add(fc);
 		
+		JButton settingsButton = Settings.createButton("S");
+		settingsButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Settings.showSettings(drawPanel);
+			}
+		});
+		northPanel.add(settingsButton);
+		
 		fileBox = new JComboBox<>();
 		fileBox.addItem("");
 		fileBox.setBackground(Settings.CONTROL_BACKGROUND);
@@ -173,7 +181,7 @@ public class ControlPaint extends ControlPanel {
 		
 		setVisible(true);
 	}
-	
+
 	public void setFile(File f) {
 		if (f != null) {
 			drawPanel.setImageLoading(true);
@@ -184,6 +192,7 @@ public class ControlPaint extends ControlPanel {
 						if (Settings.PAINT_IMAGE != null) {
 							oldImageSize = new Dimension(Settings.PAINT_IMAGE.getWidth(), Settings.PAINT_IMAGE.getHeight());
 						}
+						Settings.PAINT_IMAGE = null;
 						Settings.PAINT_IMAGE = ImageIO.read(f);
 						if (Settings.PAINT_IMAGE != null) {
 							

@@ -2,7 +2,10 @@ package main;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +13,15 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import control.ControlWindow;
+import paint.DrawPanel;
 
 public class Settings {
 	
@@ -64,10 +76,12 @@ public class Settings {
 	public static final BufferedImage BLANK_CURSOR = new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB);
 	public static final BufferedImage HANDS[] = new BufferedImage[4];
 	public static BufferedImage PAINT_IMAGE;
+
+	public static ControlWindow CONTROL_WINDOW;
 	
 	public static final int[] HANDS_OFFSET = {-5, -100, -45, 0};
 	
-	public static final int PIXELS_PER_MASK = 3;
+	public static int PIXELS_PER_MASK = 3;
 	
 	public static final Point NULL_POS = new Point(-100, -100);
 	
@@ -79,6 +93,11 @@ public class Settings {
 				e.printStackTrace();
 			}
     	}
+	}
+	
+	private static void changePixelsPerMask(int newVal) {
+		int oldVal = PIXELS_PER_MASK;
+		PIXELS_PER_MASK = newVal;
 	}
 	
 	public static FileChooser createFileChooser() {
@@ -107,5 +126,40 @@ public class Settings {
 	
 	private static ImageIcon load(String res) {
 		return new ImageIcon(Settings.class.getResource("/resources/" + res));
+	}
+
+	public static void showSettings(DrawPanel drawPanel) {
+		JDialog settings = new JDialog(CONTROL_WINDOW, "Settings", true);
+		settings.setLocationRelativeTo(CONTROL_WINDOW);
+		settings.setSize(new Dimension(400, 400));
+		
+		settings.setLayout(new GridLayout(0, 3));
+		
+		settings.add(new JLabel("Paint Mask Quality"));
+		
+		JLabel maskQualityLabel = new JLabel(PIXELS_PER_MASK + "");
+		settings.add(maskQualityLabel);
+		
+		JSlider maskQualitySlider = new JSlider(JSlider.HORIZONTAL, 1, 20, PIXELS_PER_MASK);
+		maskQualitySlider.setMajorTickSpacing(5);
+		maskQualitySlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				maskQualityLabel.setText(maskQualitySlider.getValue() + "");
+			}
+		});
+		
+		settings.add(maskQualitySlider);
+		
+		JButton saveButton = createButton("Save");
+		saveButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				changePixelsPerMask(maskQualitySlider.getValue());
+				drawPanel.setImage();
+				settings.dispose();
+			}
+		});
+		settings.add(saveButton);
+		
+		settings.setVisible(true);
 	}
 }

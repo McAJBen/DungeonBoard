@@ -27,7 +27,7 @@ public class Main {
 		if (displayIndex >= 0 && displayIndex < screens.length) {
 			int controlIndex = (displayIndex == 0 ? screens.length - 1 : 0);
 			Settings.DISPLAY_SIZE = screens[displayIndex].getDefaultConfiguration().getBounds().getSize();
-			new ControlWindow(
+			Settings.CONTROL_WINDOW = new ControlWindow(
 					screens[displayIndex].getDefaultConfiguration().getBounds(), 
 					screens[controlIndex].getDefaultConfiguration().getBounds());
 		}
