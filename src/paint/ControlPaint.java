@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -177,24 +176,41 @@ public class ControlPaint extends ControlPanel {
 	
 	public void setFile(File f) {
 		if (f != null) {
-			drawPanel.setImageLoading();
+			drawPanel.setImageLoading(true);
 			Thread fileLoadingThread = new Thread("fileLoadingThread") {
 				public void run() {
 					try {
-						BufferedImage image = ImageIO.read(f);
-						if (image != null) {
-							drawPanel.setImage(image);
+						Dimension oldImageSize = new Dimension(0, 0);
+						if (Settings.PAINT_IMAGE != null) {
+							oldImageSize = new Dimension(Settings.PAINT_IMAGE.getWidth(), Settings.PAINT_IMAGE.getHeight());
+						}
+						Settings.PAINT_IMAGE = ImageIO.read(f);
+						if (Settings.PAINT_IMAGE != null) {
+							
+							if (oldImageSize == null ||
+									Settings.PAINT_IMAGE.getWidth() != oldImageSize.getWidth() ||
+									Settings.PAINT_IMAGE.getHeight() != oldImageSize.getHeight() ||
+									JOptionPane.showConfirmDialog(drawPanel,
+										"Would you like to keep the same visibility mask?",
+										"Paint Image has been changed",
+										JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+								
+								drawPanel.setImage();
+							}
+							
 							paintDisplay.setMask(drawPanel.getMask());
-							paintDisplay.setImage(image);
-							setZoomMax(image.getWidth(), image.getHeight());
+							paintDisplay.setImageSize();
+							setZoomMax();
 						}
 					} catch (IOException | OutOfMemoryError error) {
 						drawPanel.resetImage();
 						paintDisplay.resetImage();
+						Settings.PAINT_IMAGE = null;
 						JOptionPane.showMessageDialog(drawPanel, "Cannot load Image, file is too large");
 					}
 					paintDisplay.repaint();
 					drawPanel.repaint();
+					drawPanel.setImageLoading(false);
 				}
 			};
 			fileLoadingThread.start();
@@ -207,9 +223,9 @@ public class ControlPaint extends ControlPanel {
 		));
 	}
 	
-	private void setZoomMax(double width, double height) {
-		double w = width / Settings.DISPLAY_SIZE.getWidth();
-		double h = height / Settings.DISPLAY_SIZE.getHeight();
+	private void setZoomMax() {
+		double w = Settings.PAINT_IMAGE.getWidth() / Settings.DISPLAY_SIZE.getWidth();
+		double h = Settings.PAINT_IMAGE.getHeight() / Settings.DISPLAY_SIZE.getHeight();
 		double maxZoom = h > w ? h : w;
 		zoomSlider.setMaximum((int) (maxZoom * 100));
 	}

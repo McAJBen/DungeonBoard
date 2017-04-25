@@ -16,9 +16,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -35,10 +32,8 @@ public class DrawPanel extends JComponent {
 	
 	// images
 	private BufferedImage drawingLayer;
-	private BufferedImage image;
 	private Graphics2D g2;
 	private Dimension controlSize;
-	private Dimension imageSize;
 	private double displayZoom;
 	
 	// drawing variables
@@ -72,26 +67,20 @@ public class DrawPanel extends JComponent {
 		updateButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (hasImage()) {
-					Thread updateThread = new Thread("updateThread") {
-						public void run() {
-							try {
-								display.setMask(getMask());
-							} catch (OutOfMemoryError error) {
-								JOptionPane.showMessageDialog(null, "Cannot update Image, file is too large");
-							}
-							updateButton.setBackground(Settings.CONTROL_BACKGROUND);
-						}
-					};
+					try {
+						display.setMask(getMask());
+					} catch (OutOfMemoryError error) {
+						JOptionPane.showMessageDialog(null, "Cannot update Image, file is too large");
+					}
 					updateButton.setEnabled(false);
-					updateButton.setBackground(Settings.DISABLE_COLOR);
-					updateThread.start();
+					updateButton.setBackground(Settings.CONTROL_BACKGROUND);
 				}
 			}
 		});
 		
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				if (image != null) {
+				if (Settings.PAINT_IMAGE != null) {
 					lastP = toDrawingPoint(e.getPoint());
 					switch (drawMode) {
 					case ANY:
@@ -127,7 +116,7 @@ public class DrawPanel extends JComponent {
 		});
 		addMouseMotionListener(new MouseMotionAdapter() {
 			public void mouseDragged(MouseEvent e) {
-				if (image != null) {
+				if (Settings.PAINT_IMAGE != null) {
 					if (canDraw) {
 						addPoint(toDrawingPoint(e.getPoint()));
 					}
@@ -162,31 +151,16 @@ public class DrawPanel extends JComponent {
 		repaint();
 	}
 	
-	public synchronized void setImage(BufferedImage image) {
-		if (g2 == null ||
-				imageSize.width != image.getWidth() ||
-				imageSize.height != image.getHeight() ||
-				JOptionPane.showConfirmDialog(this,
-					"Would you like to keep the same visibility mask?",
-					"Paint Image has been changed",
-					JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
-			
-			
-			
-			drawingLayer = new BufferedImage(
-				image.getWidth() / Settings.PIXELS_PER_MASK,
-				image.getHeight() / Settings.PIXELS_PER_MASK,
-				BufferedImage.TYPE_INT_ARGB);
-			
-			g2 = (Graphics2D) drawingLayer.getGraphics();
-			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.6f));
-			g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-			clear();
-		}
-		imageSize = new Dimension(image.getWidth(), image.getHeight());
-		this.image = scale(image);
+	public synchronized void setImage() {
+		drawingLayer = new BufferedImage(
+			Settings.PAINT_IMAGE.getWidth() / Settings.PIXELS_PER_MASK,
+			Settings.PAINT_IMAGE.getHeight() / Settings.PIXELS_PER_MASK,
+			BufferedImage.TYPE_INT_ARGB);
 		
-		loading = false;
+		g2 = (Graphics2D) drawingLayer.getGraphics();
+		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.6f));
+		g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+		clear();
 	}
 
 	public void setRadius(int value) {
@@ -200,8 +174,7 @@ public class DrawPanel extends JComponent {
 	}
 	
 	public void resetImage() {
-		image = null;
-		imageSize = null;
+		Settings.PAINT_IMAGE = null;
 		g2 = null;
 		drawingLayer = null;
 		loading = false;
@@ -237,8 +210,8 @@ public class DrawPanel extends JComponent {
 		}
 	}
 	
-	public void setImageLoading() {
-		loading = true;
+	public void setImageLoading(boolean b) {
+		loading = b;
 		repaint();
 	}
 	
@@ -286,8 +259,8 @@ public class DrawPanel extends JComponent {
 		if (loading) {
 			g.drawString("Loading...", controlSize.width / 2, controlSize.height / 2);
 		}
-		else if (image != null) {
-			g.drawImage(image, 0, 0, controlSize.width, controlSize.height, null);
+		else if (Settings.PAINT_IMAGE != null) {
+			g.drawImage(Settings.PAINT_IMAGE, 0, 0, controlSize.width, controlSize.height, null);
 			g.drawImage(drawingLayer, 0, 0, controlSize.width, controlSize.height, null);
 			g.setColor(Settings.PINK);
 			switch (penType) {
@@ -299,28 +272,14 @@ public class DrawPanel extends JComponent {
 				break;
 			}
 			g.drawRect(
-					windowPos.x * controlSize.width / imageSize.width,
-					windowPos.y * controlSize.height / imageSize.height,
-					(int) (Settings.DISPLAY_SIZE.width * displayZoom * controlSize.width / imageSize.width),
-					(int) (Settings.DISPLAY_SIZE.height * displayZoom * controlSize.height / imageSize.height));
+					windowPos.x * controlSize.width / Settings.PAINT_IMAGE.getWidth(),
+					windowPos.y * controlSize.height / Settings.PAINT_IMAGE.getHeight(),
+					(int) (Settings.DISPLAY_SIZE.width * displayZoom * controlSize.width / Settings.PAINT_IMAGE.getWidth()),
+					(int) (Settings.DISPLAY_SIZE.height * displayZoom * controlSize.height / Settings.PAINT_IMAGE.getHeight()));
 		}
 		else if (controlSize != null) {
 			g.drawString("No image loaded", controlSize.width / 2, controlSize.height / 2);
 		}
-	}
-	
-	private static BufferedImage scale(BufferedImage image) {
-	    BufferedImage newImage = new BufferedImage(
-	    		image.getWidth() / Settings.CONTROL_IMAGE_DOWNSCALE,
-	    		image.getHeight() / Settings.CONTROL_IMAGE_DOWNSCALE,
-	    		image.getType());
-	    Graphics g = newImage.createGraphics();
-	    g.drawImage(image, 0, 0,
-	    		image.getWidth() / Settings.CONTROL_IMAGE_DOWNSCALE,
-	    		image.getHeight() / Settings.CONTROL_IMAGE_DOWNSCALE,
-	    		null);
-	    g.dispose();
-	    return newImage;
 	}
 
 	private Point toDrawingPoint(Point p) {
@@ -335,15 +294,15 @@ public class DrawPanel extends JComponent {
 		windowPos.x = (int) (p.x * Settings.PIXELS_PER_MASK - (Settings.DISPLAY_SIZE.width * displayZoom) / 2);
 		windowPos.y = (int) (p.y * Settings.PIXELS_PER_MASK - (Settings.DISPLAY_SIZE.height * displayZoom) / 2);
 		
-		if (image != null) {
-			if (windowPos.x > imageSize.width - Settings.DISPLAY_SIZE.width * displayZoom) {
-				windowPos.x = (int) (imageSize.width - Settings.DISPLAY_SIZE.width * displayZoom);
+		if (Settings.PAINT_IMAGE != null) {
+			if (windowPos.x > Settings.PAINT_IMAGE.getWidth() - Settings.DISPLAY_SIZE.width * displayZoom) {
+				windowPos.x = (int) (Settings.PAINT_IMAGE.getWidth() - Settings.DISPLAY_SIZE.width * displayZoom);
 			}
 			if (windowPos.x < 0) {
 				windowPos.x = 0;
 			}
-			if (windowPos.y > imageSize.height - Settings.DISPLAY_SIZE.height * displayZoom) {
-				windowPos.y = (int) (imageSize.height - Settings.DISPLAY_SIZE.height * displayZoom);
+			if (windowPos.y > Settings.PAINT_IMAGE.getHeight() - Settings.DISPLAY_SIZE.height * displayZoom) {
+				windowPos.y = (int) (Settings.PAINT_IMAGE.getHeight() - Settings.DISPLAY_SIZE.height * displayZoom);
 			}
 			if (windowPos.y < 0) {
 				windowPos.y = 0;
