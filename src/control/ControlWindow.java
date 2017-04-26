@@ -3,8 +3,6 @@ package control;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -13,35 +11,20 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import display.DisplayPanel;
-import display.DisplayWindow;
-import image.ControlImage;
-import image.DisplayImagePanel;
-import layer.ControlLayer;
-import layer.DisplayLayerPanel;
-import loading.ControlLoading;
-import loading.DisplayLoadingPanel;
 import main.Display;
+import main.Main;
 import main.Mode;
+import main.ModeListener;
 import main.Settings;
-import paint.ControlPaint;
-import paint.DisplayPaintPanel;
 
 public class ControlWindow extends JFrame {
 	
 	private static final long serialVersionUID = -2980231396321368085L;
 	
-	private DisplayWindow window;
-	
-	private Mode controlMode;
-	private ControlPanel[] controls;
 	private JButton[] controlButtons;
-	
-	private Mode display;
-	private DisplayPanel[] displays;
 	private JButton[] displayButtons;
 	
-	public ControlWindow(Rectangle display, Rectangle control) {
+	public ControlWindow(Rectangle control) {
 		
 		setIconImage(Settings.ICON.getImage());
 		setTitle(Settings.NAME);
@@ -55,10 +38,12 @@ public class ControlWindow extends JFrame {
 		displayButtons = new JButton[Mode.values().length];
 		for (int i = 0; i < controlButtons.length; i++) {
 			controlButtons[i] = Settings.createButton(Mode.values()[i].name());
-			controlButtons[i].addActionListener(new ButtonListener(Display.CONTROL, Mode.values()[i]));
+			controlButtons[i].setBackground(Settings.INACTIVE);
+			controlButtons[i].addActionListener(new ModeListener(Display.CONTROL, Mode.values()[i]));
 			
 			displayButtons[i] = Settings.createButton(Mode.values()[i].name());
-			displayButtons[i].addActionListener(new ButtonListener(Display.DISPLAY, Mode.values()[i]));
+			displayButtons[i].setBackground(Settings.INACTIVE);
+			displayButtons[i].addActionListener(new ModeListener(Display.DISPLAY, Mode.values()[i]));
 		}
 		
 		JPanel northPanel = new JPanel(new GridLayout(1, 2));
@@ -66,28 +51,6 @@ public class ControlWindow extends JFrame {
 		northPanel.add(createButtonGroup("Displaying", displayButtons));
 		
 		add(northPanel, BorderLayout.NORTH);
-		
-		window = new DisplayWindow(display);
-		
-		controls = new ControlPanel[Mode.values().length];
-		displays = new DisplayPanel[Mode.values().length];
-		
-		displays[Mode.LAYER.ordinal()] = new DisplayLayerPanel(window);
-		controls[Mode.LAYER.ordinal()] = new ControlLayer((DisplayLayerPanel) displays[Mode.LAYER.ordinal()]);
-		
-		displays[Mode.IMAGE.ordinal()] = new DisplayImagePanel(window);
-		controls[Mode.IMAGE.ordinal()] = new ControlImage((DisplayImagePanel)displays[Mode.IMAGE.ordinal()]);
-		
-		displays[Mode.PAINT.ordinal()] = new DisplayPaintPanel(window);
-		controls[Mode.PAINT.ordinal()] = new ControlPaint((DisplayPaintPanel) displays[Mode.PAINT.ordinal()]);
-		
-		displays[Mode.LOADING.ordinal()] = new DisplayLoadingPanel(window);
-		controls[Mode.LOADING.ordinal()] = new ControlLoading((DisplayLoadingPanel) displays[Mode.LOADING.ordinal()]);
-		
-		displayButtons[Mode.LOADING.ordinal()].doClick();
-		controlButtons[Mode.LAYER.ordinal()].doClick();
-		
-		setVisible(true);
 	}
 	
 	private JPanel createButtonGroup(String title, JButton[] buttons) {
@@ -100,8 +63,8 @@ public class ControlWindow extends JFrame {
 		south.setBackground(Settings.CONTROL_BACKGROUND);
 		south.setLayout(new GridLayout(1, buttons.length));
 		
-		for (JButton b: buttons) {
-			south.add(b);
+		for (int i = 0; i < buttons.length; i++) {
+			south.add(buttons[i]);
 		}
 		
 		panel.add(new JLabel(title, SwingConstants.CENTER));
@@ -110,55 +73,21 @@ public class ControlWindow extends JFrame {
 		return panel;
 	}
 	
-	private void setControl(Mode mode) {
-		if (mode != controlMode) {
-			for (int i = 0; i < controls.length; i++) {
-				remove(controls[i]);
-				controlButtons[i].setBackground(Settings.INACTIVE);
-			}
-			controlMode = mode;
-			add(controls[controlMode.ordinal()], BorderLayout.CENTER);
-			controlButtons[controlMode.ordinal()].setBackground(Settings.ACTIVE);
-			validate();
-			repaint();
-		}
+	public void setMode(Mode newMode, Mode oldMode) {
+		remove(Main.getControl(oldMode));
+		add(Main.getControl(newMode), BorderLayout.CENTER);
+		validate();
+		repaint();
 	}
 	
-	private void setDisplay(Mode mode) {
-		if (mode != display) {
-			display = mode;
-			for (int i = 0; i < displays.length; i++) {
-				window.remove(displays[i]);
-				displays[i].setMainDisplay(false);
-				displayButtons[i].setBackground(Settings.INACTIVE);
-			}
-			window.add(displays[display.ordinal()]);
-			displays[display.ordinal()].setMainDisplay(true);
-			displayButtons[display.ordinal()].setBackground(Settings.ACTIVE);
-			window.validate();
-			window.repaint();
-		}
-	}
-	
-	private class ButtonListener implements ActionListener {
-		
-		private final Display disp;
-		private final Mode mode;
-		
-		public ButtonListener(Display d, Mode m) {
-			disp = d;
-			mode = m;
-		}
-		
-		public void actionPerformed(ActionEvent arg0) {
-			switch (disp) {
-				case CONTROL:
-					setControl(mode);
-					break;
-				case DISPLAY:
-					setDisplay(mode);
-					break;
-			}
+	public void setButton(Display display, Mode mode, boolean value) {
+		switch (display) {
+		case CONTROL:
+			controlButtons[mode.ordinal()].setBackground(value ? Settings.ACTIVE : Settings.INACTIVE);
+			break;
+		case DISPLAY:
+			displayButtons[mode.ordinal()].setBackground(value ? Settings.ACTIVE : Settings.INACTIVE);
+			break;
 		}
 	}
 }

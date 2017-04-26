@@ -9,7 +9,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 import display.DisplayPanel;
-import display.DisplayWindow;
 import layer.AlphaImage;
 import layer.Scale;
 import main.Settings;
@@ -23,8 +22,7 @@ public class DisplayImagePanel extends DisplayPanel {
 	private Scale scaleMode;
 	private boolean flip;
 	
-	public DisplayImagePanel(DisplayWindow window) {
-		super(window);
+	public DisplayImagePanel() {
 		scaleMode = Scale.FILL;
 		flip = false;
 		setVisible(true);
@@ -40,7 +38,7 @@ public class DisplayImagePanel extends DisplayPanel {
 		if (image != null && image.getImage() != null) {
 			paintImage(g2d, image.getImage());
 		}
-		window.paintMouse(g2d);
+		paintMouse(g2d);
 		g2d.dispose();
 	}
 	

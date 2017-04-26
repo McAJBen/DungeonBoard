@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -16,7 +15,7 @@ import javax.swing.JScrollPane;
 
 import control.ControlPanel;
 import layer.Scale;
-import main.FileChooser;
+import main.Main;
 import main.Mode;
 import main.Settings;
 
@@ -24,32 +23,18 @@ public class ControlImage extends ControlPanel {
 
 	private static final long serialVersionUID = 3622994265203390348L;
 	
-	private DisplayImagePanel imageDisplay;
 	private PictureImagePanel pp;
 	private JLabel folder;
 	
-	public ControlImage(DisplayImagePanel imageDisplay) {
-		this.imageDisplay = imageDisplay;
-		setLayout(new BorderLayout());
-		setBorder(BorderFactory.createLineBorder(Settings.BACKGROUND, 5));
-		JPanel northPanel = new JPanel();
-		northPanel.setBackground(Settings.CONTROL_BACKGROUND);
-		northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.X_AXIS));
-		
-		FileChooser fc = Settings.createFileChooser();
-		fc.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setDirectory(fc.getFolder());
-			}
-		});
-		northPanel.add(fc);
+	public ControlImage() {
+		JPanel northPanel = getNorthPanel();
 		
 		JComboBox<Scale> scaleComboBox = new JComboBox<>(Scale.values());
 		scaleComboBox.setBackground(Settings.CONTROL_BACKGROUND);
 		scaleComboBox.setMaximumSize(new Dimension(100, 5000));
 		scaleComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				imageDisplay.setScaleMode((Scale) scaleComboBox.getSelectedItem());
+				Main.DISPLAY_IMAGE.setScaleMode((Scale) scaleComboBox.getSelectedItem());
 			}
 		});
 		northPanel.add(scaleComboBox);
@@ -58,7 +43,7 @@ public class ControlImage extends ControlPanel {
 		flipButton.setBackground(Settings.CONTROL_BACKGROUND);
 		flipButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				imageDisplay.flip();
+				Main.DISPLAY_IMAGE.flip();
 			}
 		});
 		northPanel.add(flipButton);
@@ -67,7 +52,7 @@ public class ControlImage extends ControlPanel {
 		folder.setBackground(Settings.CONTROL_BACKGROUND);
 		northPanel.add(folder);
 		
-		pp = new PictureImagePanel(imageDisplay);
+		pp = new PictureImagePanel();
 		
 		add(northPanel, BorderLayout.NORTH);
 		
@@ -81,10 +66,10 @@ public class ControlImage extends ControlPanel {
 		setVisible(true);
 	}
 	
-	public void setDirectory(File folder) {
+	protected void setDirectory(File folder) {
 		if (folder != null && folder.exists()) {
 			this.folder.setText(folder.getPath());
-			imageDisplay.setFolder(folder);
+			Main.DISPLAY_IMAGE.setFolder(folder);
 			pp.clearImages();
 			for (File f: folder.listFiles()) {
 				String name = f.getName();

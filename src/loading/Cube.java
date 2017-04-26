@@ -26,12 +26,12 @@ public class Cube {
 		flag = false;
 	}
 	
-	public void paint(Graphics2D g, Dimension windowSize) {
+	public void paint(Graphics2D g2d, Dimension windowSize) {
 		if (flag) {
-			g.drawImage(Settings.ICON_DVD2.getImage(), point.x, point.y, null);
+			g2d.drawImage(Settings.ICON_DVD2.getImage(), point.x, point.y, null);
 		}
 		else {
-			g.drawImage(Settings.ICON_DVD.getImage(), point.x, point.y, null);
+			g2d.drawImage(Settings.ICON_DVD.getImage(), point.x, point.y, null);
 		}
 	}
 	

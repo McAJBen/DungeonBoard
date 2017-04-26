@@ -9,9 +9,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.Random;
+
 import javax.imageio.ImageIO;
+
 import display.DisplayPanel;
-import display.DisplayWindow;
 
 public class DisplayLoadingPanel extends DisplayPanel {
 	
@@ -34,8 +35,7 @@ public class DisplayLoadingPanel extends DisplayPanel {
 	private short timer;
 	private float fade;
 	
-	public DisplayLoadingPanel(DisplayWindow window) {
-		super(window);
+	public DisplayLoadingPanel() {
 		cubePositions = new LinkedList<>();
 		paintThread = new Thread();
 		fileNames = new LinkedList<>();
@@ -76,8 +76,8 @@ public class DisplayLoadingPanel extends DisplayPanel {
 		for (Cube c: cubePositions) {
 			c.paint(g2d, s);
 		}
-		window.paintMouse(g);
-		g.dispose();
+		paintMouse(g2d);
+		g2d.dispose();
 	}
 	
 	@Override

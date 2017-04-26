@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -20,8 +19,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
 import control.ControlPanel;
-import main.FileChooser;
+import main.Main;
 import main.Mode;
 import main.Settings;
 
@@ -30,7 +30,6 @@ public class ControlPaint extends ControlPanel {
 	private static final long serialVersionUID = -3231530555502467648L;
 	
 	private DrawPanel drawPanel;
-	private DisplayPaintPanel paintDisplay;
 	
 	private JComboBox<String> fileBox;
 	private JTextField zoomText;
@@ -38,28 +37,14 @@ public class ControlPaint extends ControlPanel {
 	
 	private double maxZoom;
 	
-	public ControlPaint(DisplayPaintPanel disp) {
-		setLayout(new BorderLayout());
-		setBorder(BorderFactory.createLineBorder(Settings.BACKGROUND, 5));
+	public ControlPaint() {
+		JPanel northPanel = getNorthPanel();
 		
-		paintDisplay = disp;
 		maxZoom = 10.0;
 		
-		drawPanel = new DrawPanel(disp);
-		
-		JPanel northPanel = new JPanel();
-		northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.X_AXIS));
-		northPanel.setBackground(Settings.CONTROL_BACKGROUND);
+		drawPanel = new DrawPanel();
 		
 		setFocusable(true);
-		
-		FileChooser fc = Settings.createFileChooser();
-		fc.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setFile(fc.getFile());
-			}
-		});
-		northPanel.add(fc);
 		
 		JButton settingsButton = Settings.createButton(Settings.ICON_SETTINGS);
 		settingsButton.addActionListener(new ActionListener() {
@@ -182,7 +167,7 @@ public class ControlPaint extends ControlPanel {
 		setVisible(true);
 	}
 
-	public void setFile(File f) {
+	protected void setDirectory(File f) {
 		if (f != null) {
 			drawPanel.setImageLoading(true);
 			Thread fileLoadingThread = new Thread("fileLoadingThread") {
@@ -207,17 +192,17 @@ public class ControlPaint extends ControlPanel {
 								drawPanel.setImage();
 							}
 							
-							paintDisplay.setMask(drawPanel.getMask());
-							paintDisplay.setImageSize();
+							Main.DISPLAY_PAINT.setMask(drawPanel.getMask());
+							Main.DISPLAY_PAINT.setImageSize();
 							setZoomMax();
 						}
 					} catch (IOException | OutOfMemoryError error) {
 						drawPanel.resetImage();
-						paintDisplay.resetImage();
+						Main.DISPLAY_PAINT.resetImage();
 						Settings.PAINT_IMAGE = null;
 						JOptionPane.showMessageDialog(drawPanel, "Cannot load Image, file is too large");
 					}
-					paintDisplay.repaint();
+					Main.DISPLAY_PAINT.repaint();
 					drawPanel.repaint();
 					drawPanel.setImageLoading(false);
 				}
@@ -227,7 +212,7 @@ public class ControlPaint extends ControlPanel {
 	}
 	
 	protected void setFile(String selectedItem) {
-		setFile(new File(
+		setDirectory(new File(
 				Settings.FOLDERS[Mode.PAINT.ordinal()].getAbsolutePath() + "\\" + selectedItem
 		));
 	}

@@ -3,10 +3,10 @@ package layer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.io.File;
 import java.util.LinkedList;
 import display.DisplayPanel;
-import display.DisplayWindow;
 import main.Settings;
 
 public class DisplayLayerPanel extends DisplayPanel {
@@ -17,8 +17,7 @@ public class DisplayLayerPanel extends DisplayPanel {
 	private File folder;
 	private Scale scaleMode;
 	
-	public DisplayLayerPanel(DisplayWindow window) {
-		super(window);
+	public DisplayLayerPanel() {
 		images = new LinkedList<>();
 		scaleMode = Scale.FILL;
 		setVisible(true);
@@ -27,24 +26,23 @@ public class DisplayLayerPanel extends DisplayPanel {
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, Settings.DISPLAY_SIZE.width, Settings.DISPLAY_SIZE.height);
-		
+		Graphics2D g2d = (Graphics2D) g;
+		g2d.setColor(Color.BLACK);
+		g2d.fillRect(0, 0, Settings.DISPLAY_SIZE.width, Settings.DISPLAY_SIZE.height);
 		for (AlphaImage image: images) {
-			paintImage(g, image);
+			paintImage(g2d, image);
 		}
-		
-		window.paintMouse(g);
-		g.dispose();
+		paintMouse(g2d);
+		g2d.dispose();
 	}
 	
-	public void paintImage(Graphics g, AlphaImage image) {
+	public void paintImage(Graphics2D g2d, AlphaImage image) {
 		switch (scaleMode) {
 		case FILL:
-			g.drawImage(image.getImage(), 0, 0, Settings.DISPLAY_SIZE.width, Settings.DISPLAY_SIZE.height, null);
+			g2d.drawImage(image.getImage(), 0, 0, Settings.DISPLAY_SIZE.width, Settings.DISPLAY_SIZE.height, null);
 			break;
 		case REAL_SIZE:
-			g.drawImage(image.getImage(),
+			g2d.drawImage(image.getImage(),
 					(Settings.DISPLAY_SIZE.width - image.getWidth()) / 2,
 					(Settings.DISPLAY_SIZE.height - image.getHeight()) / 2, null);
 			break;
@@ -60,7 +58,7 @@ public class DisplayLayerPanel extends DisplayPanel {
 				// width < height
 				imageScale = new Dimension((int) (Settings.DISPLAY_SIZE.height * imageRatio), Settings.DISPLAY_SIZE.height);
 			}
-			g.drawImage(image.getImage(),
+			g2d.drawImage(image.getImage(),
 					(Settings.DISPLAY_SIZE.width - imageScale.width) / 2,
 					(Settings.DISPLAY_SIZE.height - imageScale.height) / 2,
 					imageScale.width,

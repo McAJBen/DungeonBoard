@@ -19,6 +19,8 @@ import java.awt.image.BufferedImage;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+
+import main.Main;
 import main.Settings;
 
 public class DrawPanel extends JComponent {
@@ -50,14 +52,12 @@ public class DrawPanel extends JComponent {
 	private Point lastWindowClick;
 	private Point windowPos;
 	private JButton updateButton;
-	private DisplayPaintPanel display;
 	
-	public DrawPanel(DisplayPaintPanel disp) {
+	public DrawPanel() {
 		setDoubleBuffered(false);
 		setRadius(25);
 		mousePos = new Point(-100, -100);
 		displayZoom = 1;
-		this.display = disp;
 		windowPos = new Point(0, 0);
 		lastWindowClick = new Point(0, 0);
 		penType = Pen.CIRCLE;
@@ -68,7 +68,7 @@ public class DrawPanel extends JComponent {
 			public void actionPerformed(ActionEvent e) {
 				if (hasImage()) {
 					try {
-						display.setMask(getMask());
+						Main.DISPLAY_PAINT.setMask(getMask());
 					} catch (OutOfMemoryError error) {
 						JOptionPane.showMessageDialog(null, "Cannot update Image, file is too large");
 					}
@@ -86,7 +86,7 @@ public class DrawPanel extends JComponent {
 					case ANY:
 						if (e.getButton() == MouseEvent.BUTTON2) {
 							setWindowPos(lastP);
-							display.setWindowPos(getWindowPos());
+							Main.DISPLAY_PAINT.setWindowPos(getWindowPos());
 							canDraw = false;
 						}
 						else {
@@ -107,7 +107,7 @@ public class DrawPanel extends JComponent {
 						break;
 					case WINDOW:
 						setWindowPos(lastP);
-						display.setWindowPos(getWindowPos());
+						Main.DISPLAY_PAINT.setWindowPos(getWindowPos());
 						break;
 					}
 					repaint();
@@ -122,7 +122,7 @@ public class DrawPanel extends JComponent {
 					}
 					else {
 						setWindowPos(toDrawingPoint(e.getPoint()));
-						display.setWindowPos(getWindowPos());
+						Main.DISPLAY_PAINT.setWindowPos(getWindowPos());
 					}
 					mousePos = e.getPoint();
 					repaint();
@@ -137,6 +137,7 @@ public class DrawPanel extends JComponent {
 			public void componentShown(ComponentEvent e) {}
 			public void componentResized(ComponentEvent e) {
 				controlSize = getSize();
+				repaint();
 			}
 			public void componentMoved(ComponentEvent e) {}
 			public void componentHidden(ComponentEvent e) {}
@@ -147,7 +148,7 @@ public class DrawPanel extends JComponent {
 	public void setZoom(double zoom) {
 		displayZoom = zoom;
 		setWindowPos(lastWindowClick);
-		display.setWindow(zoom, getWindowPos());
+		Main.DISPLAY_PAINT.setWindow(zoom, getWindowPos());
 		repaint();
 	}
 	
@@ -257,30 +258,32 @@ public class DrawPanel extends JComponent {
 		return drawingLayer != null;
 	}
 	
+	@Override
 	protected void paintComponent(Graphics g) {
+		Graphics2D g2d = (Graphics2D) g;
 		if (loading) {
-			g.drawString("Loading...", controlSize.width / 2, controlSize.height / 2);
+			g2d.drawString("Loading...", controlSize.width / 2, controlSize.height / 2);
 		}
 		else if (Settings.PAINT_IMAGE != null) {
-			g.drawImage(Settings.PAINT_IMAGE, 0, 0, controlSize.width, controlSize.height, null);
-			g.drawImage(drawingLayer, 0, 0, controlSize.width, controlSize.height, null);
-			g.setColor(Settings.PINK);
+			g2d.drawImage(Settings.PAINT_IMAGE, 0, 0, controlSize.width, controlSize.height, null);
+			g2d.drawImage(drawingLayer, 0, 0, controlSize.width, controlSize.height, null);
+			g2d.setColor(Settings.PINK);
 			switch (penType) {
 			case CIRCLE:
-				g.drawOval(mousePos.x - radius, mousePos.y - radius, diameter, diameter);
+				g2d.drawOval(mousePos.x - radius, mousePos.y - radius, diameter, diameter);
 				break;
 			case SQUARE:
-				g.drawRect(mousePos.x - radius, mousePos.y - radius, diameter, diameter);
+				g2d.drawRect(mousePos.x - radius, mousePos.y - radius, diameter, diameter);
 				break;
 			}
-			g.drawRect(
+			g2d.drawRect(
 					windowPos.x * controlSize.width / Settings.PAINT_IMAGE.getWidth(),
 					windowPos.y * controlSize.height / Settings.PAINT_IMAGE.getHeight(),
 					(int) (Settings.DISPLAY_SIZE.width * displayZoom * controlSize.width / Settings.PAINT_IMAGE.getWidth()),
 					(int) (Settings.DISPLAY_SIZE.height * displayZoom * controlSize.height / Settings.PAINT_IMAGE.getHeight()));
 		}
 		else if (controlSize != null) {
-			g.drawString("No image loaded", controlSize.width / 2, controlSize.height / 2);
+			g2d.drawString("No image loaded", controlSize.width / 2, controlSize.height / 2);
 		}
 	}
 

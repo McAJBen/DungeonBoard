@@ -2,14 +2,11 @@ package main;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -21,7 +18,6 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import control.ControlWindow;
 import paint.DrawPanel;
 
 public class Settings {
@@ -59,8 +55,9 @@ public class Settings {
 			load("square.gif")
 	};
 	
+	public static final BufferedImage BLANK_CURSOR = new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB);
+	
 	public static final Dimension CONTROL_SIZE = new Dimension(800, 700);
-	public static Dimension DISPLAY_SIZE;
 	
 	public static final Color ACTIVE = new Color(153, 255, 187);
 	public static final Color INACTIVE = new Color(255, 128, 128);
@@ -75,26 +72,20 @@ public class Settings {
 	public static final Color BACKGROUND = Color.GRAY;
 	public static final Color CONTROL_BACKGROUND = Color.LIGHT_GRAY;
 	
-	public static final BufferedImage BLANK_CURSOR = new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB);
-	public static final BufferedImage HANDS[] = new BufferedImage[4];
 	public static BufferedImage PAINT_IMAGE;
 
-	public static ControlWindow CONTROL_WINDOW;
-	
-	public static final int[] HANDS_OFFSET = {-5, -100, -45, 0};
+	public static Dimension DISPLAY_SIZE;
 	
 	public static int PIXELS_PER_MASK = 3;
 	
-	public static final Point NULL_POS = new Point(-100, -100);
-	
 	public static void load() {
-		for (int i = 0; i < HANDS.length; i++) {
-        	try {
-				HANDS[i] = ImageIO.read(Settings.class.getResource("/resources/hand" + i + ".png"));
-			} catch (IOException e) {
-				e.printStackTrace();
+		try {
+			for (File f: Settings.FOLDERS) {
+				f.mkdirs();
 			}
-    	}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static FileChooser createFileChooser() {
@@ -121,13 +112,13 @@ public class Settings {
 		return button;
 	}
 	
-	private static ImageIcon load(String res) {
+	public static ImageIcon load(String res) {
 		return new ImageIcon(Settings.class.getResource("/resources/" + res));
 	}
 
 	public static void showSettings(DrawPanel drawPanel) {
-		JDialog settings = new JDialog(CONTROL_WINDOW, "Settings", true);
-		settings.setLocationRelativeTo(CONTROL_WINDOW);
+		JDialog settings = new JDialog(Main.CONTROL_WINDOW, "Settings", true);
+		settings.setLocationRelativeTo(Main.CONTROL_WINDOW);
 		settings.setSize(new Dimension(400, 400));
 		
 		settings.setLayout(new BoxLayout(settings.getContentPane(), BoxLayout.Y_AXIS));

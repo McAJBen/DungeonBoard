@@ -9,7 +9,6 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 import display.DisplayPanel;
-import display.DisplayWindow;
 import main.Settings;
 
 public class DisplayPaintPanel extends DisplayPanel {
@@ -21,8 +20,7 @@ public class DisplayPaintPanel extends DisplayPanel {
 	private Point windowPos;
 	private double scale;
 	
-	public DisplayPaintPanel(DisplayWindow window) {
-		super(window);
+	public DisplayPaintPanel() {
 		windowPos = new Point(0, 0);
 		scale = 1;
 		setVisible(true);
@@ -40,7 +38,7 @@ public class DisplayPaintPanel extends DisplayPanel {
 			g2d.drawImage(Settings.PAINT_IMAGE, -windowPos.x, -windowPos.y, imageSize.width, imageSize.height, null);
 			g2d.drawImage(mask, -windowPos.x, -windowPos.y, imageSize.width, imageSize.height, null);
 		}
-		window.paintMouse(g);
+		paintMouse(g2d);
 		g2d.dispose();
 	}
 	
