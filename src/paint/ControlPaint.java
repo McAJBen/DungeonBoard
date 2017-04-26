@@ -61,7 +61,7 @@ public class ControlPaint extends ControlPanel {
 		});
 		northPanel.add(fc);
 		
-		JButton settingsButton = Settings.createButton("S");
+		JButton settingsButton = Settings.createButton(Settings.ICON_SETTINGS);
 		settingsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Settings.showSettings(drawPanel);

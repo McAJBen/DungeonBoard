@@ -152,15 +152,17 @@ public class DrawPanel extends JComponent {
 	}
 	
 	public synchronized void setImage() {
-		drawingLayer = new BufferedImage(
-			Settings.PAINT_IMAGE.getWidth() / Settings.PIXELS_PER_MASK,
-			Settings.PAINT_IMAGE.getHeight() / Settings.PIXELS_PER_MASK,
-			BufferedImage.TYPE_INT_ARGB);
-		
-		g2 = (Graphics2D) drawingLayer.getGraphics();
-		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.6f));
-		g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-		clear();
+		if (Settings.PAINT_IMAGE != null) {
+			drawingLayer = new BufferedImage(
+				Settings.PAINT_IMAGE.getWidth() / Settings.PIXELS_PER_MASK,
+				Settings.PAINT_IMAGE.getHeight() / Settings.PIXELS_PER_MASK,
+				BufferedImage.TYPE_INT_ARGB);
+			
+			g2 = (Graphics2D) drawingLayer.getGraphics();
+			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.6f));
+			g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+			clear();
+		}
 	}
 
 	public void setRadius(int value) {

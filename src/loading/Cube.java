@@ -19,8 +19,8 @@ public class Cube {
 		Random rand = new Random();
 		SPEED = rand.nextInt(5) + 1;
 		point = new Point(
-				rand.nextInt(windowSize.width - Settings.cube.getIconWidth()),
-				rand.nextInt(windowSize.height - Settings.cube.getIconHeight()));
+				rand.nextInt(windowSize.width - Settings.ICON_DVD.getIconWidth()),
+				rand.nextInt(windowSize.height - Settings.ICON_DVD.getIconHeight()));
 		vertical = rand.nextBoolean();
 		horizontal = rand.nextBoolean();
 		flag = false;
@@ -28,10 +28,10 @@ public class Cube {
 	
 	public void paint(Graphics2D g, Dimension windowSize) {
 		if (flag) {
-			g.drawImage(Settings.cube2.getImage(), point.x, point.y, null);
+			g.drawImage(Settings.ICON_DVD2.getImage(), point.x, point.y, null);
 		}
 		else {
-			g.drawImage(Settings.cube.getImage(), point.x, point.y, null);
+			g.drawImage(Settings.ICON_DVD.getImage(), point.x, point.y, null);
 		}
 	}
 	
@@ -48,8 +48,8 @@ public class Cube {
 			}
 			else {
 				point.x += SPEED;
-				if (point.x > windowSize.width - Settings.cube.getIconWidth()) {
-					point.x = windowSize.width - Settings.cube.getIconWidth();
+				if (point.x > windowSize.width - Settings.ICON_DVD.getIconWidth()) {
+					point.x = windowSize.width - Settings.ICON_DVD.getIconWidth();
 					vertical = true;
 					vertHit = true;
 				}
@@ -66,8 +66,8 @@ public class Cube {
 			}
 			else {
 				point.y += SPEED;
-				if (point.y > windowSize.height - Settings.cube.getIconHeight()) {
-					point.y = windowSize.height - Settings.cube.getIconHeight();
+				if (point.y > windowSize.height - Settings.ICON_DVD.getIconHeight()) {
+					point.y = windowSize.height - Settings.ICON_DVD.getIconHeight();
 					horizontal = true;
 					if (vertHit) {
 						flag = true;
