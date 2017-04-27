@@ -34,7 +34,7 @@ In this example the base map is displayed first, then the DM can choose to tell 
 <br>
 
 ### Image Utility
-This is simmilar to the Layer Utility, but will only show one image at a time.
+This is similar to the Layer Utility, but will only show one image at a time.
 This is useful when you want to simply use a screen to display a picture.
 <br>
 <img src="Examples/control4.png" alt="Controls" width="300" height="300">
@@ -51,4 +51,14 @@ The main use case is for the DM to show 'loading tips' to distract the players a
 ## Controls
 <img src="Examples/guide.png" alt="Guide">
 
-
+## Running Dungeon Board
+Simply download the newest version of Dungeon Board <a href="https://github.com/McAJBen/DungeonBoard/raw/master/Versions/Dungeon%20Board%20v2.0.jar">Download 2.0</a>.
+<br>
+<i>Caution, web browsers do not like .jar files. They can be used to give viruses. Do your research before downloading (Don't take my word for it).</i>
+<br>
+When you first run Dungeon Board it will create a folder next to the .jar file. Inside of this are 4 folders (Layer, Image, Paint, Loading). Simply place all of your images you want to display in these folders in the .png format.
+The next time you run Dungeon Board it will automatically load these on startup.
+<br>
+If you want to run Dungeon Board with more memory allocated you have to run the .jar file from the command line.
+<br>
+<i>&nbsp;&nbsp;java -jar -Xmx1000m "Dungeon Board v2.0.jar"</i>
