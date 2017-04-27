@@ -52,7 +52,6 @@ The main use case is for the DM to show 'loading tips' to distract the players a
 ## Controls
 <img src="Examples/guide.png" alt="Guide"><br>
 ## Running Dungeon Board
-<br>
 <a href="https://github.com/McAJBen/DungeonBoard/raw/master/Versions/Dungeon%20Board%20v2.0.jar">Download 2.0</a>
 <br>
 <i>Caution, web browsers do not like .jar files. They can be used to give viruses. Do your research before downloading (Don't take my word for it).</i>
