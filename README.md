@@ -50,7 +50,7 @@ The display will alternate randomly between all images in a directory.
 The main use case is for the DM to show 'loading tips' to distract the players and also teach them about things they might not know they can do.<br>
 <a href="http://imgur.com/a/GB9kA">Example Loading texts</a>
 ## Controls
-<img src="Examples/guide.png" alt="Guide">
+<img src="Examples/guide.png" alt="Guide"><br>
 ## Running Dungeon Board
 <br>
 <a href="https://github.com/McAJBen/DungeonBoard/raw/master/Versions/Dungeon%20Board%20v2.0.jar">Download 2.0</a>
