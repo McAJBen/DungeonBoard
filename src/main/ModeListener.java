@@ -5,8 +5,8 @@ import java.awt.event.ActionListener;
 
 public class ModeListener implements ActionListener {
 	
-	private static Mode displayMode = Mode.IMAGE;
-	private static Mode controlMode = Mode.IMAGE;
+	private static Mode displayMode = Mode.LOADING;
+	private static Mode controlMode = Mode.PAINT;
 	
 	private final Display disp;
 	private final Mode mode;

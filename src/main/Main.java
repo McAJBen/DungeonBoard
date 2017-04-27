@@ -63,6 +63,11 @@ public class Main {
 			CONTROL_PAINT = new ControlPaint();
 			CONTROL_LOADING = new ControlLoading();
 			
+			CONTROL_WINDOW.setButton(Display.CONTROL, Mode.PAINT, true);
+			CONTROL_WINDOW.setButton(Display.DISPLAY, Mode.LOADING, true);
+			CONTROL_WINDOW.setMode(Mode.PAINT, Mode.IMAGE);
+			DISPLAY_WINDOW.setMode(Mode.LOADING, Mode.IMAGE);
+			
 			DISPLAY_WINDOW.setVisible(true);
 			CONTROL_WINDOW.setVisible(true);
 		}
