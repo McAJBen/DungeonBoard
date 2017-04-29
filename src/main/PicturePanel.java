@@ -1,4 +1,4 @@
-package control;
+package main;
 
 import java.awt.Component;
 import java.awt.GridLayout;
@@ -8,13 +8,13 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import main.Settings;
 
 public abstract class PicturePanel extends JPanel implements ActionListener {
 	
@@ -31,22 +31,27 @@ public abstract class PicturePanel extends JPanel implements ActionListener {
 	}
 	
 	protected abstract void press(JButton button);
-
-	public void addImage(File f) {
+	
+	public void addImage(File file) {
+		ImageIcon icon;
 		try {
-		    ImageIcon icon = new ImageIcon(ImageIO.read(f).getScaledInstance(100, 100, BufferedImage.SCALE_SMOOTH));
-		    JButton jcb = new JButton(icon);
-		    jcb.setBackground(Settings.DISABLE_COLOR);
-		    jcb.setMargin(new Insets(0, 0, 0, 0));
-		    jcb.setFocusPainted(false);
-		    jcb.addActionListener(this);
-		    jcb.setText(f.getName());
-		    jcb.setVerticalTextPosition(SwingConstants.BOTTOM);
-		    jcb.setHorizontalTextPosition(SwingConstants.CENTER);
-		    add(jcb);
+			icon = new ImageIcon(ImageIO.read(file).getScaledInstance(100, 100, BufferedImage.SCALE_SMOOTH));
+			addButton(icon, file.getName());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void addButton(ImageIcon icon, String name) {
+		JButton jcb = new JButton(icon);
+		jcb.setBackground(Settings.DISABLE_COLOR);
+		jcb.setMargin(new Insets(0, 0, 0, 0));
+		jcb.setFocusPainted(false);
+		jcb.addActionListener(this);
+		jcb.setText(name);
+		jcb.setVerticalTextPosition(SwingConstants.BOTTOM);
+		jcb.setHorizontalTextPosition(SwingConstants.CENTER);
+		add(jcb);
 	}
 	
 	public void clearImages() {

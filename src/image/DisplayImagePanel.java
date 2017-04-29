@@ -9,8 +9,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 import display.DisplayPanel;
-import layer.AlphaImage;
 import layer.Scale;
+import main.AlphaImage;
 import main.Settings;
 
 public class DisplayImagePanel extends DisplayPanel {

@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.io.File;
 import java.util.LinkedList;
 import display.DisplayPanel;
+import main.AlphaImage;
 import main.Settings;
 
 public class DisplayLayerPanel extends DisplayPanel {

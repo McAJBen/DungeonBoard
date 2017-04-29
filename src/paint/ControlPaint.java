@@ -62,7 +62,7 @@ public class ControlPaint extends ControlPanel {
 			for (File f: folder.listFiles()) {
 				String name = f.getName();
 				String suffix = name.substring(name.lastIndexOf('.') + 1);
-				if (suffix.equalsIgnoreCase("PNG") || suffix.equalsIgnoreCase("JPG")) {
+				if (suffix.equalsIgnoreCase("PNG") || suffix.equalsIgnoreCase("JPG") || suffix.equalsIgnoreCase("JPEG")) {
 					fileBox.addItem(name);
 				}
 			}

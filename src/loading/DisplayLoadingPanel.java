@@ -153,7 +153,7 @@ public class DisplayLoadingPanel extends DisplayPanel {
 			for (File f: folder.listFiles()) {
 				String name = f.getName();
 				String suffix = name.substring(name.lastIndexOf('.') + 1);
-				if (suffix.equalsIgnoreCase("PNG")) {
+				if (suffix.equalsIgnoreCase("PNG") || suffix.equalsIgnoreCase("JPG") || suffix.equalsIgnoreCase("JPEG")) {
 					int index = rand.nextInt(fileNames.size() + 1);
 					if (index == fileNames.size()) {
 						fileNames.add(name);

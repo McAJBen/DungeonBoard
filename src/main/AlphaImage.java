@@ -1,4 +1,4 @@
-package layer;
+package main;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -34,4 +34,6 @@ public class AlphaImage {
 	public int getHeight() {
 		return image.getHeight();
 	}
+	
+	
 }

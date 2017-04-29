@@ -4,8 +4,8 @@ import java.awt.Component;
 
 import javax.swing.JButton;
 
-import control.PicturePanel;
 import main.Main;
+import main.PicturePanel;
 import main.Settings;
 
 public class PictureImagePanel extends PicturePanel {

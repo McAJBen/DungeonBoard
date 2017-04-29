@@ -156,4 +156,21 @@ public class Settings {
 		
 		settings.setVisible(true);
 	}
+	
+	public static BufferedImage addAlpha(BufferedImage b) {
+		BufferedImage b2 = new BufferedImage(b.getWidth(), b.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+		int alphaColor = b.getRGB(0, 0);
+		for (int i = 0; i < b.getWidth(); i++) {
+			for (int j = 0; j < b.getHeight(); j++) {
+				int rgb = b.getRGB(i, j);
+				if (rgb != alphaColor) {
+					b2.setRGB(i, j, rgb);
+				}
+				else {
+					b2.setRGB(i, j, 0);
+				}
+			}
+		}
+		return b2;
+	}
 }
