@@ -70,7 +70,8 @@ public class DrawPanel extends JComponent {
 					try {
 						Main.DISPLAY_PAINT.setMask(getMask());
 					} catch (OutOfMemoryError error) {
-						JOptionPane.showMessageDialog(null, "Cannot update Image, file is too large");
+						JOptionPane.showMessageDialog(null,
+								"Cannot update Image, file is probably large\n" + error.getMessage());
 					}
 					updateButton.setEnabled(false);
 					updateButton.setBackground(Settings.CONTROL_BACKGROUND);

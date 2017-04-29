@@ -4,6 +4,8 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import control.ControlPanel;
 import control.ControlWindow;
@@ -33,6 +35,14 @@ public class Main {
 	public static DisplayLoadingPanel DISPLAY_LOADING;
 	
 	public static void main(String[] args) {
+		
+		try {
+			UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e) {
+			
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		}
 		
 		Settings.load();
 		

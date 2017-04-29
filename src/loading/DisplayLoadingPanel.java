@@ -138,7 +138,7 @@ public class DisplayLoadingPanel extends DisplayPanel {
 		}
 		if (!fileNames.isEmpty()) {
 			oldImage = currentImage;
-			String file = folder.getAbsolutePath() + "\\" + fileNames.removeFirst();
+			String file = folder.getAbsolutePath() + "/" + fileNames.removeFirst();
 			try {
 				currentImage = ImageIO.read(new File(file));
 			} catch (Exception e) {

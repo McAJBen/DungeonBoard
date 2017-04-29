@@ -213,7 +213,7 @@ public class ControlPaint extends ControlPanel {
 	
 	protected void setFile(String selectedItem) {
 		setDirectory(new File(
-				Settings.FOLDERS[Mode.PAINT.ordinal()].getAbsolutePath() + "\\" + selectedItem
+				Settings.FOLDERS[Mode.PAINT.ordinal()].getAbsolutePath() + "/" + selectedItem
 		));
 	}
 	

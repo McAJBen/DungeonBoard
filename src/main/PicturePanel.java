@@ -48,6 +48,7 @@ public abstract class PicturePanel extends JPanel implements ActionListener {
 		jcb.setMargin(new Insets(0, 0, 0, 0));
 		jcb.setFocusPainted(false);
 		jcb.addActionListener(this);
+		jcb.setOpaque(true);
 		jcb.setText(name);
 		jcb.setVerticalTextPosition(SwingConstants.BOTTOM);
 		jcb.setHorizontalTextPosition(SwingConstants.CENTER);

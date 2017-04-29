@@ -25,12 +25,12 @@ public class Settings {
 	public static final String NAME = "Dungeon Board";
 	
 	public static final File USER_DIR = new File(System.getProperty("user.dir"));
-	public static final File FOLDER = new File(USER_DIR.getAbsolutePath() + "\\DungeonBoard");
+	public static final File FOLDER = new File(USER_DIR.getAbsolutePath() + "/DungeonBoard");
 	public static final File[] FOLDERS = {
-			new File(FOLDER + "\\Layer"),
-			new File(FOLDER + "\\Image"),
-			new File(FOLDER + "\\Paint"),
-			new File(FOLDER + "\\Loading")
+			new File(FOLDER + "/Layer"),
+			new File(FOLDER + "/Image"),
+			new File(FOLDER + "/Paint"),
+			new File(FOLDER + "/Loading")
 	};
 	
 	public static final ImageIcon ICON = load("icon.gif");
@@ -72,6 +72,8 @@ public class Settings {
 	public static final Color BACKGROUND = Color.GRAY;
 	public static final Color CONTROL_BACKGROUND = Color.LIGHT_GRAY;
 	
+	public static final boolean IS_WINDOWS = System.getProperty("os.name").startsWith("Windows");
+	
 	public static BufferedImage PAINT_IMAGE;
 
 	public static Dimension DISPLAY_SIZE;
@@ -81,7 +83,9 @@ public class Settings {
 	public static void load() {
 		try {
 			for (File f: Settings.FOLDERS) {
-				f.mkdirs();
+				if (!f.exists()) {
+					f.mkdirs();
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -100,6 +104,7 @@ public class Settings {
 		JButton button = new JButton(label);
 		button.setFocusPainted(false);
 		button.setRolloverEnabled(false);
+		button.setOpaque(true);
 		button.setBackground(CONTROL_BACKGROUND);
 		return button;
 	}
@@ -108,6 +113,7 @@ public class Settings {
 		JButton button = new JButton(imageIcon);
 		button.setFocusPainted(false);
 		button.setRolloverEnabled(false);
+		button.setOpaque(true);
 		button.setBackground(CONTROL_BACKGROUND);
 		return button;
 	}

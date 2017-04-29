@@ -11,7 +11,7 @@ public class AlphaImage {
 	
 	public AlphaImage(File folder, String n) {
 		name = n;
-		String file = folder.getAbsolutePath() + "\\" + name;
+		String file = folder.getAbsolutePath() + "/" + name;
 		try {
 			image = ImageIO.read(new File(file));
 		} catch (Exception e) {

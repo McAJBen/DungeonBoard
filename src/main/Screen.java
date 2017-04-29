@@ -11,7 +11,7 @@ public class Screen {
 	
 	public Screen(GraphicsDevice graphicsDevice) {
 		rectangle = graphicsDevice.getDefaultConfiguration().getBounds();
-		name = graphicsDevice.getIDstring().substring(1);
+		name = graphicsDevice.getIDstring();
 	}
 	
 	@Override
