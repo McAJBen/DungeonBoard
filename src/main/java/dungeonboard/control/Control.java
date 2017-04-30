@@ -1,4 +1,4 @@
-package control;
+package dungeonboard.control;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -9,7 +9,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import main.Settings;
+import dungeonboard.Settings;
 
 public abstract class Control extends JPanel {
 

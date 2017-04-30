@@ -1,4 +1,4 @@
-package display;
+package dungeonboard.display;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.LinkedList;
 
-import main.Settings;
+import dungeonboard.Settings;
 
 public class DisplayPictures extends Display {
 

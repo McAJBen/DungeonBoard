@@ -1,4 +1,4 @@
-package main;
+package dungeonboard;
 
 public enum Window {
 	CONTROL,

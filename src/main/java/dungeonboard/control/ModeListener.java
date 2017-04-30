@@ -1,11 +1,11 @@
-package control;
+package dungeonboard.control;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import main.Window;
-import main.Main;
-import main.Mode;
+import dungeonboard.Window;
+import dungeonboard.Main;
+import dungeonboard.Mode;
 
 public class ModeListener implements ActionListener {
 	

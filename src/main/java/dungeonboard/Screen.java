@@ -1,4 +1,4 @@
-package main;
+package dungeonboard;
 
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;

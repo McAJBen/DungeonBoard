@@ -1,4 +1,4 @@
-package display;
+package dungeonboard.display;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -12,8 +12,8 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
-import main.Mode;
-import main.Settings;
+import dungeonboard.Mode;
+import dungeonboard.Settings;
 
 public class DisplayLoading extends Display {
 	
