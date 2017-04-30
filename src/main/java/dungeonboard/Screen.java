@@ -16,7 +16,7 @@ public class Screen {
 	
 	@Override
 	public String toString() {
-		return name + "  " + rectangle.width + "x" + rectangle.height;
+		return String.format("%s  %dx%d", name, rectangle.width, rectangle.height);
 	}
 
 	public Dimension getSize() {
