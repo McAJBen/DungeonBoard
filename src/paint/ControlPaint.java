@@ -135,7 +135,6 @@ public class ControlPaint extends ControlPanel {
 		westPanel.add(zoomText);
 		
 		zoomSlider = new JSlider(SwingConstants.VERTICAL, 1, (int)(maxZoom * 100), 100);
-		zoomSlider.setBackground(Settings.CONTROL_BACKGROUND);
 		zoomSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent arg0) {
 				double zoom = zoomSlider.getValue() / 100.0;

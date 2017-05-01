@@ -69,8 +69,8 @@ public class Settings {
 	public static final Color OPAQUE = new Color(255, 100, 100);
 	public static final Color PINK = new Color(255, 0, 255);
 	
-	public static final Color BACKGROUND = Color.GRAY;
-	public static final Color CONTROL_BACKGROUND = Color.LIGHT_GRAY;
+	public static final Color BACKGROUND = new Color(153, 153, 153);
+	public static final Color CONTROL_BACKGROUND = new Color(200, 200, 200);
 	
 	public static final boolean IS_WINDOWS = System.getProperty("os.name").startsWith("Windows");
 	
@@ -96,8 +96,6 @@ public class Settings {
 		JButton button = new JButton(label);
 		button.setFocusPainted(false);
 		button.setRolloverEnabled(false);
-		button.setOpaque(true);
-		button.setBackground(CONTROL_BACKGROUND);
 		return button;
 	}
 	
@@ -105,8 +103,6 @@ public class Settings {
 		JButton button = new JButton(imageIcon);
 		button.setFocusPainted(false);
 		button.setRolloverEnabled(false);
-		button.setOpaque(true);
-		button.setBackground(CONTROL_BACKGROUND);
 		return button;
 	}
 	

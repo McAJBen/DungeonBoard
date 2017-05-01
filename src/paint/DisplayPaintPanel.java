@@ -32,9 +32,10 @@ public class DisplayPaintPanel extends DisplayPanel {
 		Graphics2D g2d = ((Graphics2D) g);
 		
 		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		g2d.setColor(Color.BLACK);
+		g2d.fillRect(0, 0, Settings.DISPLAY_SIZE.width, Settings.DISPLAY_SIZE.height);
+		
 		if (Settings.PAINT_IMAGE != null && mask != null && imageSize != null) {
-			g2d.setColor(new Color(Settings.PAINT_IMAGE.getRGB(0, 0)));
-			g2d.fillRect(0, 0, Settings.DISPLAY_SIZE.width, Settings.DISPLAY_SIZE.height);
 			g2d.drawImage(Settings.PAINT_IMAGE, -windowPos.x, -windowPos.y, imageSize.width, imageSize.height, null);
 			g2d.drawImage(mask, -windowPos.x, -windowPos.y, imageSize.width, imageSize.height, null);
 		}
