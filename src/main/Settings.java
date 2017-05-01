@@ -12,7 +12,7 @@ public class Settings {
 	
 	public static final String NAME = "Dungeon Board";
 	
-	public static final File USER_DIR = new File(System.getProperty("user.dir"));
+	public static final File USER_DIR = new File(System.getProperty("usehgr.dir"));
 	public static final File FOLDER = new File(USER_DIR.getAbsolutePath() + "/DungeonBoard");
 	public static final File[] FOLDERS = {
 			new File(FOLDER + "/Layer"),
@@ -68,15 +68,11 @@ public class Settings {
 	
 	public static int PIXELS_PER_MASK = 3;
 	
-	public static void load() {
-		try {
-			for (File f: Settings.FOLDERS) {
-				if (!f.exists()) {
-					f.mkdirs();
-				}
+	public static void load() throws SecurityException {
+		for (File f: Settings.FOLDERS) {
+			if (!f.exists()) {
+				f.mkdirs();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 	
@@ -96,22 +92,5 @@ public class Settings {
 	
 	public static ImageIcon load(String res) {
 		return new ImageIcon(Settings.class.getResource("/resources/" + res));
-	}
-	
-	public static BufferedImage addAlpha(BufferedImage b) {
-		BufferedImage b2 = new BufferedImage(b.getWidth(), b.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-		int alphaColor = b.getRGB(0, 0);
-		for (int i = 0; i < b.getWidth(); i++) {
-			for (int j = 0; j < b.getHeight(); j++) {
-				int rgb = b.getRGB(i, j);
-				if (rgb != alphaColor) {
-					b2.setRGB(i, j, rgb);
-				}
-				else {
-					b2.setRGB(i, j, 0);
-				}
-			}
-		}
-		return b2;
 	}
 }
