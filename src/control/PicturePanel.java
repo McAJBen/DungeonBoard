@@ -1,4 +1,4 @@
-package main;
+package control;
 
 import java.awt.Component;
 import java.awt.GridLayout;
@@ -15,6 +15,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+
+import main.Settings;
 
 public abstract class PicturePanel extends JPanel {
 	

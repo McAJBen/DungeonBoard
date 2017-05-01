@@ -1,7 +1,11 @@
-package main;
+package control;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import main.Display;
+import main.Main;
+import main.Mode;
 
 public class ModeListener implements ActionListener {
 	

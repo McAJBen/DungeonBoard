@@ -2,23 +2,11 @@ package main;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import paint.DrawPanel;
 
 public class Settings {
 	
@@ -108,47 +96,6 @@ public class Settings {
 	
 	public static ImageIcon load(String res) {
 		return new ImageIcon(Settings.class.getResource("/resources/" + res));
-	}
-
-	public static void showSettings(DrawPanel drawPanel) {
-		JDialog settings = new JDialog(Main.CONTROL_WINDOW, "Settings", true);
-		settings.setLocationRelativeTo(Main.CONTROL_WINDOW);
-		settings.setSize(new Dimension(400, 400));
-		
-		settings.setLayout(new BoxLayout(settings.getContentPane(), BoxLayout.Y_AXIS));
-		
-		JPanel paintMaskPanel = new JPanel();
-		paintMaskPanel.setLayout(new BoxLayout(paintMaskPanel, BoxLayout.X_AXIS));
-		paintMaskPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		
-		
-		paintMaskPanel.add(new JLabel("Paint Mask Quality: "));
-		
-		JLabel maskQualityLabel = new JLabel(PIXELS_PER_MASK + "");
-		paintMaskPanel.add(maskQualityLabel);
-		
-		JSlider maskQualitySlider = new JSlider(JSlider.HORIZONTAL, 1, 20, PIXELS_PER_MASK);
-		maskQualitySlider.setMajorTickSpacing(5);
-		maskQualitySlider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				maskQualityLabel.setText(maskQualitySlider.getValue() + "");
-			}
-		});
-		
-		paintMaskPanel.add(maskQualitySlider);
-		settings.add(paintMaskPanel);
-		
-		JButton saveButton = createButton("Save");
-		saveButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				PIXELS_PER_MASK = maskQualitySlider.getValue();
-				drawPanel.setImage();
-				settings.dispose();
-			}
-		});
-		settings.add(saveButton);
-		
-		settings.setVisible(true);
 	}
 	
 	public static BufferedImage addAlpha(BufferedImage b) {

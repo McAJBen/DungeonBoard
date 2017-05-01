@@ -1,4 +1,4 @@
-package paint;
+package control;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -8,9 +8,11 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -20,10 +22,10 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import control.ControlPanel;
 import main.Main;
 import main.Mode;
 import main.Settings;
+import paint.DrawPanel;
 
 public class ControlPaint extends ControlPanel {
 	
@@ -49,7 +51,7 @@ public class ControlPaint extends ControlPanel {
 		JButton settingsButton = Settings.createButton(Settings.ICON_SETTINGS);
 		settingsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Settings.showSettings(drawPanel);
+				showSettings();
 			}
 		});
 		northPanel.add(settingsButton);
@@ -209,6 +211,47 @@ public class ControlPaint extends ControlPanel {
 		double h = Settings.PAINT_IMAGE.getHeight() / Settings.DISPLAY_SIZE.getHeight();
 		double maxZoom = h > w ? h : w;
 		zoomSlider.setMaximum((int) (maxZoom * 100));
+	}
+	
+	public void showSettings() {
+		JDialog settings = new JDialog(Main.CONTROL_WINDOW, "Settings", true);
+		settings.setLocationRelativeTo(Main.CONTROL_WINDOW);
+		settings.setSize(new Dimension(400, 400));
+		
+		settings.setLayout(new BoxLayout(settings.getContentPane(), BoxLayout.Y_AXIS));
+		
+		JPanel paintMaskPanel = new JPanel();
+		paintMaskPanel.setLayout(new BoxLayout(paintMaskPanel, BoxLayout.X_AXIS));
+		paintMaskPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		
+		
+		paintMaskPanel.add(new JLabel("Paint Mask Quality: "));
+		
+		JLabel maskQualityLabel = new JLabel(Settings.PIXELS_PER_MASK + "");
+		paintMaskPanel.add(maskQualityLabel);
+		
+		JSlider maskQualitySlider = new JSlider(JSlider.HORIZONTAL, 1, 20, Settings.PIXELS_PER_MASK);
+		maskQualitySlider.setMajorTickSpacing(5);
+		maskQualitySlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				maskQualityLabel.setText(maskQualitySlider.getValue() + "");
+			}
+		});
+		
+		paintMaskPanel.add(maskQualitySlider);
+		settings.add(paintMaskPanel);
+		
+		JButton saveButton = Settings.createButton("Save");
+		saveButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Settings.PIXELS_PER_MASK = maskQualitySlider.getValue();
+				drawPanel.setImage();
+				settings.dispose();
+			}
+		});
+		settings.add(saveButton);
+		
+		settings.setVisible(true);
 	}
 
 	@Override

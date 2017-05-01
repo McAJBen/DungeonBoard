@@ -7,18 +7,18 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import control.ControlImage;
+import control.ControlLayer;
+import control.ControlLoading;
+import control.ControlPaint;
 import control.ControlPanel;
 import control.ControlWindow;
+import display.DisplayImagePanel;
+import display.DisplayLayerPanel;
+import display.DisplayLoadingPanel;
+import display.DisplayPaintPanel;
 import display.DisplayPanel;
 import display.DisplayWindow;
-import image.ControlImage;
-import image.DisplayImagePanel;
-import layer.ControlLayer;
-import layer.DisplayLayerPanel;
-import loading.ControlLoading;
-import loading.DisplayLoadingPanel;
-import paint.ControlPaint;
-import paint.DisplayPaintPanel;
 
 public class Main {
 	

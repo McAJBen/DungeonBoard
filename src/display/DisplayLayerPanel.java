@@ -1,4 +1,4 @@
-package layer;
+package display;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -6,8 +6,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.LinkedList;
 
-import display.DisplayPanel;
-import main.AlphaImage;
 import main.Mode;
 import main.Settings;
 
@@ -86,8 +84,8 @@ public class DisplayLayerPanel extends DisplayPanel {
 		repaint();
 	}
 
-	public void setScaleMode(Scale selectedItem) {
-		scaleMode = selectedItem;
+	public void setScaleMode(Object selectedItem) {
+		scaleMode = (Scale) selectedItem;
 		repaint();
 	}
 

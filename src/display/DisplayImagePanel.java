@@ -1,4 +1,4 @@
-package image;
+package display;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -7,9 +7,6 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
-import display.DisplayPanel;
-import layer.Scale;
-import main.AlphaImage;
 import main.Mode;
 import main.Settings;
 
@@ -98,8 +95,8 @@ public class DisplayImagePanel extends DisplayPanel {
 		repaint();
 	}
 
-	public void setScaleMode(Scale selectedItem) {
-		scaleMode = selectedItem;
+	public void setScaleMode(Object selectedItem) {
+		scaleMode = (Scale) selectedItem;
 		repaint();
 	}
 

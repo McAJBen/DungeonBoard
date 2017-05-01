@@ -1,4 +1,4 @@
-package layer;
+package display;
 
 public enum Scale {
 	FILL,

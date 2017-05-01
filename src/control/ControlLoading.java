@@ -1,4 +1,4 @@
-package loading;
+package control;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -13,7 +13,6 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import control.ControlPanel;
 import main.Main;
 import main.Settings;
 

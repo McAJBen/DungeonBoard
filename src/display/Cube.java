@@ -1,4 +1,4 @@
-package loading;
+package display;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;

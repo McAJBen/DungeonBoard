@@ -14,7 +14,6 @@ import javax.swing.SwingConstants;
 import main.Display;
 import main.Main;
 import main.Mode;
-import main.ModeListener;
 import main.Settings;
 
 public class ControlWindow extends JFrame {

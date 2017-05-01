@@ -1,4 +1,4 @@
-package loading;
+package display;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -12,7 +12,6 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
-import display.DisplayPanel;
 import main.Mode;
 import main.Settings;
 
