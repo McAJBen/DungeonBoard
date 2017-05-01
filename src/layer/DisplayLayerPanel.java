@@ -4,10 +4,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.io.File;
 import java.util.LinkedList;
+
 import display.DisplayPanel;
 import main.AlphaImage;
+import main.Mode;
 import main.Settings;
 
 public class DisplayLayerPanel extends DisplayPanel {
@@ -15,7 +16,6 @@ public class DisplayLayerPanel extends DisplayPanel {
 	private static final long serialVersionUID = 3211548259335689270L;
 	
 	private LinkedList<AlphaImage> images;
-	private File folder;
 	private Scale scaleMode;
 	
 	public DisplayLayerPanel() {
@@ -70,7 +70,7 @@ public class DisplayLayerPanel extends DisplayPanel {
 	}
 	
 	public void addImage(String name) {
-		images.add(new AlphaImage(folder, name));
+		images.add(new AlphaImage(Settings.FOLDERS[Mode.LAYER.ordinal()], name));
 		repaint();
 	}
 
@@ -86,14 +86,13 @@ public class DisplayLayerPanel extends DisplayPanel {
 		repaint();
 	}
 
-	public void setFolder(File folder) {
-		this.folder = folder;
-		images.clear();
+	public void setScaleMode(Scale selectedItem) {
+		scaleMode = selectedItem;
 		repaint();
 	}
 
-	public void setScaleMode(Scale selectedItem) {
-		scaleMode = selectedItem;
+	public void removeAllImages() {
+		images.clear();
 		repaint();
 	}
 }

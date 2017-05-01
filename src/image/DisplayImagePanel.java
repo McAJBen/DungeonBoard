@@ -6,11 +6,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.File;
 
 import display.DisplayPanel;
 import layer.Scale;
 import main.AlphaImage;
+import main.Mode;
 import main.Settings;
 
 public class DisplayImagePanel extends DisplayPanel {
@@ -18,7 +18,6 @@ public class DisplayImagePanel extends DisplayPanel {
 	private static final long serialVersionUID = 4732317749539981643L;
 	
 	private AlphaImage image;
-	private File folder;
 	private Scale scaleMode;
 	private boolean flip;
 	
@@ -95,13 +94,7 @@ public class DisplayImagePanel extends DisplayPanel {
 	}
 	
 	public void setImage(String name) {
-		image = new AlphaImage(folder, name);
-		repaint();
-	}
-
-	public void setFolder(File folder) {
-		this.folder = folder;
-		image = null;
+		image = new AlphaImage(Settings.FOLDERS[Mode.IMAGE.ordinal()], name);
 		repaint();
 	}
 

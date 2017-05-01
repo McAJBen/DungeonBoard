@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -16,14 +15,11 @@ import javax.swing.event.ChangeListener;
 
 import control.ControlPanel;
 import main.Main;
-import main.Mode;
 import main.Settings;
 
 public class ControlLoading extends ControlPanel {
 	
 	private static final long serialVersionUID = 5986059033234358609L;
-	
-	private JLabel folder;
 	
 	public ControlLoading() {
 		JPanel northPanel = getNorthPanel();
@@ -77,21 +73,13 @@ public class ControlLoading extends ControlPanel {
 		});
 		northPanel.add(timeSlider);
 		
-		folder = new JLabel();
-		folder.setBackground(Settings.CONTROL_BACKGROUND);
-		northPanel.add(folder);
-		
 		add(northPanel, BorderLayout.NORTH);
-		
-		setDirectory(Settings.FOLDERS[Mode.LOADING.ordinal()]);
 		
 		setVisible(true);
 	}
-	
-	protected void setDirectory(File folder) {
-		if (folder != null && folder.exists()) {
-			this.folder.setText(folder.getPath());
-			Main.DISPLAY_LOADING.setDirectory(folder);
-		}
+
+	@Override
+	protected void load() {
+		
 	}
 }

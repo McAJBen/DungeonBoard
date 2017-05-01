@@ -55,22 +55,13 @@ public class ControlPaint extends ControlPanel {
 		northPanel.add(settingsButton);
 		
 		fileBox = new JComboBox<>();
-		fileBox.addItem("");
 		fileBox.setBackground(Settings.CONTROL_BACKGROUND);
-		File folder = Settings.FOLDERS[Mode.PAINT.ordinal()];
-		if (folder.exists()) {
-			for (File f: folder.listFiles()) {
-				String name = f.getName();
-				String suffix = name.substring(name.lastIndexOf('.') + 1);
-				if (suffix.equalsIgnoreCase("PNG") || suffix.equalsIgnoreCase("JPG") || suffix.equalsIgnoreCase("JPEG")) {
-					fileBox.addItem(name);
-				}
-			}
-		}
+		fileBox.addItem("");
+		load();
 		fileBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!fileBox.getSelectedItem().equals("")) {
-					setFile((String) fileBox.getSelectedItem());
+					setFile(fileBox.getSelectedItem().toString());
 				}
 			}
 		});
@@ -167,8 +158,11 @@ public class ControlPaint extends ControlPanel {
 		setVisible(true);
 	}
 
-	protected void setDirectory(File f) {
-		if (f != null) {
+	protected void setFile(String name) {
+		
+		File file = new File(Settings.FOLDERS[Mode.PAINT.ordinal()].getAbsolutePath() +  "/" + name);
+		
+		if (file != null && file.exists()) {
 			drawPanel.setImageLoading(true);
 			Thread fileLoadingThread = new Thread("fileLoadingThread") {
 				public void run() {
@@ -178,7 +172,7 @@ public class ControlPaint extends ControlPanel {
 							oldImageSize = new Dimension(Settings.PAINT_IMAGE.getWidth(), Settings.PAINT_IMAGE.getHeight());
 						}
 						Settings.PAINT_IMAGE = null;
-						Settings.PAINT_IMAGE = ImageIO.read(f);
+						Settings.PAINT_IMAGE = ImageIO.read(file);
 						if (Settings.PAINT_IMAGE != null) {
 							
 							if (oldImageSize == null ||
@@ -211,16 +205,27 @@ public class ControlPaint extends ControlPanel {
 		}
 	}
 	
-	protected void setFile(String selectedItem) {
-		setDirectory(new File(
-				Settings.FOLDERS[Mode.PAINT.ordinal()].getAbsolutePath() + "/" + selectedItem
-		));
-	}
-	
 	private void setZoomMax() {
 		double w = Settings.PAINT_IMAGE.getWidth() / Settings.DISPLAY_SIZE.getWidth();
 		double h = Settings.PAINT_IMAGE.getHeight() / Settings.DISPLAY_SIZE.getHeight();
 		double maxZoom = h > w ? h : w;
 		zoomSlider.setMaximum((int) (maxZoom * 100));
+	}
+
+	@Override
+	protected void load() {
+		while (fileBox.getItemCount() > 1) {
+			fileBox.removeItemAt(1);
+		}
+		File folder = Settings.FOLDERS[Mode.PAINT.ordinal()];
+		if (folder.exists()) {
+			for (File f: folder.listFiles()) {
+				String name = f.getName();
+				String suffix = name.substring(name.lastIndexOf('.') + 1);
+				if (suffix.equalsIgnoreCase("PNG") || suffix.equalsIgnoreCase("JPG") || suffix.equalsIgnoreCase("JPEG")) {
+					fileBox.addItem(name);
+				}
+			}
+		}
 	}
 }

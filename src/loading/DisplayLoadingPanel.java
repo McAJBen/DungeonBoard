@@ -13,6 +13,8 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 import display.DisplayPanel;
+import main.Mode;
+import main.Settings;
 
 public class DisplayLoadingPanel extends DisplayPanel {
 	
@@ -23,8 +25,6 @@ public class DisplayLoadingPanel extends DisplayPanel {
 	private int totalWait = 400;
 	
 	private LinkedList<Cube> cubePositions;
-	
-	private File folder;
 	private LinkedList<String> fileNames;
 	private BufferedImage oldImage;
 	private BufferedImage currentImage;
@@ -42,6 +42,7 @@ public class DisplayLoadingPanel extends DisplayPanel {
 		upScale = false;
 		timer = 20;
 		fade = 1;
+		getImage();
 		setVisible(true);
 	}
 	
@@ -87,15 +88,6 @@ public class DisplayLoadingPanel extends DisplayPanel {
 		}
 		mainDisplay = b;
 	}
-
-	public void setDirectory(File folder) {
-		this.folder = folder;
-		fileNames.clear();
-		timer = 20;
-		fade = 1;
-		rePop();
-		restart(true);
-	}
 	
 	public void setTotalWait(int seconds) {
 		totalWait = seconds * 20;
@@ -138,7 +130,7 @@ public class DisplayLoadingPanel extends DisplayPanel {
 		}
 		if (!fileNames.isEmpty()) {
 			oldImage = currentImage;
-			String file = folder.getAbsolutePath() + "/" + fileNames.removeFirst();
+			String file = Settings.FOLDERS[Mode.LOADING.ordinal()] + "/" + fileNames.removeFirst();
 			try {
 				currentImage = ImageIO.read(new File(file));
 			} catch (Exception e) {
@@ -148,7 +140,8 @@ public class DisplayLoadingPanel extends DisplayPanel {
 	}
 
 	private void rePop() {
-		if (folder != null && folder.exists()) {
+		File folder = Settings.FOLDERS[Mode.LOADING.ordinal()];
+		if (folder.exists()) {
 			Random rand = new Random();
 			for (File f: folder.listFiles()) {
 				String name = f.getName();

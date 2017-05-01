@@ -3,13 +3,12 @@ package control;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import main.FileChooser;
 import main.Settings;
 
 public abstract class ControlPanel extends JPanel {
@@ -21,21 +20,23 @@ public abstract class ControlPanel extends JPanel {
 		setBorder(BorderFactory.createLineBorder(Settings.BACKGROUND, 5));
 	}
 	
-	protected abstract void setDirectory(File file);
-	
 	protected JPanel getNorthPanel() {
 		JPanel northPanel = new JPanel();
 		northPanel.setBackground(Settings.CONTROL_BACKGROUND);
 		northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.X_AXIS));
 		
-		FileChooser fc = Settings.createFileChooser();
-		fc.addActionListener(new ActionListener() {
+		JButton refreshButton = Settings.createButton(Settings.ICON_REFRESH);
+		refreshButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				setDirectory(fc.getFolder());
+				load();
 			}
 		});
-		northPanel.add(fc);
+		northPanel.add(refreshButton);
+		
+		northPanel.repaint();
 		
 		return northPanel;
 	}
+	
+	protected abstract void load();
 }

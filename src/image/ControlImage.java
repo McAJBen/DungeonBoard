@@ -9,7 +9,6 @@ import java.io.File;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -24,7 +23,6 @@ public class ControlImage extends ControlPanel {
 	private static final long serialVersionUID = 3622994265203390348L;
 	
 	private PictureImagePanel pp;
-	private JLabel folder;
 	
 	public ControlImage() {
 		JPanel northPanel = getNorthPanel();
@@ -48,10 +46,6 @@ public class ControlImage extends ControlPanel {
 		});
 		northPanel.add(flipButton);
 		
-		folder = new JLabel();
-		folder.setBackground(Settings.CONTROL_BACKGROUND);
-		northPanel.add(folder);
-		
 		pp = new PictureImagePanel();
 		
 		add(northPanel, BorderLayout.NORTH);
@@ -61,15 +55,15 @@ public class ControlImage extends ControlPanel {
 		jsp.setBorder(BorderFactory.createEmptyBorder());
 		add(jsp, BorderLayout.CENTER);
 		
-		setDirectory(Settings.FOLDERS[Mode.IMAGE.ordinal()]);
+		load();
 		
 		setVisible(true);
 	}
 	
-	protected void setDirectory(File folder) {
-		if (folder != null && folder.exists()) {
-			this.folder.setText(folder.getPath());
-			Main.DISPLAY_IMAGE.setFolder(folder);
+	@Override
+	protected void load() {
+		File folder = Settings.FOLDERS[Mode.IMAGE.ordinal()];
+		if (folder.exists()) {
 			pp.clearImages();
 			for (File f: folder.listFiles()) {
 				String name = f.getName();
@@ -80,6 +74,7 @@ public class ControlImage extends ControlPanel {
 			}
 			repaint();
 			revalidate();
+			Main.DISPLAY_IMAGE.setImage("");
 		}
 	}
 }

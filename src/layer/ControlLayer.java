@@ -8,7 +8,6 @@ import java.io.File;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -22,7 +21,6 @@ public class ControlLayer extends ControlPanel {
 	private static final long serialVersionUID = 111613405297226375L;
 	
 	private PictureLayerPanel pp;
-	private JLabel folder;
 	
 	public ControlLayer() {
 		JPanel northPanel = getNorthPanel();
@@ -37,10 +35,6 @@ public class ControlLayer extends ControlPanel {
 		});
 		northPanel.add(scaleComboBox);
 		
-		folder = new JLabel();
-		folder.setBackground(Settings.CONTROL_BACKGROUND);
-		northPanel.add(folder);
-		
 		pp = new PictureLayerPanel();
 		
 		add(northPanel, BorderLayout.NORTH);
@@ -50,15 +44,15 @@ public class ControlLayer extends ControlPanel {
 		jsp.setBorder(BorderFactory.createEmptyBorder());
 		add(jsp, BorderLayout.CENTER);
 		
-		setDirectory(Settings.FOLDERS[Mode.LAYER.ordinal()]);
+		load();
 		
 		setVisible(true);
 	}
 	
-	protected void setDirectory(File folder) {
-		if (folder != null && folder.exists()) {
-			this.folder.setText(folder.getPath());
-			Main.DISPLAY_LAYER.setFolder(folder);
+	@Override
+	protected void load() {
+		File folder = Settings.FOLDERS[Mode.LAYER.ordinal()];
+		if (folder.exists()) {
 			pp.clearImages();
 			for (File f: folder.listFiles()) {
 				String name = f.getName();
@@ -69,6 +63,7 @@ public class ControlLayer extends ControlPanel {
 			}
 			repaint();
 			revalidate();
+			Main.DISPLAY_LAYER.removeAllImages();
 		}
 	}
 }

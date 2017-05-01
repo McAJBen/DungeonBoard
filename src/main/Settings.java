@@ -34,7 +34,7 @@ public class Settings {
 	};
 	
 	public static final ImageIcon ICON = load("icon.gif");
-	public static final ImageIcon ICON_FOLDER = load("open.gif");
+	public static final ImageIcon ICON_REFRESH = load("refresh.gif");
 	public static final ImageIcon ICON_FLIP = load("flip.gif");
 	public static final ImageIcon ICON_SETTINGS = load("settings.gif");
 	public static final ImageIcon ICON_DVD = load("dvdlogo.gif");
@@ -90,14 +90,6 @@ public class Settings {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public static FileChooser createFileChooser() {
-		FileChooser fc = new FileChooser();
-		fc.setFocusPainted(false);
-		fc.setRolloverEnabled(false);
-		fc.setBackground(CONTROL_BACKGROUND);
-		return fc;
 	}
 	
 	public static JButton createButton(String label) {
