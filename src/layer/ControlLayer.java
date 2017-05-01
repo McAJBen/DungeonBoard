@@ -14,13 +14,14 @@ import javax.swing.JScrollPane;
 import control.ControlPanel;
 import main.Main;
 import main.Mode;
+import main.PicturePanel;
 import main.Settings;
 
 public class ControlLayer extends ControlPanel {
 	
 	private static final long serialVersionUID = 111613405297226375L;
 	
-	private PictureLayerPanel pp;
+	private PicturePanel pp;
 	
 	public ControlLayer() {
 		JPanel northPanel = getNorthPanel();
@@ -35,7 +36,20 @@ public class ControlLayer extends ControlPanel {
 		});
 		northPanel.add(scaleComboBox);
 		
-		pp = new PictureLayerPanel();
+		pp = new PicturePanel() {
+			
+			private static final long serialVersionUID = 2972394170217781329L;
+			
+			@Override
+			protected void select(String name) {
+				Main.DISPLAY_LAYER.addImage(name);
+			}
+
+			@Override
+			protected void deselect(String name) {
+				Main.DISPLAY_LAYER.removeImage(name);
+			}
+		};
 		
 		add(northPanel, BorderLayout.NORTH);
 		
@@ -58,7 +72,7 @@ public class ControlLayer extends ControlPanel {
 				String name = f.getName();
 				String suffix = name.substring(name.lastIndexOf('.') + 1);
 				if (suffix.equalsIgnoreCase("PNG") || suffix.equalsIgnoreCase("JPG") || suffix.equalsIgnoreCase("JPEG")) {
-					pp.addImage(f);
+					pp.addButton(f);
 				}
 			}
 			repaint();

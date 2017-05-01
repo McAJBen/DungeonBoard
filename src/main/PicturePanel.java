@@ -16,7 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-public abstract class PicturePanel extends JPanel implements ActionListener {
+public abstract class PicturePanel extends JPanel {
 	
 	private static final long serialVersionUID = 2972394170217781329L;
 	
@@ -25,34 +25,35 @@ public abstract class PicturePanel extends JPanel implements ActionListener {
 		setBorder(BorderFactory.createEmptyBorder());
 	}
 	
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		press((JButton) (e.getSource()));
-	}
-	
-	protected abstract void press(JButton button);
-	
-	public void addImage(File file) {
-		ImageIcon icon;
+	public void addButton(File file) {
 		try {
-			icon = new ImageIcon(ImageIO.read(file).getScaledInstance(100, 100, BufferedImage.SCALE_SMOOTH));
-			addButton(icon, file.getName());
+			JButton button = new JButton(
+					file.getName(),
+					new ImageIcon(ImageIO.read(file).getScaledInstance(100, 100, BufferedImage.SCALE_SMOOTH)));
+			button.setMargin(new Insets(0, 0, 0, 0));
+			button.setFocusPainted(false);
+			button.setVerticalTextPosition(SwingConstants.BOTTOM);
+			button.setHorizontalTextPosition(SwingConstants.CENTER);
+			button.setBackground(Settings.DISABLE_COLOR);
+			button.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					JButton button = (JButton) arg0.getSource();
+					String name = button.getText();
+					if (button.getBackground() == Settings.DISABLE_COLOR) {
+						select(name);
+						button.setBackground(Settings.ENABLE_COLOR);
+					}
+					else {
+						deselect(name);
+						button.setBackground(Settings.DISABLE_COLOR);
+					}
+				}
+			});
+			add(button);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	private void addButton(ImageIcon icon, String name) {
-		JButton jcb = new JButton(icon);
-		jcb.setBackground(Settings.DISABLE_COLOR);
-		jcb.setMargin(new Insets(0, 0, 0, 0));
-		jcb.setFocusPainted(false);
-		jcb.addActionListener(this);
-		jcb.setOpaque(true);
-		jcb.setText(name);
-		jcb.setVerticalTextPosition(SwingConstants.BOTTOM);
-		jcb.setHorizontalTextPosition(SwingConstants.CENTER);
-		add(jcb);
 	}
 	
 	public void clearImages() {
@@ -62,4 +63,8 @@ public abstract class PicturePanel extends JPanel implements ActionListener {
 			}
 		}
 	}
+	
+	protected abstract void select(String name);
+	
+	protected abstract void deselect(String name);
 }

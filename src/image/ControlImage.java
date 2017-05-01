@@ -1,6 +1,7 @@
 package image;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,13 +17,14 @@ import control.ControlPanel;
 import layer.Scale;
 import main.Main;
 import main.Mode;
+import main.PicturePanel;
 import main.Settings;
 
 public class ControlImage extends ControlPanel {
 
 	private static final long serialVersionUID = 3622994265203390348L;
 	
-	private PictureImagePanel pp;
+	private PicturePanel pp;
 	
 	public ControlImage() {
 		JPanel northPanel = getNorthPanel();
@@ -46,7 +48,23 @@ public class ControlImage extends ControlPanel {
 		});
 		northPanel.add(flipButton);
 		
-		pp = new PictureImagePanel();
+		pp = new PicturePanel() {
+			
+			private static final long serialVersionUID = 2972394170217781329L;
+			
+			@Override
+			protected void select(String name) {
+				for (Component c: getComponents()) {
+					c.setBackground(Settings.DISABLE_COLOR);
+				}
+				Main.DISPLAY_IMAGE.setImage(name);
+			}
+
+			@Override
+			protected void deselect(String name) {
+				Main.DISPLAY_IMAGE.setImage(null);
+			}
+		};
 		
 		add(northPanel, BorderLayout.NORTH);
 		
@@ -69,7 +87,7 @@ public class ControlImage extends ControlPanel {
 				String name = f.getName();
 				String suffix = name.substring(name.lastIndexOf('.') + 1);
 				if (suffix.equalsIgnoreCase("PNG") || suffix.equalsIgnoreCase("JPG") || suffix.equalsIgnoreCase("JPEG")) {
-					pp.addImage(f);
+					pp.addButton(f);
 				}
 			}
 			repaint();

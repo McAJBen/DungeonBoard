@@ -40,7 +40,7 @@ public class Main {
 			UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 			
 			UIManager.put("Button.background", Settings.CONTROL_BACKGROUND);
-			UIManager.put("button.opaque", true);
+			UIManager.put("Button.opaque", true);
 			UIManager.put("OptionPane.background", Settings.BACKGROUND);
 			UIManager.put("Panel.background", Settings.BACKGROUND);
 			UIManager.put("Slider.background", Settings.CONTROL_BACKGROUND);
