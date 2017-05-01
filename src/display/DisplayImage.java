@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 import main.Mode;
 import main.Settings;
 
-public class DisplayImagePanel extends DisplayPanel {
+public class DisplayImage extends Display {
 
 	private static final long serialVersionUID = 4732317749539981643L;
 	
@@ -18,7 +18,7 @@ public class DisplayImagePanel extends DisplayPanel {
 	private Scale scaleMode;
 	private boolean flip;
 	
-	public DisplayImagePanel() {
+	public DisplayImage() {
 		scaleMode = Scale.FILL;
 		flip = false;
 		setVisible(true);

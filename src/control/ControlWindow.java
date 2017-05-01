@@ -11,7 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import main.Display;
+import main.Window;
 import main.Main;
 import main.Mode;
 import main.Settings;
@@ -38,11 +38,11 @@ public class ControlWindow extends JFrame {
 		for (int i = 0; i < controlButtons.length; i++) {
 			controlButtons[i] = Settings.createButton(Mode.values()[i].name());
 			controlButtons[i].setBackground(Settings.INACTIVE);
-			controlButtons[i].addActionListener(new ModeListener(Display.CONTROL, Mode.values()[i]));
+			controlButtons[i].addActionListener(new ModeListener(Window.CONTROL, Mode.values()[i]));
 			
 			displayButtons[i] = Settings.createButton(Mode.values()[i].name());
 			displayButtons[i].setBackground(Settings.INACTIVE);
-			displayButtons[i].addActionListener(new ModeListener(Display.DISPLAY, Mode.values()[i]));
+			displayButtons[i].addActionListener(new ModeListener(Window.DISPLAY, Mode.values()[i]));
 		}
 		
 		JPanel northPanel = new JPanel(new GridLayout(1, 2));
@@ -79,7 +79,7 @@ public class ControlWindow extends JFrame {
 		repaint();
 	}
 	
-	public void setButton(Display display, Mode mode, boolean value) {
+	public void setButton(Window display, Mode mode, boolean value) {
 		switch (display) {
 		case CONTROL:
 			controlButtons[mode.ordinal()].setBackground(value ? Settings.ACTIVE : Settings.INACTIVE);

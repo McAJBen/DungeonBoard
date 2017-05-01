@@ -11,13 +11,13 @@ import control.ControlImage;
 import control.ControlLayer;
 import control.ControlLoading;
 import control.ControlPaint;
-import control.ControlPanel;
+import control.Control;
 import control.ControlWindow;
-import display.DisplayImagePanel;
-import display.DisplayLayerPanel;
-import display.DisplayLoadingPanel;
-import display.DisplayPaintPanel;
-import display.DisplayPanel;
+import display.DisplayImage;
+import display.DisplayLayer;
+import display.DisplayLoading;
+import display.DisplayPaint;
+import display.Display;
 import display.DisplayWindow;
 
 public class Main {
@@ -29,10 +29,10 @@ public class Main {
 	public static ControlLoading CONTROL_LOADING;
 	
 	public static DisplayWindow DISPLAY_WINDOW;
-	public static DisplayLayerPanel DISPLAY_LAYER;
-	public static DisplayImagePanel DISPLAY_IMAGE;
-	public static DisplayPaintPanel DISPLAY_PAINT;
-	public static DisplayLoadingPanel DISPLAY_LOADING;
+	public static DisplayLayer DISPLAY_LAYER;
+	public static DisplayImage DISPLAY_IMAGE;
+	public static DisplayPaint DISPLAY_PAINT;
+	public static DisplayLoading DISPLAY_LOADING;
 	
 	public static void main(String[] args) {
 		
@@ -70,18 +70,18 @@ public class Main {
 			CONTROL_WINDOW = new ControlWindow(
 					screens[controlIndex].getRectangle());
 			
-			DISPLAY_LAYER = new DisplayLayerPanel();
-			DISPLAY_IMAGE = new DisplayImagePanel();
-			DISPLAY_PAINT = new DisplayPaintPanel();
-			DISPLAY_LOADING = new DisplayLoadingPanel();
+			DISPLAY_LAYER = new DisplayLayer();
+			DISPLAY_IMAGE = new DisplayImage();
+			DISPLAY_PAINT = new DisplayPaint();
+			DISPLAY_LOADING = new DisplayLoading();
 			
 			CONTROL_LAYER = new ControlLayer();
 			CONTROL_IMAGE = new ControlImage();
 			CONTROL_PAINT = new ControlPaint();
 			CONTROL_LOADING = new ControlLoading();
 			
-			CONTROL_WINDOW.setButton(Display.CONTROL, Mode.PAINT, true);
-			CONTROL_WINDOW.setButton(Display.DISPLAY, Mode.LOADING, true);
+			CONTROL_WINDOW.setButton(Window.CONTROL, Mode.PAINT, true);
+			CONTROL_WINDOW.setButton(Window.DISPLAY, Mode.LOADING, true);
 			CONTROL_WINDOW.setMode(Mode.PAINT, Mode.IMAGE);
 			DISPLAY_WINDOW.setMode(Mode.LOADING, Mode.IMAGE);
 			
@@ -90,7 +90,7 @@ public class Main {
 		}
 	}
 	
-	public static ControlPanel getControl(Mode mode) {
+	public static Control getControl(Mode mode) {
 		switch (mode) {
 		case IMAGE:
 			return CONTROL_IMAGE;
@@ -105,7 +105,7 @@ public class Main {
 		}
 	}
 	
-	public static DisplayPanel getDisplay(Mode mode) {
+	public static Display getDisplay(Mode mode) {
 		switch (mode) {
 		case IMAGE:
 			return DISPLAY_IMAGE;

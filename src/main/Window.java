@@ -1,6 +1,6 @@
 package main;
 
-public enum Display {
+public enum Window {
 	CONTROL,
 	DISPLAY
 }

@@ -3,7 +3,7 @@ package control;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import main.Display;
+import main.Window;
 import main.Main;
 import main.Mode;
 
@@ -12,10 +12,10 @@ public class ModeListener implements ActionListener {
 	private static Mode displayMode = Mode.LOADING;
 	private static Mode controlMode = Mode.PAINT;
 	
-	private final Display disp;
+	private final Window disp;
 	private final Mode mode;
 	
-	public ModeListener(Display disp, Mode mode) {
+	public ModeListener(Window disp, Mode mode) {
 		this.disp = disp;
 		this.mode = mode;
 	}

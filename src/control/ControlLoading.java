@@ -16,7 +16,7 @@ import javax.swing.event.ChangeListener;
 import main.Main;
 import main.Settings;
 
-public class ControlLoading extends ControlPanel {
+public class ControlLoading extends Control {
 	
 	private static final long serialVersionUID = 5986059033234358609L;
 	

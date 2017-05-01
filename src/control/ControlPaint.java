@@ -27,7 +27,7 @@ import main.Mode;
 import main.Settings;
 import paint.DrawPanel;
 
-public class ControlPaint extends ControlPanel {
+public class ControlPaint extends Control {
 	
 	private static final long serialVersionUID = -3231530555502467648L;
 	

@@ -18,7 +18,7 @@ import main.Main;
 import main.Mode;
 import main.Settings;
 
-public class ControlImage extends ControlPanel {
+public class ControlImage extends Control {
 
 	private static final long serialVersionUID = 3622994265203390348L;
 	

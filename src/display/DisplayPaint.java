@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 
 import main.Settings;
 
-public class DisplayPaintPanel extends DisplayPanel {
+public class DisplayPaint extends Display {
 	
 	private static final long serialVersionUID = -8389531693546434519L;
 	
@@ -19,7 +19,7 @@ public class DisplayPaintPanel extends DisplayPanel {
 	private Point windowPos;
 	private double scale;
 	
-	public DisplayPaintPanel() {
+	public DisplayPaint() {
 		windowPos = new Point(0, 0);
 		scale = 1;
 		setVisible(true);

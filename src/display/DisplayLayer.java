@@ -9,14 +9,14 @@ import java.util.LinkedList;
 import main.Mode;
 import main.Settings;
 
-public class DisplayLayerPanel extends DisplayPanel {
+public class DisplayLayer extends Display {
 	
 	private static final long serialVersionUID = 3211548259335689270L;
 	
 	private LinkedList<AlphaImage> images;
 	private Scale scaleMode;
 	
-	public DisplayLayerPanel() {
+	public DisplayLayer() {
 		images = new LinkedList<>();
 		scaleMode = Scale.FILL;
 		setVisible(true);

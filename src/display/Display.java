@@ -6,11 +6,11 @@ import javax.swing.JPanel;
 
 import main.Main;
 
-public class DisplayPanel extends JPanel {
+public class Display extends JPanel {
 
 	private static final long serialVersionUID = 3464890244015717841L;
 	
-	public DisplayPanel() {
+	public Display() {
 		
 	}
 	

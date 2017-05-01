@@ -16,7 +16,7 @@ import main.Main;
 import main.Mode;
 import main.Settings;
 
-public class ControlLayer extends ControlPanel {
+public class ControlLayer extends Control {
 	
 	private static final long serialVersionUID = 111613405297226375L;
 	

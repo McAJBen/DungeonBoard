@@ -11,11 +11,11 @@ import javax.swing.JPanel;
 
 import main.Settings;
 
-public abstract class ControlPanel extends JPanel {
+public abstract class Control extends JPanel {
 
 	private static final long serialVersionUID = 7062093943678033069L;
 	
-	public ControlPanel() {
+	public Control() {
 		setLayout(new BorderLayout());
 		setBorder(BorderFactory.createLineBorder(Settings.BACKGROUND, 5));
 	}

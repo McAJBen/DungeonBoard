@@ -15,7 +15,7 @@ import javax.imageio.ImageIO;
 import main.Mode;
 import main.Settings;
 
-public class DisplayLoadingPanel extends DisplayPanel {
+public class DisplayLoading extends Display {
 	
 	private static final long serialVersionUID = -4364176757863161776L;
 	
@@ -34,7 +34,7 @@ public class DisplayLoadingPanel extends DisplayPanel {
 	private short timer;
 	private float fade;
 	
-	public DisplayLoadingPanel() {
+	public DisplayLoading() {
 		cubePositions = new LinkedList<>();
 		paintThread = new Thread();
 		fileNames = new LinkedList<>();
