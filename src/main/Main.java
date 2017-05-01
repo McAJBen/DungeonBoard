@@ -7,30 +7,28 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import control.ControlImage;
-import control.ControlLayer;
 import control.ControlLoading;
 import control.ControlPaint;
+import control.ControlPictures;
 import control.Control;
 import control.ControlWindow;
-import display.DisplayImage;
-import display.DisplayLayer;
 import display.DisplayLoading;
 import display.DisplayPaint;
+import display.DisplayPictures;
 import display.Display;
 import display.DisplayWindow;
 
 public class Main {
 	
 	public static ControlWindow CONTROL_WINDOW;
-	public static ControlLayer CONTROL_LAYER;
-	public static ControlImage CONTROL_IMAGE;
+	public static ControlPictures CONTROL_LAYER;
+	public static ControlPictures CONTROL_IMAGE;
 	public static ControlPaint CONTROL_PAINT;
 	public static ControlLoading CONTROL_LOADING;
 	
 	public static DisplayWindow DISPLAY_WINDOW;
-	public static DisplayLayer DISPLAY_LAYER;
-	public static DisplayImage DISPLAY_IMAGE;
+	public static DisplayPictures DISPLAY_LAYER;
+	public static DisplayPictures DISPLAY_IMAGE;
 	public static DisplayPaint DISPLAY_PAINT;
 	public static DisplayLoading DISPLAY_LOADING;
 	
@@ -70,13 +68,13 @@ public class Main {
 			CONTROL_WINDOW = new ControlWindow(
 					screens[controlIndex].getRectangle());
 			
-			DISPLAY_LAYER = new DisplayLayer();
-			DISPLAY_IMAGE = new DisplayImage();
+			DISPLAY_LAYER = new DisplayPictures(Settings.FOLDERS[Mode.LAYER.ordinal()]);
+			DISPLAY_IMAGE = new DisplayPictures(Settings.FOLDERS[Mode.IMAGE.ordinal()]);
 			DISPLAY_PAINT = new DisplayPaint();
 			DISPLAY_LOADING = new DisplayLoading();
 			
-			CONTROL_LAYER = new ControlLayer();
-			CONTROL_IMAGE = new ControlImage();
+			CONTROL_LAYER = new ControlPictures(Settings.FOLDERS[Mode.LAYER.ordinal()], DISPLAY_LAYER, true);
+			CONTROL_IMAGE = new ControlPictures(Settings.FOLDERS[Mode.IMAGE.ordinal()], DISPLAY_IMAGE, false);
 			CONTROL_PAINT = new ControlPaint();
 			CONTROL_LOADING = new ControlLoading();
 			

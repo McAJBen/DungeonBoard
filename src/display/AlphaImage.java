@@ -1,5 +1,6 @@
 package display;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
@@ -33,6 +34,10 @@ public class AlphaImage {
 	
 	public int getHeight() {
 		return image.getHeight();
+	}
+	
+	public Color getBGColor() {
+		return new Color(image.getRGB(0, 0));
 	}
 	
 	

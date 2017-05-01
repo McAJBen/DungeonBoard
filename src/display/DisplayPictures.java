@@ -6,21 +6,28 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.LinkedList;
 
-import main.Mode;
 import main.Settings;
 
-public class DisplayImage extends Display {
+public class DisplayPictures extends Display {
 
-	private static final long serialVersionUID = 4732317749539981643L;
+	private static final long serialVersionUID = 350995921778402576L;
 	
-	private AlphaImage image;
+	private LinkedList<AlphaImage> images;
 	private Scale scaleMode;
 	private boolean flip;
 	
-	public DisplayImage() {
+	private final File folder;
+	
+	public DisplayPictures(File folder) {
+		this.folder = folder;
+		
+		images = new LinkedList<>();
 		scaleMode = Scale.FILL;
 		flip = false;
+		
 		setVisible(true);
 	}
 	
@@ -28,36 +35,38 @@ public class DisplayImage extends Display {
 	public void paint(Graphics g) {
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
-		g2d.setColor(Color.BLACK);
-		g2d.fillRect(0, 0, Settings.DISPLAY_SIZE.width, Settings.DISPLAY_SIZE.height);
 		
-		if (image != null && image.getImage() != null) {
-			paintImage(g2d, image.getImage());
+		if (images.isEmpty()) {
+			fillBackground(g2d, Color.BLACK);
 		}
+		else {
+			fillBackground(g2d, images.getFirst().getBGColor());
+		}
+		
+		for (AlphaImage image: images) {
+			paintImage(g2d, image);
+		}
+		
 		paintMouse(g2d);
 		g2d.dispose();
 	}
 	
-	public void paintImage(Graphics2D g2d, BufferedImage image) {
+	public void paintImage(Graphics2D g2d, AlphaImage aImage) {
 		
 		switch (scaleMode) {
 		case FILL:
-			drawImage(g2d, image, 0, 0, Settings.DISPLAY_SIZE.width, Settings.DISPLAY_SIZE.height);
+			drawImage(g2d, aImage.getImage(), 0, 0, Settings.DISPLAY_SIZE.width, Settings.DISPLAY_SIZE.height);
 			break;
 		case REAL_SIZE:
-			g2d.setColor(new Color(image.getRGB(0, 0)));
-			g2d.fillRect(0, 0, Settings.DISPLAY_SIZE.width, Settings.DISPLAY_SIZE.height);
-			drawImage(g2d, image,
-					(Settings.DISPLAY_SIZE.width - image.getWidth()) / 2,
-					(Settings.DISPLAY_SIZE.height - image.getHeight()) / 2,
-					image.getWidth(),
-					image.getHeight());
+			drawImage(g2d, aImage.getImage(),
+					(Settings.DISPLAY_SIZE.width - aImage.getWidth()) / 2,
+					(Settings.DISPLAY_SIZE.height - aImage.getHeight()) / 2,
+					aImage.getWidth(),
+					aImage.getHeight());
 			break;
 		case UP_SCALE:
-			g2d.setColor(new Color(image.getRGB(0, 0)));
-			g2d.fillRect(0, 0, Settings.DISPLAY_SIZE.width, Settings.DISPLAY_SIZE.height);
 			double screenRatio = Settings.DISPLAY_SIZE.getWidth() / Settings.DISPLAY_SIZE.getHeight();
-			double imageRatio = (double)image.getWidth() / image.getHeight();
+			double imageRatio = (double)aImage.getWidth() / aImage.getHeight();
 			Dimension imageScale;
 			if (imageRatio > screenRatio) {
 				// width > height
@@ -67,13 +76,18 @@ public class DisplayImage extends Display {
 				// width < height
 				imageScale = new Dimension((int) (Settings.DISPLAY_SIZE.height * imageRatio), Settings.DISPLAY_SIZE.height);
 			}
-			drawImage(g2d, image,
+			drawImage(g2d, aImage.getImage(),
 					(Settings.DISPLAY_SIZE.width - imageScale.width) / 2,
 					(Settings.DISPLAY_SIZE.height - imageScale.height) / 2,
 					imageScale.width,
 					imageScale.height);
 			break;
 		}
+	}
+	
+	private void fillBackground(Graphics2D g2d, Color c) {
+		g2d.setColor(c);
+		g2d.fillRect(0, 0, Settings.DISPLAY_SIZE.width, Settings.DISPLAY_SIZE.height);
 	}
 	
 	private void drawImage(Graphics2D g2d, BufferedImage img, int x, int y, int w, int h) {
@@ -90,13 +104,30 @@ public class DisplayImage extends Display {
 		}
 	}
 	
-	public void setImage(String name) {
-		image = new AlphaImage(Settings.FOLDERS[Mode.IMAGE.ordinal()], name);
+	public void addImage(String name) {
+		images.add(new AlphaImage(folder, name));
+		repaint();
+	}
+	
+	public void removeImage(String name) {
+		for (int i = 0; i < images.size();) {
+			if (images.get(i).getName().equals(name)) {
+				images.remove(i);
+			}
+			else {
+				i++;
+			}
+		}
 		repaint();
 	}
 
 	public void setScaleMode(Object selectedItem) {
 		scaleMode = (Scale) selectedItem;
+		repaint();
+	}
+	
+	public void removeAllImages() {
+		images.clear();
 		repaint();
 	}
 

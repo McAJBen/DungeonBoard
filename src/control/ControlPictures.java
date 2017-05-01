@@ -1,28 +1,35 @@
 package control;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import display.DisplayPictures;
 import display.Scale;
-import main.Main;
-import main.Mode;
 import main.Settings;
 
-public class ControlLayer extends Control {
-	
-	private static final long serialVersionUID = 111613405297226375L;
+public class ControlPictures extends Control {
+
+	private static final long serialVersionUID = -1679600820663944136L;
 	
 	private PicturePanel pp;
 	
-	public ControlLayer() {
+	private final File folder;
+	private final DisplayPictures display;
+	
+	public ControlPictures(File folder, DisplayPictures display, boolean allowList) {
+		this.folder = folder;
+		this.display = display;
+		
 		JPanel northPanel = getNorthPanel();
 		
 		JComboBox<Scale> scaleComboBox = new JComboBox<>(Scale.values());
@@ -30,10 +37,19 @@ public class ControlLayer extends Control {
 		scaleComboBox.setMaximumSize(new Dimension(100, 5000));
 		scaleComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Main.DISPLAY_LAYER.setScaleMode(scaleComboBox.getSelectedItem());
+				display.setScaleMode(scaleComboBox.getSelectedItem());
 			}
 		});
 		northPanel.add(scaleComboBox);
+		
+		JButton flipButton = Settings.createButton(Settings.ICON_FLIP);
+		flipButton.setBackground(Settings.CONTROL_BACKGROUND);
+		flipButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				display.flip();
+			}
+		});
+		northPanel.add(flipButton);
 		
 		pp = new PicturePanel() {
 			
@@ -41,12 +57,18 @@ public class ControlLayer extends Control {
 			
 			@Override
 			protected void select(String name) {
-				Main.DISPLAY_LAYER.addImage(name);
+				if (!allowList) {
+					display.removeAllImages();
+					for (Component c: getComponents()) {
+						c.setBackground(Settings.DISABLE_COLOR);
+					}
+				}
+				display.addImage(name);
 			}
 
 			@Override
 			protected void deselect(String name) {
-				Main.DISPLAY_LAYER.removeImage(name);
+				display.removeImage(name);
 			}
 		};
 		
@@ -64,7 +86,6 @@ public class ControlLayer extends Control {
 	
 	@Override
 	protected void load() {
-		File folder = Settings.FOLDERS[Mode.LAYER.ordinal()];
 		if (folder.exists()) {
 			pp.clearImages();
 			for (File f: folder.listFiles()) {
@@ -76,7 +97,7 @@ public class ControlLayer extends Control {
 			}
 			repaint();
 			revalidate();
-			Main.DISPLAY_LAYER.removeAllImages();
+			display.removeAllImages();
 		}
 	}
 }
