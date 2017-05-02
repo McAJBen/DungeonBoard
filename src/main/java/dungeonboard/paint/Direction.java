@@ -1,4 +1,4 @@
-package paint;
+package dungeonboard.paint;
 
 public enum Direction {
 	NONE,

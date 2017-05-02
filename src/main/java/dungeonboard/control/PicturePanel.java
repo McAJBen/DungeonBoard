@@ -1,4 +1,4 @@
-package control;
+package dungeonboard.control;
 
 import java.awt.Component;
 import java.awt.GridLayout;
@@ -16,7 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import main.Settings;
+import dungeonboard.Settings;
 
 public abstract class PicturePanel extends JPanel {
 	

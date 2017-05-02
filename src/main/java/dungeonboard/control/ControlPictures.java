@@ -1,4 +1,4 @@
-package control;
+package dungeonboard.control;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -13,9 +13,9 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import display.DisplayPictures;
-import display.Scale;
-import main.Settings;
+import dungeonboard.display.DisplayPictures;
+import dungeonboard.display.Scale;
+import dungeonboard.Settings;
 
 public class ControlPictures extends Control {
 

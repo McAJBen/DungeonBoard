@@ -1,4 +1,4 @@
-package paint;
+package dungeonboard.paint;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -21,8 +21,8 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
-import main.Main;
-import main.Settings;
+import dungeonboard.Main;
+import dungeonboard.Settings;
 
 public class DrawPanel extends JComponent {
 	

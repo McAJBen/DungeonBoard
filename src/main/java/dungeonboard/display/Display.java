@@ -1,10 +1,10 @@
-package display;
+package dungeonboard.display;
 
 import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
-import main.Main;
+import dungeonboard.Main;
 
 public class Display extends JPanel {
 

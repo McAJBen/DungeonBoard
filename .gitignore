@@ -14,3 +14,14 @@ hs_err_pid*
 /.settings/
 .classpath
 .project
+
+# gradle
+.gradle/
+build/
+out/
+
+# intellij
+.idea/
+*.iml
+*.ipr
+*.iws

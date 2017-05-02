@@ -1,0 +1,16 @@
+apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile "org.codehaus.groovy:groovy-all:2.3.6"
+
+	testCompile "junit:junit:4.+"
+	testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
+	testCompile "cglib:cglib-nodep:3.1"
+}

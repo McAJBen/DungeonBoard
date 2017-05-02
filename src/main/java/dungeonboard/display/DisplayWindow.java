@@ -1,4 +1,4 @@
-package display;
+package dungeonboard.display;
 
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -10,9 +10,9 @@ import java.awt.event.MouseMotionAdapter;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
-import main.Main;
-import main.Mode;
-import main.Settings;
+import dungeonboard.Main;
+import dungeonboard.Mode;
+import dungeonboard.Settings;
 
 public class DisplayWindow extends JFrame {
 

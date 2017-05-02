@@ -1,4 +1,4 @@
-package main;
+package dungeonboard;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -8,16 +8,16 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import control.ControlLoading;
-import control.ControlPaint;
-import control.ControlPictures;
-import control.Control;
-import control.ControlWindow;
-import display.DisplayLoading;
-import display.DisplayPaint;
-import display.DisplayPictures;
-import display.Display;
-import display.DisplayWindow;
+import dungeonboard.control.ControlLoading;
+import dungeonboard.control.ControlPaint;
+import dungeonboard.control.ControlPictures;
+import dungeonboard.control.Control;
+import dungeonboard.control.ControlWindow;
+import dungeonboard.display.DisplayLoading;
+import dungeonboard.display.DisplayPaint;
+import dungeonboard.display.DisplayPictures;
+import dungeonboard.display.Display;
+import dungeonboard.display.DisplayWindow;
 
 public class Main {
 	
