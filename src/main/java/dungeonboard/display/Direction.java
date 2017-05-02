@@ -1,4 +1,4 @@
-package display;
+package dungeonboard.display;
 
 public enum Direction {
 	UP,

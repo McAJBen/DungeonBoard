@@ -1,4 +1,4 @@
-package display;
+package dungeonboard.display;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -8,7 +8,7 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
-import main.Settings;
+import dungeonboard.Settings;
 
 public class DisplayPaint extends Display {
 	

@@ -1,4 +1,4 @@
-package display;
+package dungeonboard.display;
 
 public enum Scale {
 	FILL,

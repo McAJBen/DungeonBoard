@@ -1,4 +1,4 @@
-package display;
+package dungeonboard.display;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;

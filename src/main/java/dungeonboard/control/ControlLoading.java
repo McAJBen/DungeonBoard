@@ -1,4 +1,4 @@
-package control;
+package dungeonboard.control;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -13,8 +13,8 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import main.Main;
-import main.Settings;
+import dungeonboard.Main;
+import dungeonboard.Settings;
 
 public class ControlLoading extends Control {
 	

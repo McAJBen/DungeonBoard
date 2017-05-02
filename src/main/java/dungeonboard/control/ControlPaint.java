@@ -1,4 +1,4 @@
-package control;
+package dungeonboard.control;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -22,10 +22,10 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import main.Main;
-import main.Mode;
-import main.Settings;
-import paint.DrawPanel;
+import dungeonboard.Main;
+import dungeonboard.Mode;
+import dungeonboard.Settings;
+import dungeonboard.paint.DrawPanel;
 
 public class ControlPaint extends Control {
 	

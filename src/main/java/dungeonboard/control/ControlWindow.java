@@ -1,4 +1,4 @@
-package control;
+package dungeonboard.control;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -11,10 +11,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import main.Window;
-import main.Main;
-import main.Mode;
-import main.Settings;
+import dungeonboard.Window;
+import dungeonboard.Main;
+import dungeonboard.Mode;
+import dungeonboard.Settings;
 
 public class ControlWindow extends JFrame {
 	
