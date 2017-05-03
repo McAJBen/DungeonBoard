@@ -11,15 +11,27 @@ import javax.swing.JPanel;
 
 import main.Settings;
 
+/**
+ * a {@code JPanel} for all Controls
+ * @author McAJBen <McAJBen@gmail.com>
+ * @since 1.0
+ */
 public abstract class Control extends JPanel {
 
 	private static final long serialVersionUID = 7062093943678033069L;
 	
+	/**
+	 * creates an instance of the {@code Control} class
+	 */
 	public Control() {
 		setLayout(new BorderLayout());
 		setBorder(BorderFactory.createLineBorder(Settings.BACKGROUND, 5));
 	}
 	
+	/**
+	 * creates a top panel with a refresh button and the correct layout
+	 * @return a {@code JPanel} with a refresh button
+	 */
 	protected JPanel getNorthPanel() {
 		JPanel northPanel = new JPanel();
 		northPanel.setBackground(Settings.CONTROL_BACKGROUND);
@@ -38,5 +50,8 @@ public abstract class Control extends JPanel {
 		return northPanel;
 	}
 	
+	/**
+	 * loads all of the image from the file
+	 */
 	protected abstract void load();
 }

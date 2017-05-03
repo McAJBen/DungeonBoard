@@ -16,10 +16,18 @@ import javax.swing.event.ChangeListener;
 import main.Main;
 import main.Settings;
 
+/**
+ * a {@code Control} for the Loading Utility
+ * @author McAJBen <McAJBen@gmail.com>
+ * @since 1.0
+ */
 public class ControlLoading extends Control {
 	
 	private static final long serialVersionUID = 5986059033234358609L;
 	
+	/**
+	 * creates an instance of {@code ControlLoading}
+	 */
 	public ControlLoading() {
 		JPanel northPanel = getNorthPanel();
 		

@@ -16,21 +16,37 @@ import main.Main;
 import main.Mode;
 import main.Settings;
 
+/**
+ * a {@code JFrame} for controlling the whole program
+ * @author McAJBen <McAJBen@gmail.com>
+ * @since 1.0
+ */
 public class ControlWindow extends JFrame {
 	
 	private static final long serialVersionUID = -2980231396321368085L;
 	
+	/**
+	 * an array of the buttons to change control mode
+	 */
 	private JButton[] controlButtons;
+	
+	/**
+	 * an array of the buttons to change display mode
+	 */
 	private JButton[] displayButtons;
 	
-	public ControlWindow(Rectangle control) {
+	/**
+	 * creates an instance of the {@code ControlWindow} class
+	 * @param r the position and dimension of the screen
+	 */
+	public ControlWindow(Rectangle r) {
 		
 		setIconImage(Settings.ICON.getImage());
 		setTitle(Settings.NAME);
 		setSize(Settings.CONTROL_SIZE);
 		setLocation(
-				(control.width - Settings.CONTROL_SIZE.width) / 2 + control.x,
-				(control.height - Settings.CONTROL_SIZE.height) / 2 + control.y);
+				(r.width - Settings.CONTROL_SIZE.width) / 2 + r.x,
+				(r.height - Settings.CONTROL_SIZE.height) / 2 + r.y);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		controlButtons = new JButton[Mode.values().length];
@@ -52,6 +68,12 @@ public class ControlWindow extends JFrame {
 		add(northPanel, BorderLayout.NORTH);
 	}
 	
+	/**
+	 * combines buttons into a menu with a header. This is a mock radio button group
+	 * @param title the title for the header
+	 * @param buttons the buttons to place inside the group
+	 * @return a {@code JPanel} which is formatted for a mock radio button group
+	 */
 	private JPanel createButtonGroup(String title, JButton[] buttons) {
 		JPanel panel = new JPanel();
 		panel.setBackground(Settings.CONTROL_BACKGROUND);
@@ -72,6 +94,11 @@ public class ControlWindow extends JFrame {
 		return panel;
 	}
 	
+	/**
+	 * changes the mode of control being displayed
+	 * @param newMode the new mode to display
+	 * @param oldMode the old mode displayed before
+	 */
 	public void setMode(Mode newMode, Mode oldMode) {
 		remove(Main.getControl(oldMode));
 		add(Main.getControl(newMode), BorderLayout.CENTER);
@@ -79,6 +106,12 @@ public class ControlWindow extends JFrame {
 		repaint();
 	}
 	
+	/**
+	 * changes the background of a button
+	 * @param display whether it is a display or a control button
+	 * @param mode the button mode
+	 * @param value true for active, false for inactive
+	 */
 	public void setButton(Window display, Mode mode, boolean value) {
 		switch (display) {
 		case CONTROL:

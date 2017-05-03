@@ -14,14 +14,28 @@ import main.Main;
 import main.Mode;
 import main.Settings;
 
+/**
+ * {@code JFrame} for displaying players screen
+ * @author McAJBen <McAJBen@gmail.com>
+ * @since 1.0
+ */
 public class DisplayWindow extends JFrame {
 
 	private static final long serialVersionUID = -251787008359029888L;
 	
+	/**
+	 * the offsets used to display the cursor hand
+	 */
 	private static final int[] HANDS_OFFSET = {-5, -100, -45, 0};
 	
+	/**
+	 * the position a cursor is placed when not on screen
+	 */
 	private static final Point NULL_POS = new Point(-100, -100);
 	
+	/**
+	 * the images for cursor hands
+	 */
 	private static final ImageIcon HANDS[] = {
 			Settings.load("hand0.png"),
 			Settings.load("hand1.png"),
@@ -29,10 +43,21 @@ public class DisplayWindow extends JFrame {
 			Settings.load("hand3.png")
 	};
 	
+	/**
+	 * the position that the mouse is on the screen<br>
+	 * used to place the hand cursor
+	 */
 	private Point mousePos;
 	
+	/**
+	 * the direction that the hand cursor is facing
+	 */
 	private Direction handDirection;
 	
+	/**
+	 * creates an instance of {@code DisplayWindow}
+	 * @param r the position and dimensions of the {@code JFrame}
+	 */
 	public DisplayWindow(Rectangle r) {
 		super();
 		setTitle("Display");
@@ -72,6 +97,10 @@ public class DisplayWindow extends JFrame {
 		});
 	}
 	
+	/**
+	 * paints the hand cursor to the screen
+	 * @param g2d the graphics to paint to
+	 */
 	public void paintMouse(Graphics2D g2d) {
 		int i = handDirection.ordinal();
 		g2d.drawImage(
@@ -81,6 +110,11 @@ public class DisplayWindow extends JFrame {
 				null);
 	}
 	
+	/**
+	 * changes the panel being displayed
+	 * @param newMode the new mode to display
+	 * @param oldMode the old mode displayed before
+	 */
 	public void setMode(Mode newMode, Mode oldMode) {
 		remove(Main.getDisplay(oldMode));
 		Main.getDisplay(oldMode).setMainDisplay(false);
@@ -90,6 +124,10 @@ public class DisplayWindow extends JFrame {
 		repaint();
 	}
 	
+	/**
+	 * changes the position of the mouse
+	 * @param p the new position of the mouse
+	 */
 	private void setMouse(Point p) {
 		mousePos = p;
 		repaint();

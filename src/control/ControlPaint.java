@@ -27,18 +27,43 @@ import main.Mode;
 import main.Settings;
 import paint.DrawPanel;
 
+/**
+ * a {@code Control} for the Paint Utility
+ * @author McAJBen <McAJBen@gmail.com>
+ * @since 1.0
+ */
 public class ControlPaint extends Control {
 	
 	private static final long serialVersionUID = -3231530555502467648L;
 	
+	/**
+	 * the main panel the user draws onto to create a mask
+	 */
 	private DrawPanel drawPanel;
 	
+	/**
+	 * the drop down menu for selecting a file
+	 */
 	private JComboBox<String> fileBox;
+	
+	/**
+	 * the text field for changing zoom
+	 */
 	private JTextField zoomText;
+	
+	/**
+	 * the slider for changing zoom
+	 */
 	private JSlider zoomSlider;
 	
+	/**
+	 * the maximum zoom this image is allowed
+	 */
 	private double maxZoom;
 	
+	/**
+	 * creates an instance of the {@code ControlPaint} class
+	 */
 	public ControlPaint() {
 		JPanel northPanel = getNorthPanel();
 		
@@ -159,7 +184,12 @@ public class ControlPaint extends Control {
 		setVisible(true);
 	}
 
-	protected void setFile(String name) {
+	/**
+	 * sets up the selected file for painting<br>
+	 * loads it into control and the display
+	 * @param name the file name to load
+	 */
+	private void setFile(String name) {
 		
 		File file = new File(Settings.FOLDERS[Mode.PAINT.ordinal()].getAbsolutePath() +  "/" + name);
 		
@@ -206,13 +236,19 @@ public class ControlPaint extends Control {
 		}
 	}
 	
+	/**
+	 * changes the maximum zoom so the image cannot be smaller than the screen
+	 */
 	private void setZoomMax() {
 		double w = Settings.PAINT_IMAGE.getWidth() / Settings.DISPLAY_SIZE.getWidth();
 		double h = Settings.PAINT_IMAGE.getHeight() / Settings.DISPLAY_SIZE.getHeight();
-		double maxZoom = h > w ? h : w;
+		maxZoom = h > w ? h : w;
 		zoomSlider.setMaximum((int) (maxZoom * 100));
 	}
 	
+	/**
+	 * opens the settings dialog
+	 */
 	public void showSettings() {
 		JDialog settings = new JDialog(Main.CONTROL_WINDOW, "Settings", true);
 		settings.setLocationRelativeTo(Main.CONTROL_WINDOW);

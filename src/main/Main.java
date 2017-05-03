@@ -19,18 +19,61 @@ import display.DisplayPictures;
 import display.Display;
 import display.DisplayWindow;
 
+/**
+ * contains most of the starting code for Dungeon Board
+ * @author McAJBen <McAJBen@gmail.com>
+ * @since 1.0
+ */
 public class Main {
 	
+	/**
+	 * {@code JFrame} for control window
+	 */
 	public static ControlWindow CONTROL_WINDOW;
+	
+	/**
+	 * {@code JPanel} for controlling Layer Utility
+	 */
 	public static ControlPictures CONTROL_LAYER;
+	
+	/**
+	 * {@code JPanel} for controlling Image Utility
+	 */
 	public static ControlPictures CONTROL_IMAGE;
+	
+	/**
+	 * {@code JPanel} for controlling Paint Utility
+	 */
 	public static ControlPaint CONTROL_PAINT;
+	
+	/**
+	 * {@code JPanel} for controlling Loading Utility
+	 */
 	public static ControlLoading CONTROL_LOADING;
 	
+	/**
+	 * {@code JFrame} for display window
+	 */
 	public static DisplayWindow DISPLAY_WINDOW;
+	
+	/**
+	 * {@code JPanel} for displaying Layer Utility
+	 */
 	public static DisplayPictures DISPLAY_LAYER;
+	
+	/**
+	 * {@code JPanel} for displaying Image Utility
+	 */
 	public static DisplayPictures DISPLAY_IMAGE;
+	
+	/**
+	 * {@code JPanel} for displaying Paint Utility
+	 */
 	public static DisplayPaint DISPLAY_PAINT;
+	
+	/**
+	 * {@code JPanel} for displaying Loading Utility
+	 */
 	public static DisplayLoading DISPLAY_LOADING;
 	
 	public static void main(String[] args) {
@@ -96,6 +139,10 @@ public class Main {
 		}
 	}
 	
+	/**
+	 * @param mode The {@code Mode} of the {@code JPanel} that will be returned
+	 * @return The {@code JPanel} which contains the controls for the given {@code Mode}
+	 */
 	public static Control getControl(Mode mode) {
 		switch (mode) {
 		case IMAGE:
@@ -111,6 +158,10 @@ public class Main {
 		}
 	}
 	
+	/**
+	 * @param mode The {@code Mode} of the {@code JPanel} that will be returned
+	 * @return The {@code JPanel} which contains the display for the given {@code Mode}
+	 */
 	public static Display getDisplay(Mode mode) {
 		switch (mode) {
 		case IMAGE:
@@ -126,9 +177,13 @@ public class Main {
 		}
 	}
 	
+	/**
+	 * 
+	 * @return an array of all the {@code Screens} usable by the system
+	 * @throws HeadlessException if the environment does not support a display
+	 */
 	private static Screen[] getScreens() throws HeadlessException {
-		GraphicsDevice[] graphicsDevice = 
-				GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+		GraphicsDevice[] graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 		Screen[] screens = new Screen[graphicsDevice.length];
 		for (int i = 0; i < graphicsDevice.length; i++) {
 			screens[i] = new Screen(graphicsDevice[i]);

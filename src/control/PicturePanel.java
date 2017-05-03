@@ -18,15 +18,27 @@ import javax.swing.SwingConstants;
 
 import main.Settings;
 
+/**
+ * a scroll menu to display images on as buttons
+ * @author McAJBen <McAJBen@gmail.com>
+ * @since 1.0
+ */
 public abstract class PicturePanel extends JPanel {
 	
 	private static final long serialVersionUID = 2972394170217781329L;
 	
+	/**
+	 * creates an instance of the {@code Picture Panel}
+	 */
 	public PicturePanel() {
 		setLayout(new GridLayout(0, 6));
 		setBorder(BorderFactory.createEmptyBorder());
 	}
 	
+	/**
+	 * adds a button to the panel by loading an image from file
+	 * @param file the file of an image to add
+	 */
 	public void addButton(File file) {
 		try {
 			JButton button = new JButton(
@@ -58,6 +70,9 @@ public abstract class PicturePanel extends JPanel {
 		}
 	}
 	
+	/**
+	 * removes all images
+	 */
 	public void clearImages() {
 		for (Component c: getComponents()) {
 			if (c.getClass().equals(JButton.class)) {
@@ -66,7 +81,15 @@ public abstract class PicturePanel extends JPanel {
 		}
 	}
 	
+	/**
+	 * called when an image is selected
+	 * @param name the name of the image
+	 */
 	protected abstract void select(String name);
 	
+	/**
+	 * called when an image is deselected
+	 * @param name the name of the image
+	 */
 	protected abstract void deselect(String name);
 }

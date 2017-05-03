@@ -17,15 +17,38 @@ import display.DisplayPictures;
 import display.Scale;
 import main.Settings;
 
+/**
+ * a {@code Control} for the Layer and Image Utility
+ * @author McAJBen <McAJBen@gmail.com>
+ * @since 2.0
+ */
 public class ControlPictures extends Control {
 
 	private static final long serialVersionUID = -1679600820663944136L;
 	
+	/**
+	 * the scroll menu of images inside the folder
+	 */
 	private PicturePanel pp;
 	
+	/**
+	 * the folder which images are selected from
+	 */
 	private final File folder;
+	
+	/**
+	 * the display to post images to
+	 */
 	private final DisplayPictures display;
 	
+	/**
+	 * creates an instance of the {@code ControlPaint} class
+	 * @param folder the folder that images are loaded from
+	 * @param display the display to post images to
+	 * @param allowList if more than 1 image should be allowed<br>
+	 * - true will be for Layer Utility<br>
+	 * - false will be for Image Utility
+	 */
 	public ControlPictures(File folder, DisplayPictures display, boolean allowList) {
 		this.folder = folder;
 		this.display = display;
