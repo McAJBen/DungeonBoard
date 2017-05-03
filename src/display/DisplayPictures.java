@@ -153,7 +153,9 @@ public class DisplayPictures extends Display {
 	 * @param name the name of the file to load an image from
 	 */
 	public void addImage(String name) {
-		images.add(new AlphaImage(folder, name));
+		AlphaImage ai = new AlphaImage(folder, name);
+		ai.rememberImage();
+		images.add(ai);
 		repaint();
 	}
 	
@@ -196,5 +198,19 @@ public class DisplayPictures extends Display {
 	public void flip() {
 		flip = !flip;
 		repaint();
+	}
+	
+	@Override
+	public synchronized void setMainDisplay(boolean b) {
+		if (b) {
+			for (AlphaImage ai: images) {
+				ai.rememberImage();
+			}
+		}
+		else {
+			for (AlphaImage ai: images) {
+				ai.forgetImage();
+			}
+		}
 	}
 }

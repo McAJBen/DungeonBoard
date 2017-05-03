@@ -3,7 +3,10 @@ package display;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 
 /**
  * a container for name and an image
@@ -23,18 +26,18 @@ public class AlphaImage {
 	private String name;
 	
 	/**
+	 * the file used to load the image
+	 */
+	private File file;
+	
+	/**
 	 * creates an instance of {@code AlphaImage}
 	 * @param folder the folder that contains the file named n
 	 * @param n the name of the specific file
 	 */
 	public AlphaImage(File folder, String n) {
 		name = n;
-		String file = folder.getAbsolutePath() + "/" + name;
-		try {
-			image = ImageIO.read(new File(file));
-		} catch (Exception e) {
-			image = null;
-		}
+		file = new File(folder.getAbsolutePath() + "/" + name);
 	}
 	
 	/**
@@ -75,5 +78,24 @@ public class AlphaImage {
 	 */
 	public Color getBGColor() {
 		return new Color(image.getRGB(0, 0));
+	}
+
+	/**
+	 * removes the image from memory to free up space
+	 */
+	public void forgetImage() {
+		image = null;
+	}
+
+	/**
+	 * reloads the image from file
+	 */
+	public void rememberImage() {
+		try {
+			image = ImageIO.read(file);
+		} catch (IllegalArgumentException | IOException e) {
+			image = null;
+			JOptionPane.showMessageDialog(null, "Cannot load Image \"" + name + "\"\n" + e.getMessage());
+		}
 	}
 }

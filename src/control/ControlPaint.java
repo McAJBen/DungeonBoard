@@ -225,7 +225,7 @@ public class ControlPaint extends Control {
 						drawPanel.resetImage();
 						Main.DISPLAY_PAINT.resetImage();
 						Settings.PAINT_IMAGE = null;
-						JOptionPane.showMessageDialog(drawPanel, "Cannot load Image, file is too large");
+						JOptionPane.showMessageDialog(drawPanel, "Cannot load Image, file is probably too large\n" + error.getMessage());
 					}
 					Main.DISPLAY_PAINT.repaint();
 					drawPanel.repaint();
