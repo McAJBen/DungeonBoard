@@ -18,7 +18,7 @@ public class Settings {
 	/**
 	 * full name of the program
 	 */
-	public static final String NAME = "DungeonBoard";
+	public static final String NAME = "Dungeon Board";
 	
 	/**
 	 * The Dungeon Board directory that contains all images
