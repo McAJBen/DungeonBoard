@@ -77,7 +77,12 @@ public class AlphaImage {
 	 * @return the color of the top left corner of the image
 	 */
 	public Color getBGColor() {
-		return new Color(image.getRGB(0, 0));
+		if (image != null) {
+			return new Color(image.getRGB(0, 0));
+		}
+		else {
+			return Color.BLACK;
+		}
 	}
 
 	/**
