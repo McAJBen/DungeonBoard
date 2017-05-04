@@ -31,7 +31,7 @@ public abstract class PicturePanel extends JPanel {
 	 * creates an instance of the {@code Picture Panel}
 	 */
 	public PicturePanel() {
-		setLayout(new GridLayout(0, 6));
+		setLayout(new GridLayout(0, 4));
 		setBorder(BorderFactory.createEmptyBorder());
 	}
 	
@@ -73,7 +73,7 @@ public abstract class PicturePanel extends JPanel {
 	/**
 	 * removes all images
 	 */
-	public void clearImages() {
+	public void clearButtons() {
 		for (Component c: getComponents()) {
 			if (c.getClass().equals(JButton.class)) {
 				remove(c);

@@ -110,7 +110,7 @@ public class ControlPictures extends Control {
 	@Override
 	protected void load() {
 		if (folder.exists()) {
-			pp.clearImages();
+			pp.clearButtons();
 			for (File f: folder.listFiles()) {
 				String name = f.getName();
 				String suffix = name.substring(name.lastIndexOf('.') + 1);
