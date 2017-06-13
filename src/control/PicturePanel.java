@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
@@ -38,12 +39,13 @@ public abstract class PicturePanel extends JPanel {
 	/**
 	 * adds a button to the panel by loading an image from file
 	 * @param file the file of an image to add
+	 * @param w the position of the button
 	 */
-	public void addButton(File file) {
+	public void addButton(File file, int w) {
 		try {
 			JButton button = new JButton(
 					file.getName(),
-					new ImageIcon(ImageIO.read(file).getScaledInstance(100, 100, BufferedImage.SCALE_SMOOTH)));
+					new ImageIcon(ImageIO.read(file).getScaledInstance(100, 60, BufferedImage.SCALE_SMOOTH)));
 			button.setMargin(new Insets(0, 0, 0, 0));
 			button.setFocusPainted(false);
 			button.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -64,8 +66,19 @@ public abstract class PicturePanel extends JPanel {
 					}
 				}
 			});
-			add(button);
+			while (true) {
+				try {
+					add(button, w);
+					break;
+				}
+				catch (IllegalArgumentException e) {
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException e2) {}
+				}
+			}
 		} catch (IOException e) {
+			JOptionPane.showMessageDialog(this, "Cannot load Image, file is probably too large\n" + e.getMessage());
 			e.printStackTrace();
 		}
 	}

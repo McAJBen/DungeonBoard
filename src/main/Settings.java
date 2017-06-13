@@ -26,6 +26,11 @@ public class Settings {
 	public static final File FOLDER = new File(new File(System.getProperty("user.dir")).getAbsolutePath() + "/" + NAME);
 	
 	/**
+	 * The folder currently in use on the paint layer
+	 */
+	public static File PAINT_FOLDER;
+	
+	/**
 	 * an array of all the sub folders in the Dungeon Board folder by their {@code Mode}
 	 */
 	public static final File[] FOLDERS = {
@@ -153,9 +158,21 @@ public class Settings {
 	public static final boolean IS_WINDOWS = System.getProperty("os.name").startsWith("Windows");
 	
 	/**
+	 * the method of selecting a background for the paint panel
+	 * true allows the user to select a folder
+	 * false allows the user to select an image
+	 */
+	public static boolean PAINT_FOLDER_MODE;
+	
+	/**
 	 * the image used by {@code DisplayPaint} and {@code ControlPaint}
 	 */
 	public static BufferedImage PAINT_IMAGE;
+	
+	/**
+	 * The active layers in {@code DisplayPaint}
+	 */
+	public static boolean[] PAINT_IMAGES;
 
 	/**
 	 * the size of the display that players see
@@ -168,6 +185,11 @@ public class Settings {
 	 * - lower number means the shadows will be more fine, but will use more memory and CPU time
 	 */
 	public static int PIXELS_PER_MASK = 3;
+	
+	/**
+	 * number of files in the current PAINT_FOLDER
+	 */
+	public static int PAINT_FOLDER_SIZE;
 	
 	/**
 	 * initializes the {@code FOLDERS} and creates them if they are not already there

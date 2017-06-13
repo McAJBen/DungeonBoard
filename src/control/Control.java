@@ -33,10 +33,7 @@ public abstract class Control extends JPanel {
 	 * @return a {@code JPanel} with a refresh button
 	 */
 	protected JPanel getNorthPanel() {
-		JPanel northPanel = new JPanel();
-		northPanel.setBackground(Settings.CONTROL_BACKGROUND);
-		northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.X_AXIS));
-		
+		JPanel northPanel = getEmptyNorthPanel();
 		JButton refreshButton = Settings.createButton(Settings.ICON_REFRESH);
 		refreshButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -47,6 +44,18 @@ public abstract class Control extends JPanel {
 		
 		northPanel.repaint();
 		
+		return northPanel;
+	}
+	
+	/**
+	 * creates a top panel without anything in it
+	 * @return a {@code JPanel}
+	 */
+	protected JPanel getEmptyNorthPanel() {
+		JPanel northPanel = new JPanel();
+		northPanel.setBackground(Settings.CONTROL_BACKGROUND);
+		northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.X_AXIS));
+		northPanel.repaint();
 		return northPanel;
 	}
 	

@@ -2,8 +2,10 @@ package control;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -11,6 +13,7 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -62,10 +65,22 @@ public class ControlPaint extends Control {
 	private double maxZoom;
 	
 	/**
+	 * the {@code JPanel} holding options for which file in a folder to display
+	 */
+	private JPanel folderControlPanel;
+	
+	/**
 	 * creates an instance of the {@code ControlPaint} class
 	 */
 	public ControlPaint() {
-		JPanel northPanel = getNorthPanel();
+		
+		JPanel northPanel = new JPanel();
+		northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
+		
+		folderControlPanel = getEmptyNorthPanel();
+		folderControlPanel.setVisible(Settings.PAINT_FOLDER_MODE);
+		
+		JPanel innerNorthPanel = getNorthPanel();
 		
 		maxZoom = 10.0;
 		
@@ -79,7 +94,7 @@ public class ControlPaint extends Control {
 				showSettings();
 			}
 		});
-		northPanel.add(settingsButton);
+		innerNorthPanel.add(settingsButton);
 		
 		fileBox = new JComboBox<>();
 		fileBox.setBackground(Settings.CONTROL_BACKGROUND);
@@ -88,11 +103,16 @@ public class ControlPaint extends Control {
 		fileBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!fileBox.getSelectedItem().equals("")) {
-					setFile(fileBox.getSelectedItem().toString());
+					if (Settings.PAINT_FOLDER_MODE) {
+						setFolder(fileBox.getSelectedItem().toString());
+					}
+					else {
+						setFile(fileBox.getSelectedItem().toString());
+					}
 				}
 			}
 		});
-		northPanel.add(fileBox);
+		innerNorthPanel.add(fileBox);
 		
 		JButton drawStyleButton = Settings.createButton(Settings.DRAW_STYLE[0]);
 		drawStyleButton.addActionListener(new ActionListener() {
@@ -101,7 +121,7 @@ public class ControlPaint extends Control {
 				drawStyleButton.setIcon(Settings.DRAW_STYLE[drawPanel.getStyle()]);
 			}
 		});
-		northPanel.add(drawStyleButton);
+		innerNorthPanel.add(drawStyleButton);
 		
 		JButton shape = Settings.createButton(Settings.PEN_TYPE[0]);
 		shape.addActionListener(new ActionListener() {
@@ -110,7 +130,7 @@ public class ControlPaint extends Control {
 				shape.setIcon(Settings.PEN_TYPE[drawPanel.getPen()]);
 			}
 		});
-		northPanel.add(shape);
+		innerNorthPanel.add(shape);
 		
 		JButton drawModeButton = Settings.createButton(Settings.DRAW_MODE[0]);
 		drawModeButton.addActionListener(new ActionListener() {
@@ -119,7 +139,7 @@ public class ControlPaint extends Control {
 				drawModeButton.setIcon(Settings.DRAW_MODE[drawPanel.getDrawMode()]);
 			}
 		});
-		northPanel.add(drawModeButton);
+		innerNorthPanel.add(drawModeButton);
 		
 		JSlider slider = new JSlider(SwingConstants.HORIZONTAL, 10, 100, 25);
 		slider.setBackground(Settings.CONTROL_BACKGROUND);
@@ -128,9 +148,9 @@ public class ControlPaint extends Control {
 				drawPanel.setRadius(slider.getValue());
 			}
 		});
-		northPanel.add(slider);
+		innerNorthPanel.add(slider);
 		
-		northPanel.add(drawPanel.getUpdateButton());
+		innerNorthPanel.add(drawPanel.getUpdateButton());
 		
 		JPanel westPanel = new JPanel();
 		westPanel.setBackground(Settings.CONTROL_BACKGROUND);
@@ -177,11 +197,129 @@ public class ControlPaint extends Control {
 		});
 		westPanel.add(zoomSlider);
 		
+		northPanel.add(folderControlPanel);
+		northPanel.add(innerNorthPanel);
+		
 		add(westPanel, BorderLayout.WEST);
 		add(northPanel, BorderLayout.NORTH);
 		add(drawPanel, BorderLayout.CENTER);
 		
 		setVisible(true);
+	}
+	
+	/**
+	 * sets up the selected folder for painting<br>
+	 * loads it into control and the display
+	 * @param name the folder name to load
+	 */
+	private void setFolder(String name) {
+
+		Settings.PAINT_FOLDER = new File(Settings.FOLDERS[Mode.PAINT.ordinal()].getAbsolutePath() +  "/" + name);
+		
+		File guide = new File(Settings.PAINT_FOLDER.getAbsolutePath() + "/Guide.png");
+		
+		Settings.PAINT_FOLDER_SIZE = 0;
+		for (File f: Settings.PAINT_FOLDER.listFiles(File::isFile)) {
+			String fileName = f.getName();
+			String prefix = fileName.substring(0, fileName.lastIndexOf('.'));
+			String suffix = fileName.substring(fileName.lastIndexOf('.') + 1);
+			try {
+				if (suffix.equalsIgnoreCase("PNG") && Integer.parseInt(prefix) == Settings.PAINT_FOLDER_SIZE + 1) {
+					Settings.PAINT_FOLDER_SIZE++;
+				}
+			} catch (NumberFormatException e) {
+				
+			}
+		}
+		
+		Settings.PAINT_IMAGES = new boolean[Settings.PAINT_FOLDER_SIZE];
+		
+		folderControlPanel.removeAll();
+		for (int i = 1; i <= Settings.PAINT_FOLDER_SIZE; i++) {
+			JButton button = Settings.createButton(i + "");
+			button.setBackground(Settings.INACTIVE);
+			button.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					int number = Integer.parseInt(((JButton) e.getSource()).getText());
+					
+					if (button.getBackground().equals(Settings.ACTIVE)) {
+						button.setBackground(Settings.INACTIVE);
+						Settings.PAINT_IMAGES[number - 1] = false;
+					}
+					else {
+						button.setBackground(Settings.ACTIVE);
+						Settings.PAINT_IMAGES[number - 1] = true;
+					}
+					Thread fileLoadingThread = new Thread("fileLoadingThread") {
+						public void run() {
+							try {
+								synchronized (Settings.PAINT_IMAGE) {
+									Settings.PAINT_IMAGE = new BufferedImage(
+											Settings.PAINT_IMAGE.getWidth(),
+											Settings.PAINT_IMAGE.getHeight(),
+											Settings.PAINT_IMAGE.getType());
+									
+									Graphics2D g2d = Settings.PAINT_IMAGE.createGraphics();
+									
+									for (int i = Settings.PAINT_FOLDER_SIZE; i > 0; i--) {
+										if (Settings.PAINT_IMAGES[i - 1]) {
+											File f = new File(Settings.PAINT_FOLDER + "/" + i + ".png");
+											g2d.drawImage(ImageIO.read(f), 0, 0, null);
+										}
+									}
+									
+									g2d.dispose();
+									
+									if (Settings.PAINT_IMAGE != null) {
+										Main.DISPLAY_PAINT.setMask(drawPanel.getMask());
+										Main.DISPLAY_PAINT.setImageSize();
+										setZoomMax();
+									}
+								}
+							} catch (IOException | OutOfMemoryError error) {
+								drawPanel.resetImage();
+								Main.DISPLAY_PAINT.resetImage();
+								Settings.PAINT_IMAGE = null;
+								JOptionPane.showMessageDialog(drawPanel, "Cannot load Image, file is probably too large\n" + error.getMessage());
+							}
+							Main.DISPLAY_PAINT.repaint();
+							drawPanel.repaint();
+							drawPanel.setImageLoading(false);
+						}
+					};
+					fileLoadingThread.start();
+				}
+			});
+			folderControlPanel.add(button);
+		}
+		folderControlPanel.revalidate();
+		
+		if (Settings.PAINT_FOLDER != null && Settings.PAINT_FOLDER.exists()) {
+			drawPanel.setImageLoading(true);
+			Thread folderLoadingThread = new Thread("folderLoadingThread") {
+				public void run() {
+					try {
+						Settings.PAINT_IMAGE = null;
+						Settings.PAINT_IMAGE = ImageIO.read(guide);
+						if (Settings.PAINT_IMAGE != null) {
+							drawPanel.setImage();
+							Main.DISPLAY_PAINT.setMask(drawPanel.getMask());
+							Main.DISPLAY_PAINT.setImageSize();
+							setZoomMax();
+						}
+					} catch (IOException | OutOfMemoryError error) {
+						drawPanel.resetImage();
+						Main.DISPLAY_PAINT.resetImage();
+						Settings.PAINT_IMAGE = null;
+						JOptionPane.showMessageDialog(drawPanel, "Cannot load Image, file is probably too large\n" + error.getMessage());
+					}
+					Main.DISPLAY_PAINT.repaint();
+					drawPanel.repaint();
+					drawPanel.setImageLoading(false);
+				}
+			};
+			folderLoadingThread.start();
+		}
 	}
 
 	/**
@@ -253,19 +391,14 @@ public class ControlPaint extends Control {
 		JDialog settings = new JDialog(Main.CONTROL_WINDOW, "Settings", true);
 		settings.setLocationRelativeTo(Main.CONTROL_WINDOW);
 		settings.setSize(new Dimension(400, 400));
-		
 		settings.setLayout(new BoxLayout(settings.getContentPane(), BoxLayout.Y_AXIS));
 		
 		JPanel paintMaskPanel = new JPanel();
 		paintMaskPanel.setLayout(new BoxLayout(paintMaskPanel, BoxLayout.X_AXIS));
 		paintMaskPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		
-		
 		paintMaskPanel.add(new JLabel("Paint Mask Quality: "));
-		
 		JLabel maskQualityLabel = new JLabel(Settings.PIXELS_PER_MASK + "");
 		paintMaskPanel.add(maskQualityLabel);
-		
 		JSlider maskQualitySlider = new JSlider(JSlider.HORIZONTAL, 1, 20, Settings.PIXELS_PER_MASK);
 		maskQualitySlider.setMajorTickSpacing(5);
 		maskQualitySlider.addChangeListener(new ChangeListener() {
@@ -273,14 +406,25 @@ public class ControlPaint extends Control {
 				maskQualityLabel.setText(maskQualitySlider.getValue() + "");
 			}
 		});
-		
 		paintMaskPanel.add(maskQualitySlider);
 		settings.add(paintMaskPanel);
+		
+		JPanel allowFolderPanel = new JPanel();
+		allowFolderPanel.setLayout(new BoxLayout(allowFolderPanel, BoxLayout.X_AXIS));
+		allowFolderPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		allowFolderPanel.add(new JLabel("Paint with a Folder?"));
+		JCheckBox allowFolderCheckBox = new JCheckBox();
+		allowFolderCheckBox.setSelected(Settings.PAINT_FOLDER_MODE);
+		allowFolderPanel.add(allowFolderCheckBox);
+		settings.add(allowFolderPanel);
 		
 		JButton saveButton = Settings.createButton("Save");
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Settings.PIXELS_PER_MASK = maskQualitySlider.getValue();
+				Settings.PAINT_FOLDER_MODE = allowFolderCheckBox.isSelected();
+				folderControlPanel.setVisible(Settings.PAINT_FOLDER_MODE);
+				load();
 				drawPanel.setImage();
 				settings.dispose();
 			}
@@ -296,12 +440,21 @@ public class ControlPaint extends Control {
 			fileBox.removeItemAt(1);
 		}
 		File folder = Settings.FOLDERS[Mode.PAINT.ordinal()];
+		
 		if (folder.exists()) {
-			for (File f: folder.listFiles()) {
-				String name = f.getName();
-				String suffix = name.substring(name.lastIndexOf('.') + 1);
-				if (suffix.equalsIgnoreCase("PNG") || suffix.equalsIgnoreCase("JPG") || suffix.equalsIgnoreCase("JPEG")) {
+			if (Settings.PAINT_FOLDER_MODE) {
+				for (File f: folder.listFiles(File::isDirectory)) {
+					String name = f.getName();
 					fileBox.addItem(name);
+				}
+			}
+			else {
+				for (File f: folder.listFiles(File::isFile)) {
+					String name = f.getName();
+					String suffix = name.substring(name.lastIndexOf('.') + 1);
+					if (suffix.equalsIgnoreCase("PNG") || suffix.equalsIgnoreCase("JPG") || suffix.equalsIgnoreCase("JPEG")) {
+						fileBox.addItem(name);
+					}
 				}
 			}
 		}

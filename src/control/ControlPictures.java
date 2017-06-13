@@ -111,16 +111,51 @@ public class ControlPictures extends Control {
 	protected void load() {
 		if (folder.exists()) {
 			pp.clearButtons();
+			
+			int w = 0;
 			for (File f: folder.listFiles()) {
 				String name = f.getName();
 				String suffix = name.substring(name.lastIndexOf('.') + 1);
 				if (suffix.equalsIgnoreCase("PNG") || suffix.equalsIgnoreCase("JPG") || suffix.equalsIgnoreCase("JPEG")) {
-					pp.addButton(f);
+					new ButtonMakerThread(f, w).start();
+					w++;
 				}
 			}
 			repaint();
 			revalidate();
 			display.removeAllImages();
+		}
+	}
+	
+	/**
+	 * A Thread that loads a thumbnail for a button, and adds it to the picture panel
+	 * @author McAJBen <McAJBen@gmail.com>
+	 */
+	private class ButtonMakerThread extends Thread {
+		
+		/**
+		 * The Image file to be loaded
+		 */
+		private final File file;
+		
+		/**
+		 * The position in {@code PicturePanel} that this button will be
+		 */
+		private final int width;
+		
+		/**
+		 * Creates an instance of the {@code ButtonMakerThread} class
+		 * @param f file
+		 * @param w width
+		 */
+		public ButtonMakerThread(File f, int w) {
+			file = f;
+			width = w;
+		}
+		
+		@Override
+		public void run() {
+			pp.addButton(file, width);
 		}
 	}
 }
