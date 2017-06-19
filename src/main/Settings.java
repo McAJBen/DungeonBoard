@@ -159,16 +159,14 @@ public class Settings {
 	public static final boolean IS_WINDOWS = System.getProperty("os.name").startsWith("Windows");
 	
 	/**
-	 * the method of selecting a background for the paint panel
-	 * true allows the user to select a folder
-	 * false allows the user to select an image
-	 */
-	public static boolean PAINT_FOLDER_MODE;
-	
-	/**
-	 * the image used by {@code DisplayPaint} and {@code ControlPaint}
+	 * the image used by {@code DisplayPaint}
 	 */
 	public static BufferedImage PAINT_IMAGE;
+	
+	/**
+	 * the image used by {@code ControlPaint}
+	 */
+	public static BufferedImage PAINT_CONTROL_IMAGE;
 	
 	/**
 	 * The active layers in {@code DisplayPaint}

@@ -13,7 +13,6 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -78,7 +77,7 @@ public class ControlPaint extends Control {
 		northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
 		
 		folderControlPanel = getEmptyNorthPanel();
-		folderControlPanel.setVisible(Settings.PAINT_FOLDER_MODE);
+		folderControlPanel.setVisible(false);
 		
 		JPanel innerNorthPanel = getNorthPanel();
 		
@@ -103,11 +102,22 @@ public class ControlPaint extends Control {
 		fileBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!fileBox.getSelectedItem().equals("")) {
-					if (Settings.PAINT_FOLDER_MODE) {
-						setFolder(fileBox.getSelectedItem().toString());
+					File file = new File(
+							Settings.FOLDERS[Mode.PAINT.ordinal()].getAbsolutePath() +
+							"/" + fileBox.getSelectedItem().toString());
+					
+					if (file.exists()) {
+						if (file.isDirectory()) {
+							folderControlPanel.setVisible(true);
+							setFolder(file);
+						}
+						else {
+							folderControlPanel.setVisible(false);
+							setFile(file);
+						}
 					}
 					else {
-						setFile(fileBox.getSelectedItem().toString());
+						Settings.showError("Cannot load Image, file does not exist");
 					}
 				}
 			}
@@ -230,9 +240,9 @@ public class ControlPaint extends Control {
 	 * loads it into control and the display
 	 * @param name the folder name to load
 	 */
-	private void setFolder(String name) {
+	private void setFolder(File folder) {
 
-		Settings.PAINT_FOLDER = new File(Settings.FOLDERS[Mode.PAINT.ordinal()].getAbsolutePath() +  "/" + name);
+		Settings.PAINT_FOLDER = folder;
 		
 		File guide = new File(Settings.PAINT_FOLDER.getAbsolutePath() + "/Guide.png");
 		
@@ -345,54 +355,46 @@ public class ControlPaint extends Control {
 	 * loads it into control and the display
 	 * @param name the file name to load
 	 */
-	private void setFile(String name) {
-		
-		File file = new File(Settings.FOLDERS[Mode.PAINT.ordinal()].getAbsolutePath() +  "/" + name);
-		
-		if (file.exists()) {
-			drawPanel.setImageLoading(true);
-			Thread fileLoadingThread = new Thread("fileLoadingThread") {
-				public void run() {
-					try {
-						Dimension oldImageSize = new Dimension(0, 0);
-						if (Settings.PAINT_IMAGE != null) {
-							oldImageSize = new Dimension(Settings.PAINT_IMAGE.getWidth(), Settings.PAINT_IMAGE.getHeight());
-						}
-						Settings.PAINT_IMAGE = null;
-						Settings.PAINT_IMAGE = ImageIO.read(file);
-						if (Settings.PAINT_IMAGE != null) {
-							
-							if (oldImageSize == null ||
-									Settings.PAINT_IMAGE.getWidth() != oldImageSize.getWidth() ||
-									Settings.PAINT_IMAGE.getHeight() != oldImageSize.getHeight() ||
-									JOptionPane.showConfirmDialog(drawPanel,
-										"Would you like to keep the same visibility mask?",
-										"Paint Image has been changed",
-										JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
-								
-								drawPanel.setImage();
-							}
-							
-							Main.DISPLAY_PAINT.setMask(drawPanel.getMask());
-							Main.DISPLAY_PAINT.setImageSize();
-							setZoomMax();
-						}
-					} catch (IOException | OutOfMemoryError error) {
-						drawPanel.resetImage();
-						Main.DISPLAY_PAINT.resetImage();
-						Settings.PAINT_IMAGE = null;
-						Settings.showError("Cannot load Image, file is probably too large", error);
+	private void setFile(File file) {
+		drawPanel.setImageLoading(true);
+		Thread fileLoadingThread = new Thread("fileLoadingThread") {
+			public void run() {
+				try {
+					Dimension oldImageSize = new Dimension(0, 0);
+					if (Settings.PAINT_IMAGE != null) {
+						oldImageSize = new Dimension(Settings.PAINT_IMAGE.getWidth(), Settings.PAINT_IMAGE.getHeight());
 					}
-					Main.DISPLAY_PAINT.repaint();
-					drawPanel.repaint();
-					drawPanel.setImageLoading(false);
+					Settings.PAINT_IMAGE = null;
+					Settings.PAINT_IMAGE = ImageIO.read(file);
+					if (Settings.PAINT_IMAGE != null) {
+						
+						if (oldImageSize == null ||
+								Settings.PAINT_IMAGE.getWidth() != oldImageSize.getWidth() ||
+								Settings.PAINT_IMAGE.getHeight() != oldImageSize.getHeight() ||
+								JOptionPane.showConfirmDialog(drawPanel,
+									"Would you like to keep the same visibility mask?",
+									"Paint Image has been changed",
+									JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+							
+							drawPanel.setImage();
+						}
+						
+						Main.DISPLAY_PAINT.setMask(drawPanel.getMask());
+						Main.DISPLAY_PAINT.setImageSize();
+						setZoomMax();
+					}
+				} catch (IOException | OutOfMemoryError error) {
+					drawPanel.resetImage();
+					Main.DISPLAY_PAINT.resetImage();
+					Settings.PAINT_IMAGE = null;
+					Settings.showError("Cannot load Image, file is probably too large", error);
 				}
-			};
-			fileLoadingThread.start();
-		}
-		else {
-			Settings.showError("Cannot load Image, file does not exist");
-		}
+				Main.DISPLAY_PAINT.repaint();
+				drawPanel.repaint();
+				drawPanel.setImageLoading(false);
+			}
+		};
+		fileLoadingThread.start();
 	}
 	
 	/**
@@ -430,21 +432,10 @@ public class ControlPaint extends Control {
 		paintMaskPanel.add(maskQualitySlider);
 		settings.add(paintMaskPanel);
 		
-		JPanel allowFolderPanel = new JPanel();
-		allowFolderPanel.setLayout(new BoxLayout(allowFolderPanel, BoxLayout.X_AXIS));
-		allowFolderPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		allowFolderPanel.add(new JLabel("Paint with a Folder?"));
-		JCheckBox allowFolderCheckBox = new JCheckBox();
-		allowFolderCheckBox.setSelected(Settings.PAINT_FOLDER_MODE);
-		allowFolderPanel.add(allowFolderCheckBox);
-		settings.add(allowFolderPanel);
-		
 		JButton saveButton = Settings.createButton("Save");
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Settings.PIXELS_PER_MASK = maskQualitySlider.getValue();
-				Settings.PAINT_FOLDER_MODE = allowFolderCheckBox.isSelected();
-				folderControlPanel.setVisible(Settings.PAINT_FOLDER_MODE);
 				load();
 				drawPanel.setImage();
 				settings.dispose();
@@ -463,14 +454,11 @@ public class ControlPaint extends Control {
 		File folder = Settings.FOLDERS[Mode.PAINT.ordinal()];
 		
 		if (folder.exists()) {
-			if (Settings.PAINT_FOLDER_MODE) {
-				for (File f: folder.listFiles(File::isDirectory)) {
-					String name = f.getName();
-					fileBox.addItem(name);
+			for (File f: folder.listFiles()) {
+				if (f.isDirectory()) {
+					fileBox.addItem(f.getName());
 				}
-			}
-			else {
-				for (File f: folder.listFiles(File::isFile)) {
+				else {
 					String name = f.getName();
 					String suffix = name.substring(name.lastIndexOf('.') + 1);
 					if (suffix.equalsIgnoreCase("PNG") || suffix.equalsIgnoreCase("JPG") || suffix.equalsIgnoreCase("JPEG")) {
