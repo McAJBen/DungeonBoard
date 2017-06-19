@@ -19,7 +19,6 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 
 import main.Main;
 import main.Settings;
@@ -135,8 +134,7 @@ public class DrawPanel extends JComponent {
 					try {
 						Main.DISPLAY_PAINT.setMask(getMask());
 					} catch (OutOfMemoryError error) {
-						JOptionPane.showMessageDialog(null,
-								"Cannot update Image, file is probably large\n" + error.getMessage());
+						Settings.showError("Cannot update Image, file is probably large", error);
 					}
 					updateButton.setEnabled(false);
 					updateButton.setBackground(Settings.CONTROL_BACKGROUND);
@@ -238,7 +236,7 @@ public class DrawPanel extends JComponent {
 			g2 = (Graphics2D) drawingLayer.getGraphics();
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.6f));
 			g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-			clear();
+			hideAll();
 		}
 	}
 
@@ -539,7 +537,14 @@ public class DrawPanel extends JComponent {
 	/**
 	 * sets all of {@code drawingLayer} to Opaque and unseen to players
 	 */
-	private void clear() {
+	public void hideAll() {
 		fillAll(Settings.OPAQUE);
+	}
+	
+	/**
+	 *  sets all of {@code drawingLayer} to Clear and seen to players
+	 */
+	public void showAll() {
+		fillAll(Settings.CLEAR);
 	}
 }

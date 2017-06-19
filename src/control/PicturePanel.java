@@ -13,7 +13,6 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
@@ -78,7 +77,7 @@ public abstract class PicturePanel extends JPanel {
 				}
 			}
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(this, "Cannot load Image, file is probably too large\n" + e.getMessage());
+			Settings.showError("Cannot load Image, file is probably too large", e);
 			e.printStackTrace();
 		}
 	}

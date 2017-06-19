@@ -6,7 +6,8 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.JOptionPane;
+
+import main.Settings;
 
 /**
  * a container for name and an image
@@ -100,7 +101,7 @@ public class AlphaImage {
 			image = ImageIO.read(file);
 		} catch (IllegalArgumentException | IOException e) {
 			image = null;
-			JOptionPane.showMessageDialog(null, "Cannot load Image \"" + name + "\"\n" + e.getMessage());
+			Settings.showError("Cannot load Image \"" + name, e);
 		}
 	}
 }

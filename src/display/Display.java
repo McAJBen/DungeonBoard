@@ -20,7 +20,7 @@ public abstract class Display extends JPanel {
 	 * @param g2d the graphics to paint onto
 	 */
 	protected void paintMouse(Graphics2D g2d) {
-		Main.DISPLAY_WINDOW.paintMouse(g2d);
+		Main.getDisplay().paintMouse(g2d);
 	}
 
 	/**

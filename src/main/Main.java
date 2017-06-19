@@ -29,42 +29,48 @@ public class Main {
 	/**
 	 * {@code JFrame} for control window
 	 */
-	public static ControlWindow CONTROL_WINDOW;
+	private static ControlWindow CONTROL_WINDOW;
 	
 	/**
 	 * {@code JPanel} for controlling Layer Utility
 	 */
-	public static ControlPictures CONTROL_LAYER;
+	private static ControlPictures CONTROL_LAYER;
 	
 	/**
 	 * {@code JPanel} for controlling Image Utility
 	 */
-	public static ControlPictures CONTROL_IMAGE;
+	private static ControlPictures CONTROL_IMAGE;
 	
 	/**
 	 * {@code JPanel} for controlling Paint Utility
 	 */
-	public static ControlPaint CONTROL_PAINT;
+	private static ControlPaint CONTROL_PAINT;
 	
 	/**
 	 * {@code JPanel} for controlling Loading Utility
 	 */
-	public static ControlLoading CONTROL_LOADING;
+	private static ControlLoading CONTROL_LOADING;
+	
+	/**
+	 * the current control mode.
+	 * Used to tell which button to disable
+	 */
+	private static Mode CONTROL_MODE = Mode.PAINT;
 	
 	/**
 	 * {@code JFrame} for display window
 	 */
-	public static DisplayWindow DISPLAY_WINDOW;
+	private static DisplayWindow DISPLAY_WINDOW;
 	
 	/**
 	 * {@code JPanel} for displaying Layer Utility
 	 */
-	public static DisplayPictures DISPLAY_LAYER;
+	private static DisplayPictures DISPLAY_LAYER;
 	
 	/**
 	 * {@code JPanel} for displaying Image Utility
 	 */
-	public static DisplayPictures DISPLAY_IMAGE;
+	private static DisplayPictures DISPLAY_IMAGE;
 	
 	/**
 	 * {@code JPanel} for displaying Paint Utility
@@ -75,6 +81,12 @@ public class Main {
 	 * {@code JPanel} for displaying Loading Utility
 	 */
 	public static DisplayLoading DISPLAY_LOADING;
+	
+	/**
+	 * the current display mode.
+	 * Used to tell which button to disable
+	 */
+	private static Mode DISPLAY_MODE = Mode.LOADING;
 	
 	public static void main(String[] args) {
 		
@@ -89,7 +101,7 @@ public class Main {
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 				| UnsupportedLookAndFeelException e) {
 			
-			JOptionPane.showMessageDialog(null, e.getMessage(), "Error - Changing look and feel", JOptionPane.ERROR_MESSAGE);
+			Settings.showError("Error - Changing look and feel", e);
 		}
 		
 		try {
@@ -126,14 +138,14 @@ public class Main {
 				
 				CONTROL_WINDOW.setButton(Window.CONTROL, Mode.PAINT, true);
 				CONTROL_WINDOW.setButton(Window.DISPLAY, Mode.LOADING, true);
-				CONTROL_WINDOW.setMode(Mode.PAINT, Mode.IMAGE);
-				DISPLAY_WINDOW.setMode(Mode.LOADING, Mode.IMAGE);
+				CONTROL_WINDOW.setMode(CONTROL_MODE, Mode.IMAGE);
+				DISPLAY_WINDOW.setMode(DISPLAY_MODE, Mode.IMAGE);
 				
 				DISPLAY_WINDOW.setVisible(true);
 				CONTROL_WINDOW.setVisible(true);
 			}
 		} catch (SecurityException e) {
-			JOptionPane.showMessageDialog(null, e.getMessage(), "Error - Loading resources", JOptionPane.ERROR_MESSAGE);
+			Settings.showError("Error - Loading resources", e);
 		} catch (HeadlessException e) {
 			System.out.println("Error - Cannot find any screens\n" + e.getMessage());
 		}
@@ -189,5 +201,41 @@ public class Main {
 			screens[i] = new Screen(graphicsDevice[i]);
 		}
 		return screens;
+	}
+	
+	// TODO
+	public static DisplayWindow getDisplay() {
+		return DISPLAY_WINDOW;
+	}
+	
+	// TODO
+	public static ControlWindow getControl() {
+		return CONTROL_WINDOW;
+	}
+
+	// TODO
+	public static void changeButton(Window disp, Mode mode) {
+		switch (disp) {
+		case CONTROL:
+			synchronized (CONTROL_MODE) {
+				if (CONTROL_MODE != mode) {
+					CONTROL_WINDOW.setButton(disp, CONTROL_MODE, false);
+					CONTROL_WINDOW.setMode(mode, CONTROL_MODE);
+					CONTROL_MODE = mode;
+					CONTROL_WINDOW.setButton(disp, CONTROL_MODE, true);
+				}
+			}
+			break;
+		case DISPLAY:
+			synchronized (DISPLAY_MODE) {
+				if (DISPLAY_MODE != mode) {
+					CONTROL_WINDOW.setButton(disp, DISPLAY_MODE, false);
+					DISPLAY_WINDOW.setMode(mode, DISPLAY_MODE);
+					DISPLAY_MODE = mode;
+					CONTROL_WINDOW.setButton(disp, DISPLAY_MODE, true);
+				}
+			}
+			break;
+		}
 	}
 }

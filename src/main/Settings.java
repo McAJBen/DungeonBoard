@@ -7,6 +7,7 @@ import java.io.File;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 
 /**
  * contains static final variables that are used through Dungeon Board
@@ -105,7 +106,7 @@ public class Settings {
 	/**
 	 * the default size of the {@code ControlWindow}
 	 */
-	public static final Dimension CONTROL_SIZE = new Dimension(800, 700);
+	public static final Dimension CONTROL_SIZE = new Dimension(900, 700);
 	
 	/**
 	 * the color of an active button - (153, 255, 187)
@@ -204,6 +205,15 @@ public class Settings {
 	}
 	
 	/**
+	 * method used to load resources by file name
+	 * @param res name of the file to be loaded
+	 * @return an {@code ImageIcon} from the resources folder
+	 */
+	public static ImageIcon load(String res) {
+		return new ImageIcon(Settings.class.getResource("/resources/" + res));
+	}
+	
+	/**
 	 * creates and returns a {@code JButton} with the proper look
 	 * @param label text to be shown on the {@code JButton}
 	 * @return a {@code JButton} that looks like the standard for Dungeon Board
@@ -228,11 +238,19 @@ public class Settings {
 	}
 	
 	/**
-	 * method used to load resources by file name
-	 * @param res name of the file to be loaded
-	 * @return an {@code ImageIcon} from the resources folder
+	 * shows a {@code JOptionPane} to display an error
+	 * @param message custom text to be displayed
 	 */
-	public static ImageIcon load(String res) {
-		return new ImageIcon(Settings.class.getResource("/resources/" + res));
+	public static void showError(String message) {
+		JOptionPane.showMessageDialog(Main.getControl(), message, "Error", JOptionPane.ERROR_MESSAGE);
+	}
+	
+	/**
+	 * shows a {@code JOptionPane} to display an error
+	 * @param message custom text to be displayed
+	 * @param error the error that was thrown
+	 */
+	public static void showError(String message, Throwable error) {
+		JOptionPane.showMessageDialog(Main.getControl(), message + "\n" + error.getMessage());
 	}
 }

@@ -141,6 +141,24 @@ public class ControlPaint extends Control {
 		});
 		innerNorthPanel.add(drawModeButton);
 		
+		JButton showButton = Settings.createButton("Show");
+		showButton.setBackground(Settings.ACTIVE);
+		showButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				drawPanel.showAll();
+			}
+		});
+		innerNorthPanel.add(showButton);
+		
+		JButton hideButton = Settings.createButton("Hide");
+		hideButton.setBackground(Settings.INACTIVE);
+		hideButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				drawPanel.hideAll();
+			}
+		});
+		innerNorthPanel.add(hideButton);
+		
 		JSlider slider = new JSlider(SwingConstants.HORIZONTAL, 10, 100, 25);
 		slider.setBackground(Settings.CONTROL_BACKGROUND);
 		slider.addChangeListener(new ChangeListener() {
@@ -228,7 +246,7 @@ public class ControlPaint extends Control {
 					Settings.PAINT_FOLDER_SIZE++;
 				}
 			} catch (NumberFormatException e) {
-				
+				// file not in valid format, therefore ignore
 			}
 		}
 		
@@ -280,7 +298,7 @@ public class ControlPaint extends Control {
 								drawPanel.resetImage();
 								Main.DISPLAY_PAINT.resetImage();
 								Settings.PAINT_IMAGE = null;
-								JOptionPane.showMessageDialog(drawPanel, "Cannot load Image, file is probably too large\n" + error.getMessage());
+								Settings.showError("Cannot load Image, file is probably too large", error);
 							}
 							Main.DISPLAY_PAINT.repaint();
 							drawPanel.repaint();
@@ -311,7 +329,7 @@ public class ControlPaint extends Control {
 						drawPanel.resetImage();
 						Main.DISPLAY_PAINT.resetImage();
 						Settings.PAINT_IMAGE = null;
-						JOptionPane.showMessageDialog(drawPanel, "Cannot load Image, file is probably too large\n" + error.getMessage());
+						Settings.showError("Cannot load Image, file is probably too large", error);
 					}
 					Main.DISPLAY_PAINT.repaint();
 					drawPanel.repaint();
@@ -331,7 +349,7 @@ public class ControlPaint extends Control {
 		
 		File file = new File(Settings.FOLDERS[Mode.PAINT.ordinal()].getAbsolutePath() +  "/" + name);
 		
-		if (file != null && file.exists()) {
+		if (file.exists()) {
 			drawPanel.setImageLoading(true);
 			Thread fileLoadingThread = new Thread("fileLoadingThread") {
 				public void run() {
@@ -363,7 +381,7 @@ public class ControlPaint extends Control {
 						drawPanel.resetImage();
 						Main.DISPLAY_PAINT.resetImage();
 						Settings.PAINT_IMAGE = null;
-						JOptionPane.showMessageDialog(drawPanel, "Cannot load Image, file is probably too large\n" + error.getMessage());
+						Settings.showError("Cannot load Image, file is probably too large", error);
 					}
 					Main.DISPLAY_PAINT.repaint();
 					drawPanel.repaint();
@@ -371,6 +389,9 @@ public class ControlPaint extends Control {
 				}
 			};
 			fileLoadingThread.start();
+		}
+		else {
+			Settings.showError("Cannot load Image, file does not exist");
 		}
 	}
 	
@@ -388,8 +409,8 @@ public class ControlPaint extends Control {
 	 * opens the settings dialog
 	 */
 	public void showSettings() {
-		JDialog settings = new JDialog(Main.CONTROL_WINDOW, "Settings", true);
-		settings.setLocationRelativeTo(Main.CONTROL_WINDOW);
+		JDialog settings = new JDialog(Main.getControl(), "Settings", true);
+		settings.setLocationRelativeTo(Main.getControl());
 		settings.setSize(new Dimension(400, 400));
 		settings.setLayout(new BoxLayout(settings.getContentPane(), BoxLayout.Y_AXIS));
 		

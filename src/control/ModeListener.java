@@ -15,18 +15,6 @@ import main.Mode;
 public class ModeListener implements ActionListener {
 	
 	/**
-	 * the current display mode.
-	 * Used to tell which button to disable
-	 */
-	private static Mode displayMode = Mode.LOADING;
-	
-	/**
-	 * the current control mode.
-	 * Used to tell which button to disable
-	 */
-	private static Mode controlMode = Mode.PAINT;
-	
-	/**
 	 * the specific display to change to when this button is pressed
 	 */
 	private final Window disp;
@@ -48,27 +36,6 @@ public class ModeListener implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		switch (disp) {
-		case CONTROL:
-			synchronized (controlMode) {
-				if (controlMode != mode) {
-					Main.CONTROL_WINDOW.setButton(disp, controlMode, false);
-					Main.CONTROL_WINDOW.setMode(mode, controlMode);
-					controlMode = mode;
-					Main.CONTROL_WINDOW.setButton(disp, controlMode, true);
-				}
-			}
-			break;
-		case DISPLAY:
-			synchronized (displayMode) {
-				if (displayMode != mode) {
-					Main.CONTROL_WINDOW.setButton(disp, displayMode, false);
-					Main.DISPLAY_WINDOW.setMode(mode, displayMode);
-					displayMode = mode;
-					Main.CONTROL_WINDOW.setButton(disp, displayMode, true);
-				}
-			}
-			break;
-		}
+		Main.changeButton(disp, mode);
 	}
 }
