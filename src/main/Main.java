@@ -203,17 +203,27 @@ public class Main {
 		return screens;
 	}
 	
-	// TODO
+	/**
+	 * gets the {@code DISPLAY_WINDOW}
+	 * @return the {@code DISPLAY_WINDOW}
+	 */
 	public static DisplayWindow getDisplay() {
 		return DISPLAY_WINDOW;
 	}
 	
-	// TODO
+	/**
+	 * gets the {@code CONTROL_WINDOW}
+	 * @return the {@code CONTROL_WINDOW}
+	 */
 	public static ControlWindow getControl() {
 		return CONTROL_WINDOW;
 	}
 
-	// TODO
+	/**
+	 * changes the active button on the control window
+	 * @param disp the new display to be set
+	 * @param mode the mode to be set
+	 */
 	public static void changeButton(Window disp, Mode mode) {
 		switch (disp) {
 		case CONTROL:

@@ -1,6 +1,7 @@
 package control;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -282,12 +283,10 @@ public class ControlPaint extends Control {
 						public void run() {
 							try {
 								synchronized (Settings.PAINT_IMAGE) {
-									Settings.PAINT_IMAGE = new BufferedImage(
-											Settings.PAINT_IMAGE.getWidth(),
-											Settings.PAINT_IMAGE.getHeight(),
-											Settings.PAINT_IMAGE.getType());
 									
 									Graphics2D g2d = Settings.PAINT_IMAGE.createGraphics();
+									g2d.setColor(Color.BLACK);
+									g2d.fillRect(0, 0, Settings.PAINT_IMAGE.getWidth(), Settings.PAINT_IMAGE.getHeight());
 									
 									for (int i = Settings.PAINT_FOLDER_SIZE; i > 0; i--) {
 										if (Settings.PAINT_IMAGES[i - 1]) {
@@ -328,13 +327,16 @@ public class ControlPaint extends Control {
 				public void run() {
 					try {
 						Settings.PAINT_IMAGE = null;
-						Settings.PAINT_IMAGE = ImageIO.read(guide);
-						if (Settings.PAINT_IMAGE != null) {
-							drawPanel.setImage();
-							Main.DISPLAY_PAINT.setMask(drawPanel.getMask());
-							Main.DISPLAY_PAINT.setImageSize();
-							setZoomMax();
-						}
+						Settings.PAINT_CONTROL_IMAGE = null;
+						Settings.PAINT_CONTROL_IMAGE = ImageIO.read(guide);
+						Settings.PAINT_IMAGE = new BufferedImage(
+								Settings.PAINT_CONTROL_IMAGE.getWidth(),
+								Settings.PAINT_CONTROL_IMAGE.getHeight(), 
+								Settings.PAINT_CONTROL_IMAGE.getType());
+						drawPanel.setImage();
+						Main.DISPLAY_PAINT.setMask(drawPanel.getMask());
+						Main.DISPLAY_PAINT.setImageSize();
+						setZoomMax();
 					} catch (IOException | OutOfMemoryError error) {
 						drawPanel.resetImage();
 						Main.DISPLAY_PAINT.resetImage();
@@ -366,8 +368,8 @@ public class ControlPaint extends Control {
 					}
 					Settings.PAINT_IMAGE = null;
 					Settings.PAINT_IMAGE = ImageIO.read(file);
+					Settings.PAINT_CONTROL_IMAGE = Settings.PAINT_IMAGE;
 					if (Settings.PAINT_IMAGE != null) {
-						
 						if (oldImageSize == null ||
 								Settings.PAINT_IMAGE.getWidth() != oldImageSize.getWidth() ||
 								Settings.PAINT_IMAGE.getHeight() != oldImageSize.getHeight() ||

@@ -263,6 +263,7 @@ public class DrawPanel extends JComponent {
 	 */
 	public void resetImage() {
 		Settings.PAINT_IMAGE = null;
+		Settings.PAINT_CONTROL_IMAGE = null;
 		g2 = null;
 		drawingLayer = null;
 		loading = false;
@@ -391,8 +392,8 @@ public class DrawPanel extends JComponent {
 		if (loading) {
 			g2d.drawString("Loading...", controlSize.width / 2, controlSize.height / 2);
 		}
-		else if (Settings.PAINT_IMAGE != null) {
-			g2d.drawImage(Settings.PAINT_IMAGE, 0, 0, controlSize.width, controlSize.height, null);
+		else if (Settings.PAINT_CONTROL_IMAGE != null) {
+			g2d.drawImage(Settings.PAINT_CONTROL_IMAGE, 0, 0, controlSize.width, controlSize.height, null);
 			g2d.drawImage(drawingLayer, 0, 0, controlSize.width, controlSize.height, null);
 			g2d.setColor(Settings.PINK);
 			switch (penType) {
