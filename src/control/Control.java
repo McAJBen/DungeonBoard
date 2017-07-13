@@ -63,4 +63,12 @@ public abstract class Control extends JPanel {
 	 * loads all of the image from the file
 	 */
 	protected abstract void load();
+
+	/**
+	 * tells the {@code ControlPanel} if it is the currently displayed control
+	 * @param b true if it is displayed, false if it is not
+	 */
+	public void setMainControl(boolean b) {
+		
+	}
 }

@@ -204,6 +204,7 @@ public class DisplayLoading extends Display {
 				currentImage = ImageIO.read(new File(file));
 			} catch (Exception e) {
 				currentImage = null;
+				e.printStackTrace();
 			}
 		}
 	}

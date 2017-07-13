@@ -8,15 +8,15 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import control.Control;
 import control.ControlLoading;
 import control.ControlPaint;
 import control.ControlPictures;
-import control.Control;
 import control.ControlWindow;
+import display.Display;
 import display.DisplayLoading;
 import display.DisplayPaint;
 import display.DisplayPictures;
-import display.Display;
 import display.DisplayWindow;
 
 /**

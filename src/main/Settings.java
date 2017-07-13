@@ -24,7 +24,7 @@ public class Settings {
 	/**
 	 * The Dungeon Board directory that contains all images
 	 */
-	public static final File FOLDER = new File(new File(System.getProperty("user.dir")).getAbsolutePath() + "/" + NAME);
+	public static final File FOLDER = new File(new File(System.getProperty("user.dir")).getAbsolutePath() + File.separator + NAME);
 	
 	/**
 	 * The folder currently in use on the paint layer
@@ -35,10 +35,10 @@ public class Settings {
 	 * an array of all the sub folders in the Dungeon Board folder by their {@code Mode}
 	 */
 	public static final File[] FOLDERS = {
-			new File(FOLDER + "/Layer"),
-			new File(FOLDER + "/Image"),
-			new File(FOLDER + "/Paint"),
-			new File(FOLDER + "/Loading")
+			new File(FOLDER + File.separator + "Layer"),
+			new File(FOLDER + File.separator + "Image"),
+			new File(FOLDER + File.separator + "Paint"),
+			new File(FOLDER + File.separator + "Loading")
 	};
 	
 	/**
@@ -159,6 +159,11 @@ public class Settings {
 	public static final boolean IS_WINDOWS = System.getProperty("os.name").startsWith("Windows");
 	
 	/**
+	 * the number of threads this computer has
+	 */
+	public static final int SYS_THREADS = Runtime.getRuntime().availableProcessors();
+	
+	/**
 	 * the image used by {@code DisplayPaint}
 	 */
 	public static BufferedImage PAINT_IMAGE;
@@ -195,11 +200,18 @@ public class Settings {
 	 * @throws SecurityException when the program is unable to create the folders
 	 */
 	public static void load() throws SecurityException {
-		for (File f: Settings.FOLDERS) {
+		for (File f: FOLDERS) {
 			if (!f.exists()) {
 				f.mkdirs();
 			}
 		}
+		File ImageThumbs = new File(FOLDERS[Mode.IMAGE.ordinal()] + File.separator + "TempThumbnails");
+		ImageThumbs.mkdirs();
+		ImageThumbs.deleteOnExit();
+		
+		File LayerThumbs = new File(FOLDERS[Mode.LAYER.ordinal()] + File.separator + "TempThumbnails");
+		LayerThumbs.mkdirs();
+		LayerThumbs.deleteOnExit();
 	}
 	
 	/**
@@ -233,6 +245,15 @@ public class Settings {
 		button.setFocusPainted(false);
 		button.setRolloverEnabled(false);
 		return button;
+	}
+	
+	/**
+	 * turns a file into its thumbnail equal
+	 * @param f the file referring to an image
+	 * @return a file in the thumbnail folder
+	 */
+	public static File fileToThumb(File f) {
+		return new File(f.getParentFile() + File.separator + "TempThumbnails" + File.separator + f.getName());
 	}
 	
 	/**

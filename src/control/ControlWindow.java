@@ -101,7 +101,9 @@ public class ControlWindow extends JFrame {
 	 */
 	public void setMode(Mode newMode, Mode oldMode) {
 		remove(Main.getControl(oldMode));
+		Main.getControl(oldMode).setMainControl(false);
 		add(Main.getControl(newMode), BorderLayout.CENTER);
+		Main.getControl(newMode).setMainControl(true);
 		validate();
 		repaint();
 	}
