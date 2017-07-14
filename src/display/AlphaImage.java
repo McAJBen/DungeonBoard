@@ -17,11 +17,6 @@ import main.Settings;
 public class AlphaImage {
 	
 	/**
-	 * the image loaded from file
-	 */
-	private BufferedImage image;
-	
-	/**
 	 * the name of the file that is loaded
 	 */
 	private String name;
@@ -38,7 +33,7 @@ public class AlphaImage {
 	 */
 	public AlphaImage(File folder, String n) {
 		name = n;
-		file = new File(folder.getAbsolutePath() + "/" + name);
+		file = new File(folder.getAbsolutePath() + File.separator + name);
 	}
 	
 	/**
@@ -54,23 +49,12 @@ public class AlphaImage {
 	 * @return a {@code BufferedImage} with the file name
 	 */
 	public BufferedImage getImage() {
-		return image;
-	}
-	
-	/**
-	 * gets the width of the image
-	 * @return the same as {@code image.getWidth()}
-	 */
-	public int getWidth() {
-		return image.getWidth();
-	}
-
-	/**
-	 * gets the height of the image
-	 * @return the same as {@code image.getHeight()}
-	 */
-	public int getHeight() {
-		return image.getHeight();
+		try {
+			return ImageIO.read(file);
+		} catch (IllegalArgumentException | IOException e) {
+			Settings.showError("Cannot load Image \"" + name, e);
+			return null;
+		}
 	}
 	
 	/**
@@ -78,30 +62,12 @@ public class AlphaImage {
 	 * @return the color of the top left corner of the image
 	 */
 	public Color getBGColor() {
-		if (image != null) {
-			return new Color(image.getRGB(0, 0));
-		}
-		else {
-			return Color.BLACK;
-		}
-	}
-
-	/**
-	 * removes the image from memory to free up space
-	 */
-	public void forgetImage() {
-		image = null;
-	}
-
-	/**
-	 * reloads the image from file
-	 */
-	public void rememberImage() {
+		File f = Settings.fileToThumb(file);
 		try {
-			image = ImageIO.read(file);
+			return new Color(ImageIO.read(f).getRGB(0, 0));
 		} catch (IllegalArgumentException | IOException e) {
-			image = null;
-			Settings.showError("Cannot load Image \"" + name, e);
+			Settings.showError("Cannot load Image RGB \"" + name, e);
 		}
+		return Color.BLACK;
 	}
 }
