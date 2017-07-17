@@ -104,6 +104,8 @@ public class ControlPictures extends Control {
 		
 		load();
 		
+		pp.forgetThumbnails();
+		
 		setVisible(true);
 	}
 	
@@ -128,6 +130,7 @@ public class ControlPictures extends Control {
 			repaint();
 			revalidate();
 			display.removeAllImages();
+			pp.rememberThumbnails(folder);
 		}
 	}
 }

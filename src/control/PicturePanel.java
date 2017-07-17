@@ -84,18 +84,19 @@ public abstract class PicturePanel extends JPanel {
 	 */
 	private void createThumbnail(File file) {
 		File tFile = Settings.fileToThumb(file);
-		if (!tFile.exists()) {
-			try {
-				BufferedImage bufferedImage = new BufferedImage(IMAGE_SIZE.width, IMAGE_SIZE.height, BufferedImage.TYPE_INT_RGB);
-				bufferedImage.getGraphics().drawImage(
-						ImageIO.read(file).getScaledInstance(IMAGE_SIZE.width, IMAGE_SIZE.height, BufferedImage.SCALE_SMOOTH),
-						0, 0, null);
-				ImageIO.write(bufferedImage, "GIF", tFile);
-				tFile.deleteOnExit();
-			} catch (OutOfMemoryError | IOException e) {
-				Settings.showError("Cannot create Thumbnail, file is probably too large", e);
-				e.printStackTrace();
-			}
+		if (tFile.exists()) {
+			tFile.delete();
+		}
+		try {
+			BufferedImage bufferedImage = new BufferedImage(IMAGE_SIZE.width, IMAGE_SIZE.height, BufferedImage.TYPE_INT_RGB);
+			bufferedImage.getGraphics().drawImage(
+					ImageIO.read(file).getScaledInstance(IMAGE_SIZE.width, IMAGE_SIZE.height, BufferedImage.SCALE_SMOOTH),
+					0, 0, null);
+			ImageIO.write(bufferedImage, "GIF", tFile);
+			tFile.deleteOnExit();
+		} catch (OutOfMemoryError | IOException e) {
+			Settings.showError("Cannot create Thumbnail, file is probably too large", e);
+			e.printStackTrace();
 		}
 	}
 	
