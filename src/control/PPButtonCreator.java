@@ -61,11 +61,11 @@ public class PPButtonCreator {
 		if (!queue.isEmpty()) {
 			ButtonMakerThread[] bmt = new ButtonMakerThread[Settings.SYS_THREADS];
 			
-			for (int i = 0; i < Settings.SYS_THREADS; i++) {
+			for (int i = 0; i < bmt.length; i++) {
 				bmt[i] = new ButtonMakerThread(ButtonMakerThread.class.getName() + "-" + i);
 				bmt[i].start();
 			}
-			for (int i = 0; i < Settings.SYS_THREADS; i++) {
+			for (int i = 0; i < bmt.length; i++) {
 				try {
 					bmt[i].join();
 				} catch (InterruptedException e) {

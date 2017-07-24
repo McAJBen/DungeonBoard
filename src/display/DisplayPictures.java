@@ -191,7 +191,7 @@ public class DisplayPictures extends Display {
 						for (AlphaImage image: images) {
 							paintImage(g2d, image.getImage());
 						}
-					} catch (ConcurrentModificationException e) {
+					} catch (NullPointerException | ConcurrentModificationException e) {
 						return;
 					}
 				}

@@ -161,7 +161,12 @@ public class Settings {
 	/**
 	 * the number of threads this computer has
 	 */
-	public static final int SYS_THREADS = Runtime.getRuntime().availableProcessors();
+	public static final int SYS_THREADS = Math.max(1, Runtime.getRuntime().availableProcessors() - 1);
+	
+	/**
+	 * 
+	 */
+	public static final int PAINT_GUIDE_SCALE = 3;
 	
 	/**
 	 * the image used by {@code DisplayPaint}
@@ -188,7 +193,7 @@ public class Settings {
 	 * - higher number means the shadows will be more blocky<br>
 	 * - lower number means the shadows will be more fine, but will use more memory and CPU time
 	 */
-	public static int PIXELS_PER_MASK = 3;
+	public static int PIXELS_PER_MASK = 5;
 	
 	/**
 	 * number of files in the current PAINT_FOLDER

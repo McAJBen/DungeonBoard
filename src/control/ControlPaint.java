@@ -245,8 +245,6 @@ public class ControlPaint extends Control {
 
 		Settings.PAINT_FOLDER = folder;
 		
-		File guide = new File(Settings.PAINT_FOLDER.getAbsolutePath() + "/Guide.png");
-		
 		Settings.PAINT_FOLDER_SIZE = 0;
 		for (File f: Settings.PAINT_FOLDER.listFiles(File::isFile)) {
 			String fileName = f.getName();
@@ -257,13 +255,17 @@ public class ControlPaint extends Control {
 					Settings.PAINT_FOLDER_SIZE++;
 				}
 			} catch (NumberFormatException e) {
-				// file not in valid format, therefore ignore
+				if (!fileName.equalsIgnoreCase("Guide.png")) {
+					System.out.println("File not in correct format: " + fileName + 
+							". Should be named with a number, ex: '" + Settings.PAINT_FOLDER_SIZE + ".png'");
+				}
 			}
 		}
 		
 		Settings.PAINT_IMAGES = new boolean[Settings.PAINT_FOLDER_SIZE];
 		
 		folderControlPanel.removeAll();
+		// creates all buttons
 		for (int i = 1; i <= Settings.PAINT_FOLDER_SIZE; i++) {
 			JButton button = Settings.createButton(i + "");
 			button.setBackground(Settings.INACTIVE);
@@ -321,6 +323,9 @@ public class ControlPaint extends Control {
 		}
 		folderControlPanel.revalidate();
 		
+		// loads guide
+		File guide = new File(Settings.PAINT_FOLDER.getAbsolutePath() + "/Guide.png");
+		
 		if (Settings.PAINT_FOLDER != null && Settings.PAINT_FOLDER.exists()) {
 			drawPanel.setImageLoading(true);
 			Thread folderLoadingThread = new Thread("folderLoadingThread") {
@@ -328,11 +333,23 @@ public class ControlPaint extends Control {
 					try {
 						Settings.PAINT_IMAGE = null;
 						Settings.PAINT_CONTROL_IMAGE = null;
-						Settings.PAINT_CONTROL_IMAGE = ImageIO.read(guide);
+						Dimension imageSize;
+						{
+							BufferedImage guideImg = ImageIO.read(guide);
+							imageSize = new Dimension(guideImg.getWidth(), guideImg.getHeight());
+							Settings.PAINT_CONTROL_IMAGE = new BufferedImage(
+									imageSize.width / Settings.PAINT_GUIDE_SCALE,
+									imageSize.height / Settings.PAINT_GUIDE_SCALE,
+									BufferedImage.TYPE_INT_RGB);
+							Settings.PAINT_CONTROL_IMAGE.getGraphics().drawImage(guideImg.getScaledInstance(
+									imageSize.width / Settings.PAINT_GUIDE_SCALE,
+									imageSize.height / Settings.PAINT_GUIDE_SCALE,
+									BufferedImage.SCALE_SMOOTH), 0, 0, null);
+						}
 						Settings.PAINT_IMAGE = new BufferedImage(
-								Settings.PAINT_CONTROL_IMAGE.getWidth(),
-								Settings.PAINT_CONTROL_IMAGE.getHeight(), 
-								Settings.PAINT_CONTROL_IMAGE.getType());
+								imageSize.width,
+								imageSize.height,
+								BufferedImage.TYPE_INT_ARGB);
 						drawPanel.setImage();
 						Main.DISPLAY_PAINT.setMask(drawPanel.getMask());
 						Main.DISPLAY_PAINT.setImageSize();

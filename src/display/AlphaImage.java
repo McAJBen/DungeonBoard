@@ -49,12 +49,19 @@ public class AlphaImage {
 	 * @return a {@code BufferedImage} with the file name
 	 */
 	public BufferedImage getImage() {
-		try {
-			return ImageIO.read(file);
-		} catch (IllegalArgumentException | IOException e) {
-			Settings.showError("Cannot load Image \"" + name, e);
-			return null;
+		for (int i = 0; i < 50; i++) {
+			try {
+				Thread.sleep(10);
+				return ImageIO.read(file);
+			} catch (InterruptedException | OutOfMemoryError e) {
+				
+			} catch (IllegalArgumentException | IOException e) {
+				Settings.showError("Cannot load Image \"" + name, e);
+			}
 		}
+		Settings.showError("Cannot Load Image\"" + name + "\" after 50 attempts\n" +
+				"Allocate more memory, use smaller images");
+		return null;
 	}
 	
 	/**
