@@ -144,6 +144,11 @@ public class Settings {
 	public static final Color PINK = new Color(255, 0, 255);
 	
 	/**
+	 * 
+	 */
+	public static final Color PINK_CLEAR = new Color(255, 0, 255, 25);
+	
+	/**
 	 * the background color used through Dungeon Board - (153, 153, 153)
 	 */
 	public static final Color BACKGROUND = new Color(153, 153, 153);

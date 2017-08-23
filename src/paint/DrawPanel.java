@@ -404,15 +404,27 @@ public class DrawPanel extends JComponent {
 				g2d.drawRect(mousePos.x - radius, mousePos.y - radius, diameter, diameter);
 				break;
 			}
-			g2d.drawRect(
-					windowPos.x * controlSize.width / Settings.PAINT_IMAGE.getWidth(),
-					windowPos.y * controlSize.height / Settings.PAINT_IMAGE.getHeight(),
-					(int) (Settings.DISPLAY_SIZE.width * displayZoom * controlSize.width / Settings.PAINT_IMAGE.getWidth()),
-					(int) (Settings.DISPLAY_SIZE.height * displayZoom * controlSize.height / Settings.PAINT_IMAGE.getHeight()));
+			
+			drawPlayerView(g2d);
 		}
 		else if (controlSize != null) {
 			g2d.drawString("No image loaded", controlSize.width / 2, controlSize.height / 2);
 		}
+	}
+	
+	/**
+	 * Draws a rectangle on the area of a {@code DrawPanel} to tell what the players can see
+	 * @param g2d the graphics component to draw to
+	 */
+	private void drawPlayerView(Graphics2D g2d) {
+		int w = (int) (Settings.DISPLAY_SIZE.width * displayZoom * controlSize.width / Settings.PAINT_IMAGE.getWidth());
+		int h = (int) (Settings.DISPLAY_SIZE.height * displayZoom * controlSize.height / Settings.PAINT_IMAGE.getHeight());
+		int x = w > controlSize.width ? -1 : windowPos.x * controlSize.width / Settings.PAINT_IMAGE.getWidth();
+		int y = h > controlSize.height ? -1 : windowPos.y * controlSize.height / Settings.PAINT_IMAGE.getHeight();
+		
+		g2d.drawRect(x, y, w, h);
+		g2d.setColor(Settings.PINK_CLEAR);
+		g2d.fillRect(x, y, w, h);
 	}
 
 	/**
