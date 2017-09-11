@@ -55,6 +55,11 @@ public class DisplayWindow extends JFrame {
 	private Direction handDirection;
 	
 	/**
+	 * handler for displaying a timer created from {@code DisplayLoading}
+	 */
+	private DisplayTimer displayTimer;
+	
+	/**
 	 * creates an instance of {@code DisplayWindow}
 	 * @param r the position and dimensions of the {@code JFrame}
 	 */
@@ -72,6 +77,7 @@ public class DisplayWindow extends JFrame {
 	            "null"));
 		mousePos = NULL_POS;
 		handDirection = Direction.UP;
+		displayTimer = new DisplayTimer(getSize());
 		
 		addMouseMotionListener(new MouseMotionAdapter() {
 			public void mouseDragged(MouseEvent e) {
@@ -84,7 +90,8 @@ public class DisplayWindow extends JFrame {
 		addMouseListener(new MouseListener() {
 			public void mouseReleased(MouseEvent e) {}
 			public void mousePressed(MouseEvent e) {
-				handDirection = Direction.values()[(handDirection.ordinal() + 1) % Direction.values().length];
+				handDirection = Direction.values()
+						[(handDirection.ordinal() + 1) % Direction.values().length];
 				repaint();
 			}
 			public void mouseClicked(MouseEvent e) {}
@@ -101,13 +108,15 @@ public class DisplayWindow extends JFrame {
 	 * paints the hand cursor to the screen
 	 * @param g2d the graphics to paint to
 	 */
-	public void paintMouse(Graphics2D g2d) {
+	public void paintDisplay(Graphics2D g2d) {
 		int i = handDirection.ordinal();
+		displayTimer.paint(g2d);
 		g2d.drawImage(
 				HANDS[i].getImage(),
 				mousePos.x + HANDS_OFFSET[i],
 				mousePos.y + HANDS_OFFSET[i == 0 ? 3 : i - 1],
 				null);
+		
 	}
 	
 	/**
@@ -131,5 +140,20 @@ public class DisplayWindow extends JFrame {
 	private void setMouse(Point p) {
 		mousePos = p;
 		repaint();
+	}
+
+	/**
+	 * enables a timer for a set amount of seconds
+	 * @param seconds number of seconds for the timer to count down
+	 */
+	public void setTimer(int seconds) {
+		displayTimer.setTimer(seconds);
+	}
+
+	/**
+	 * removes the timer from {@code DisplayWindow}
+	 */
+	public void clearTimer() {
+		displayTimer.clearTimer();
 	}
 }

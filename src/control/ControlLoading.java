@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
@@ -63,9 +64,8 @@ public class ControlLoading extends Control {
 		});
 		northPanel.add(clearCubeButton);
 		
-		JLabel timeLabel = new JLabel("8");
+		JLabel timeLabel = new JLabel("08");
 		timeLabel.setBackground(Settings.CONTROL_BACKGROUND);
-		timeLabel.setMinimumSize(new Dimension(20, 0));
 		timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		northPanel.add(timeLabel);
 		
@@ -74,11 +74,43 @@ public class ControlLoading extends Control {
 		timeSlider.setMinimumSize(new Dimension(100, 0));
 		timeSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				timeLabel.setText(String.format("%d", timeSlider.getValue()));
+				timeLabel.setText(String.format("%02d", timeSlider.getValue()));
 				Main.DISPLAY_LOADING.setTotalWait(timeSlider.getValue());
 			}
 		});
 		northPanel.add(timeSlider);
+		
+		JButton createTimerButton = Settings.createButton("Create Timer");
+		createTimerButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String input = JOptionPane.showInputDialog(Main.getControl(), "Enter minutes or M:SS", "");
+				try {
+					int seconds = 0;
+					if (input.contains(":")) {
+						String[] split = input.split(":");
+						seconds += Integer.parseInt(split[0]) * 60;
+						seconds += Integer.parseInt(split[1]);
+					}
+					else {
+						seconds += Integer.parseInt(input) * 60;
+					}
+					Main.getDisplay().setTimer(seconds);
+				} catch (NumberFormatException | NullPointerException e2) {
+					
+				}
+			}
+		});
+		northPanel.add(createTimerButton);
+		
+		JButton clearTimerButton = Settings.createButton("Clear Timer");
+		clearTimerButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Main.getDisplay().clearTimer();
+			}
+		});
+		northPanel.add(clearTimerButton);
 		
 		add(northPanel, BorderLayout.NORTH);
 		

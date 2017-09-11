@@ -139,12 +139,12 @@ public class Settings {
 	public static final Color OPAQUE = new Color(255, 100, 100);
 	
 	/**
-	 * the pink color used on {@DrawPanel} to show the cursor and outline of player's view
+	 * the pink color used on {@code DrawPanel} to show the cursor and outline of player's view
 	 */
 	public static final Color PINK = new Color(255, 0, 255);
 	
 	/**
-	 * 
+	 * the semi-transparent pink color used on {@code DrawPanel}
 	 */
 	public static final Color PINK_CLEAR = new Color(255, 0, 255, 25);
 	
@@ -169,7 +169,7 @@ public class Settings {
 	public static final int SYS_THREADS = Math.max(1, Runtime.getRuntime().availableProcessors() - 1);
 	
 	/**
-	 * 
+	 * how much to scale down the image for {@code ControlPaint}
 	 */
 	public static final int PAINT_GUIDE_SCALE = 3;
 	

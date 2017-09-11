@@ -419,10 +419,24 @@ public class DrawPanel extends JComponent {
 	private void drawPlayerView(Graphics2D g2d) {
 		int w = (int) (Settings.DISPLAY_SIZE.width * displayZoom * controlSize.width / Settings.PAINT_IMAGE.getWidth());
 		int h = (int) (Settings.DISPLAY_SIZE.height * displayZoom * controlSize.height / Settings.PAINT_IMAGE.getHeight());
-		int x = w > controlSize.width ? -1 : windowPos.x * controlSize.width / Settings.PAINT_IMAGE.getWidth();
-		int y = h > controlSize.height ? -1 : windowPos.y * controlSize.height / Settings.PAINT_IMAGE.getHeight();
+		int x, y;
+		
+		if (w > controlSize.width) {
+			x = -(w - controlSize.width) / 2;
+		}
+		else {
+			x = windowPos.x * controlSize.width / Settings.PAINT_IMAGE.getWidth();
+		}
+		if (h > controlSize.height) {
+			y = -(h - controlSize.height) / 2;
+		}
+		else {
+			y = windowPos.y * controlSize.height / Settings.PAINT_IMAGE.getHeight();
+		}
 		
 		g2d.drawRect(x, y, w, h);
+		g2d.drawLine(x, y, x + w, y + h);
+		g2d.drawLine(x + w, y, x, y + h);
 		g2d.setColor(Settings.PINK_CLEAR);
 		g2d.fillRect(x, y, w, h);
 	}
