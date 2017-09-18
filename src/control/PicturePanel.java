@@ -37,7 +37,7 @@ public abstract class PicturePanel extends JPanel {
 	/**
 	 * The size of the {@code ImageIcon} in each of the buttons
 	 */
-	private static final Dimension IMAGE_SIZE = new Dimension(100, 60);
+	private static final Dimension IMAGE_ICON_SIZE = new Dimension(100, 60);
 	
 	/**
 	 * creates an instance of the {@code Picture Panel}
@@ -82,21 +82,19 @@ public abstract class PicturePanel extends JPanel {
 	 * resizes an image and saves a lower quality version as a thumbnail
 	 * @param file the file input of the full size image
 	 */
-	private void createThumbnail(File file) {
+	private static void createThumbnail(File file) {
 		File tFile = Settings.fileToThumb(file);
-		if (tFile.exists()) {
-			tFile.delete();
-		}
-		try {
-			BufferedImage bufferedImage = new BufferedImage(IMAGE_SIZE.width, IMAGE_SIZE.height, BufferedImage.TYPE_INT_RGB);
-			bufferedImage.getGraphics().drawImage(
-					ImageIO.read(file).getScaledInstance(IMAGE_SIZE.width, IMAGE_SIZE.height, BufferedImage.SCALE_SMOOTH),
-					0, 0, null);
-			ImageIO.write(bufferedImage, "GIF", tFile);
-			tFile.deleteOnExit();
-		} catch (OutOfMemoryError | IOException e) {
-			Settings.showError("Cannot create Thumbnail, file is probably too large", e);
-			e.printStackTrace();
+		if (!tFile.exists() || file.lastModified() > tFile.lastModified()) {
+			try {
+				BufferedImage bufferedImage = new BufferedImage(IMAGE_ICON_SIZE.width, IMAGE_ICON_SIZE.height, BufferedImage.TYPE_INT_RGB);
+				bufferedImage.getGraphics().drawImage(
+						ImageIO.read(file).getScaledInstance(IMAGE_ICON_SIZE.width, IMAGE_ICON_SIZE.height, BufferedImage.SCALE_SMOOTH),
+						0, 0, null);
+				ImageIO.write(bufferedImage, "GIF", tFile);
+			} catch (OutOfMemoryError | IOException e) {
+				Settings.showError("Cannot create Thumbnail, file is probably too large", e);
+				e.printStackTrace();
+			}
 		}
 	}
 	

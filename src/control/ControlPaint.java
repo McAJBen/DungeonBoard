@@ -11,11 +11,9 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -88,21 +86,13 @@ public class ControlPaint extends Control {
 		
 		setFocusable(true);
 		
-		JButton settingsButton = Settings.createButton(Settings.ICON_SETTINGS);
-		settingsButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				showSettings();
-			}
-		});
-		innerNorthPanel.add(settingsButton);
-		
 		fileBox = new JComboBox<>();
 		fileBox.setBackground(Settings.CONTROL_BACKGROUND);
 		fileBox.addItem("");
 		load();
 		fileBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (!fileBox.getSelectedItem().equals("")) {
+				if (fileBox.getSelectedIndex() != 0) {
 					File file = new File(
 							Settings.FOLDERS[Mode.PAINT.ordinal()].getAbsolutePath() +
 							"/" + fileBox.getSelectedItem().toString());
@@ -242,9 +232,8 @@ public class ControlPaint extends Control {
 	 * @param name the folder name to load
 	 */
 	private void setFolder(File folder) {
-
+		drawPanel.saveMask(Settings.fileToMaskFile(Settings.PAINT_FOLDER));
 		Settings.PAINT_FOLDER = folder;
-		
 		Settings.PAINT_FOLDER_SIZE = 0;
 		for (File f: Settings.PAINT_FOLDER.listFiles(File::isFile)) {
 			String fileName = f.getName();
@@ -376,6 +365,8 @@ public class ControlPaint extends Control {
 	 */
 	private void setFile(File file) {
 		drawPanel.setImageLoading(true);
+		drawPanel.saveMask(Settings.fileToMaskFile(Settings.PAINT_FOLDER));
+		Settings.PAINT_FOLDER = file;
 		Thread fileLoadingThread = new Thread("fileLoadingThread") {
 			public void run() {
 				try {
@@ -426,45 +417,6 @@ public class ControlPaint extends Control {
 		zoomSlider.setMaximum((int) (maxZoom * 100));
 	}
 	
-	/**
-	 * opens the settings dialog
-	 */
-	public void showSettings() {
-		JDialog settings = new JDialog(Main.getControl(), "Settings", true);
-		settings.setLocationRelativeTo(Main.getControl());
-		settings.setSize(new Dimension(400, 400));
-		settings.setLayout(new BoxLayout(settings.getContentPane(), BoxLayout.Y_AXIS));
-		
-		JPanel paintMaskPanel = new JPanel();
-		paintMaskPanel.setLayout(new BoxLayout(paintMaskPanel, BoxLayout.X_AXIS));
-		paintMaskPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		paintMaskPanel.add(new JLabel("Paint Mask Quality: "));
-		JLabel maskQualityLabel = new JLabel(Settings.PIXELS_PER_MASK + "");
-		paintMaskPanel.add(maskQualityLabel);
-		JSlider maskQualitySlider = new JSlider(JSlider.HORIZONTAL, 1, 20, Settings.PIXELS_PER_MASK);
-		maskQualitySlider.setMajorTickSpacing(5);
-		maskQualitySlider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				maskQualityLabel.setText(maskQualitySlider.getValue() + "");
-			}
-		});
-		paintMaskPanel.add(maskQualitySlider);
-		settings.add(paintMaskPanel);
-		
-		JButton saveButton = Settings.createButton("Save");
-		saveButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				Settings.PIXELS_PER_MASK = maskQualitySlider.getValue();
-				load();
-				drawPanel.setImage();
-				settings.dispose();
-			}
-		});
-		settings.add(saveButton);
-		
-		settings.setVisible(true);
-	}
-
 	@Override
 	protected void load() {
 		while (fileBox.getItemCount() > 1) {
@@ -486,5 +438,12 @@ public class ControlPaint extends Control {
 				}
 			}
 		}
+	}
+
+	/**
+	 * saves the mask in {@code DrawPanel} to file
+	 */
+	public void saveMask() {
+		drawPanel.saveMask(Settings.fileToMaskFile(Settings.PAINT_FOLDER));
 	}
 }

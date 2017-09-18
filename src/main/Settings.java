@@ -42,6 +42,11 @@ public class Settings {
 	};
 	
 	/**
+	 * a sub folder in Dungeon Board to store data separate from sessions
+	 */
+	public static final File DATA_FOLDER = new File(FOLDER + File.separator + "Data");
+	
+	/**
 	 * the main {@code ImageIcon} for Dungeon Board
 	 */
 	public static final ImageIcon ICON = load("icon.gif");
@@ -102,11 +107,26 @@ public class Settings {
 	 * a blank 3x3 {@code BufferedImage} for displaying an invisible cursor, or as a placeholder for an image;
 	 */
 	public static final BufferedImage BLANK_CURSOR = new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB);
+
+	/**
+	 * the image used by {@code DisplayPaint}
+	 */
+	public static BufferedImage PAINT_IMAGE;
+	
+	/**
+	 * the image used by {@code ControlPaint}
+	 */
+	public static BufferedImage PAINT_CONTROL_IMAGE;
 	
 	/**
 	 * the default size of the {@code ControlWindow}
 	 */
 	public static final Dimension CONTROL_SIZE = new Dimension(900, 700);
+	
+	/**
+	 * the size of the display that players see
+	 */
+	public static Dimension DISPLAY_SIZE;
 	
 	/**
 	 * the color of an active button - (153, 255, 187)
@@ -164,6 +184,11 @@ public class Settings {
 	public static final boolean IS_WINDOWS = System.getProperty("os.name").startsWith("Windows");
 	
 	/**
+	 * The active layers in {@code DisplayPaint}
+	 */
+	public static boolean[] PAINT_IMAGES;
+	
+	/**
 	 * the number of threads this computer has
 	 */
 	public static final int SYS_THREADS = Math.max(1, Runtime.getRuntime().availableProcessors() - 1);
@@ -174,31 +199,11 @@ public class Settings {
 	public static final int PAINT_GUIDE_SCALE = 3;
 	
 	/**
-	 * the image used by {@code DisplayPaint}
-	 */
-	public static BufferedImage PAINT_IMAGE;
-	
-	/**
-	 * the image used by {@code ControlPaint}
-	 */
-	public static BufferedImage PAINT_CONTROL_IMAGE;
-	
-	/**
-	 * The active layers in {@code DisplayPaint}
-	 */
-	public static boolean[] PAINT_IMAGES;
-
-	/**
-	 * the size of the display that players see
-	 */
-	public static Dimension DISPLAY_SIZE;
-	
-	/**
 	 * number of pixels on the Paint image that are being covered by a single pixel on the mask.<br>
 	 * - higher number means the shadows will be more blocky<br>
 	 * - lower number means the shadows will be more fine, but will use more memory and CPU time
 	 */
-	public static int PIXELS_PER_MASK = 5;
+	public static final int PIXELS_PER_MASK = 5;
 	
 	/**
 	 * number of files in the current PAINT_FOLDER
@@ -215,13 +220,19 @@ public class Settings {
 				f.mkdirs();
 			}
 		}
-		File ImageThumbs = new File(FOLDERS[Mode.IMAGE.ordinal()] + File.separator + "TempThumbnails");
-		ImageThumbs.mkdirs();
-		ImageThumbs.deleteOnExit();
 		
-		File LayerThumbs = new File(FOLDERS[Mode.LAYER.ordinal()] + File.separator + "TempThumbnails");
+		if (!DATA_FOLDER.exists()) {
+			DATA_FOLDER.mkdirs();
+		}
+		
+		File ImageThumbs = new File(DATA_FOLDER + File.separator + "Layer");
+		ImageThumbs.mkdirs();
+		
+		File LayerThumbs = new File(DATA_FOLDER + File.separator + "Image");
 		LayerThumbs.mkdirs();
-		LayerThumbs.deleteOnExit();
+		
+		File paintMasks = new File(DATA_FOLDER + File.separator + "Paint");
+		paintMasks.mkdirs();
 	}
 	
 	/**
@@ -263,7 +274,42 @@ public class Settings {
 	 * @return a file in the thumbnail folder
 	 */
 	public static File fileToThumb(File f) {
-		return new File(f.getParentFile() + File.separator + "TempThumbnails" + File.separator + f.getName());
+		return new File(DATA_FOLDER.getAbsolutePath() + File.separator + f.getParentFile().getName() + File.separator + f.getName());
+	}
+	
+	/**
+	 * turns a thumbnail file into its normal file equal
+	 * @param f the file referring to the thumbnail
+	 * @return a file in the normal folders
+	 */
+	public static File thumbToFile(File f) {
+		return new File(FOLDER.getAbsolutePath() + File.separator + f.getParentFile().getName() + File.separator + f.getName());
+	}
+	
+	/**
+	 * turns a folder into its data folder equal
+	 * @param f the folder referring to one in Settings.FOLDERS
+	 * @return a folder in the data folder
+	 */
+	public static File folderToDataFolder(File f) {
+		return new File(DATA_FOLDER.getAbsolutePath() + File.separator + f.getName());
+	}
+	
+	/**
+	 * turns a file/folder into its data folder equal to store a mask for Paint
+	 * @param f the file referring to one in Settings.PAINT_FOLDER
+	 * @return a file in the data folder
+	 */
+	public static File fileToMaskFile(File f) {
+		if (f != null) {
+			if (f.isDirectory()) {
+				return new File(DATA_FOLDER.getAbsolutePath() + File.separator + "Paint" + File.separator + f.getName() + ".f");
+			}
+			else {
+				return new File(DATA_FOLDER.getAbsolutePath() + File.separator + "Paint" + File.separator + f.getName());
+			}
+		}
+		return null;
 	}
 	
 	/**

@@ -3,6 +3,8 @@ package main;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -140,6 +142,13 @@ public class Main {
 				CONTROL_WINDOW.setButton(Window.DISPLAY, Mode.LOADING, true);
 				CONTROL_WINDOW.setMode(CONTROL_MODE, Mode.IMAGE);
 				DISPLAY_WINDOW.setMode(DISPLAY_MODE, Mode.IMAGE);
+				
+				CONTROL_WINDOW.addWindowListener(new WindowAdapter() {
+					@Override
+					public void windowClosing(WindowEvent windowEvent) {
+						CONTROL_PAINT.saveMask();
+					}
+				});
 				
 				DISPLAY_WINDOW.setVisible(true);
 				CONTROL_WINDOW.setVisible(true);

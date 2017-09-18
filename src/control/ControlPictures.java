@@ -122,6 +122,13 @@ public class ControlPictures extends Control {
 	@Override
 	protected void load() {
 		if (folder.exists()) {
+			for (File file: Settings.folderToDataFolder(folder).listFiles()) {
+				File fileFromThumbnail = Settings.thumbToFile(file);
+				if (!fileFromThumbnail.exists()) {
+					file.delete();
+				}
+			}
+			
 			pp.clearButtons();
 			
 			PPButtonCreator ppbc = new PPButtonCreator(pp, folder);

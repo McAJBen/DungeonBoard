@@ -16,7 +16,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 
@@ -228,11 +231,24 @@ public class DrawPanel extends JComponent {
 	 */
 	public synchronized void setImage() {
 		if (Settings.PAINT_IMAGE != null) {
-			drawingLayer = new BufferedImage(
-				Settings.PAINT_IMAGE.getWidth() / Settings.PIXELS_PER_MASK,
-				Settings.PAINT_IMAGE.getHeight() / Settings.PIXELS_PER_MASK,
-				BufferedImage.TYPE_INT_ARGB);
 			
+			File maskFile = Settings.fileToMaskFile(Settings.PAINT_FOLDER);
+			
+			if (maskFile.exists() && maskFile.lastModified() > Settings.PAINT_FOLDER.lastModified()) {
+				try {
+					drawingLayer = ImageIO.read(maskFile);
+					g2 = (Graphics2D) drawingLayer.getGraphics();
+					g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.6f));
+					g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+					return;
+				} catch (IOException e) {
+					Settings.showError("Cannot load Mask, file is probably too large", e);
+				}
+			}
+			drawingLayer = new BufferedImage(
+					Settings.PAINT_IMAGE.getWidth() / Settings.PIXELS_PER_MASK,
+					Settings.PAINT_IMAGE.getHeight() / Settings.PIXELS_PER_MASK,
+					BufferedImage.TYPE_INT_ARGB);
 			g2 = (Graphics2D) drawingLayer.getGraphics();
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.6f));
 			g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
@@ -573,5 +589,18 @@ public class DrawPanel extends JComponent {
 	 */
 	public void showAll() {
 		fillAll(Settings.CLEAR);
+	}
+	
+	/**
+	 * saves the mask to file
+	 */
+	public void saveMask(File f) {
+		if (f != null) {
+			try {
+				ImageIO.write(drawingLayer, "png", f);
+			} catch (IOException e) {
+				Settings.showError("Cannot save Mask", e);
+			}
+		}
 	}
 }

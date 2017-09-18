@@ -51,10 +51,13 @@ public class AlphaImage {
 	public BufferedImage getImage() {
 		for (int i = 0; i < 50; i++) {
 			try {
-				Thread.sleep(10);
 				return ImageIO.read(file);
-			} catch (InterruptedException | OutOfMemoryError e) {
-				
+			} catch (OutOfMemoryError e) {
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e1) {
+					
+				}
 			} catch (IllegalArgumentException | IOException e) {
 				Settings.showError("Cannot load Image \"" + name, e);
 			}
