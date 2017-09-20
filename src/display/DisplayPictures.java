@@ -62,7 +62,7 @@ public class DisplayPictures extends Display {
 		
 		image = new BufferedImage(Settings.DISPLAY_SIZE.width, Settings.DISPLAY_SIZE.height, BufferedImage.TYPE_INT_ARGB);
 		images = new LinkedList<>();
-		scaleMode = Scale.FILL;
+		scaleMode = Scale.UP_SCALE;
 		flip = false;
 		
 		setVisible(true);

@@ -58,6 +58,7 @@ public class ControlPictures extends Control {
 		JComboBox<Scale> scaleComboBox = new JComboBox<>(Scale.values());
 		scaleComboBox.setBackground(Settings.CONTROL_BACKGROUND);
 		scaleComboBox.setMaximumSize(new Dimension(100, 5000));
+		scaleComboBox.setSelectedItem(Scale.UP_SCALE);
 		scaleComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				display.setScaleMode(scaleComboBox.getSelectedItem());
