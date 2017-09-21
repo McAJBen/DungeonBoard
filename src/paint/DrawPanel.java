@@ -511,21 +511,28 @@ public class DrawPanel extends JComponent {
 				default:
 					break;
 			}
+			final double widthMod = (double)drawingLayer.getWidth() / controlSize.width;
+			final double heightMod = (double)drawingLayer.getHeight() / controlSize.height;
+			final double rwidth = radius * widthMod;
+			final double rheight = radius * heightMod;
+			final int dwidth = (int) (diameter * widthMod);
+			final int dheight = (int) (diameter * heightMod);
 			switch (penType) {
 			case CIRCLE:
-				g2.fillPolygon(getPolygon(newP, lastP));
+				g2.fillPolygon(getCirclePolygon(newP, lastP, rwidth, rheight));
 				g2.fillOval(
-						newP.x - radius * drawingLayer.getWidth() / controlSize.width,
-						newP.y - radius * drawingLayer.getHeight() / controlSize.height,
-						diameter * drawingLayer.getWidth() / controlSize.width,
-						diameter * drawingLayer.getHeight() / controlSize.height);
+						newP.x - (int)rwidth,
+						newP.y - (int)rheight,
+						dwidth,
+						dheight);
 				break;
 			case SQUARE:
+				g2.fillPolygon(getSquarePolygon(newP, lastP, (int)rwidth, (int)rheight));
 				g2.fillRect(
-						newP.x - radius * drawingLayer.getWidth() / controlSize.width,
-						newP.y - radius * drawingLayer.getHeight() / controlSize.height,
-						diameter * drawingLayer.getWidth() / controlSize.width,
-						diameter * drawingLayer.getHeight() / controlSize.height);
+						newP.x - (int)rwidth,
+						newP.y - (int)rheight,
+						dwidth,
+						dheight);
 				break;
 			}
 			lastP = newP;
@@ -540,16 +547,18 @@ public class DrawPanel extends JComponent {
 	 * @param oldP the center of another circle<br>
 	 * points based on the placement on {@code Settings.PAINT_IMAGE}<br>
 	 * use {@code toDrawingPoint} to convert to the correct point
+	 * @param rwidth the radius of the circle in the x direction
+	 * @param rheight the radius of the circle in the y direction
 	 * @return a {@code Polygon} with 4 points
 	 */
-	private Polygon getPolygon(Point newP, Point oldP) {
-		double angle = -Math.atan2(newP.getY() - oldP.getY(), newP.getX() - oldP.getX());
-		double anglePos = angle + Math.PI / 2;
-		double angleNeg = angle - Math.PI / 2;
-		int cosP = (int) (Math.cos(anglePos) * radius * drawingLayer.getWidth() / controlSize.width);
-		int cosN = (int) (Math.cos(angleNeg) * radius * drawingLayer.getWidth() / controlSize.width);
-		int sinP = (int) (Math.sin(anglePos) * radius * drawingLayer.getHeight() / controlSize.height);
-		int sinN = (int) (Math.sin(angleNeg) * radius * drawingLayer.getHeight() / controlSize.height);
+	private Polygon getCirclePolygon(Point newP, Point oldP, double rwidth, double rheight) {
+		final double angle = -Math.atan2(newP.getY() - oldP.getY(), newP.getX() - oldP.getX());
+		final double anglePos = angle + Math.PI / 2;
+		final double angleNeg = angle - Math.PI / 2;
+		final int cosP = (int) (Math.cos(anglePos) * rwidth);
+		final int cosN = (int) (Math.cos(angleNeg) * rwidth);
+		final int sinP = (int) (Math.sin(anglePos) * rheight);
+		final int sinN = (int) (Math.sin(angleNeg) * rheight);
 		return new Polygon(
 				new int[] {
 						newP.x + cosP,
@@ -561,6 +570,33 @@ public class DrawPanel extends JComponent {
 						newP.y - sinN,
 						oldP.y - sinN,
 						oldP.y - sinP}, 4);
+	}
+
+	/**
+	 * returns a polygon for a rectangle connecting two squares
+	 * @param newP the center of one square
+	 * @param oldP the center of another square<br>
+	 * points based on the placement on {@code Settings.PAINT_IMAGE}<br>
+	 * use {@code toDrawingPoint} to convert to the correct point
+	 * @param rwidth the radius of the square in the x direction
+	 * @param rheight the radius of the square in the y direction
+	 * @return a {@code Polygon} with 4 points
+	 */
+	private Polygon getSquarePolygon(Point newP, Point oldP, int rwidth, int rheight) {
+		if ((newP.x > oldP.x && newP.y > oldP.y) || (newP.x < oldP.x && newP.y < oldP.y)) {
+			rheight *= -1;
+		}
+		return new Polygon(
+				new int[] {
+						newP.x - rwidth,
+						newP.x + rwidth,
+						oldP.x + rwidth,
+						oldP.x - rwidth},
+				new int[] {
+						newP.y - rheight,
+						newP.y + rheight,
+						oldP.y + rheight,
+						oldP.y - rheight}, 4);
 	}
 	
 	/**
