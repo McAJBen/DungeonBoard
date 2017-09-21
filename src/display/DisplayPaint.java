@@ -87,6 +87,13 @@ public class DisplayPaint extends Display {
 				(int)(Settings.PAINT_IMAGE.getHeight() / scale));
 	}
 	
+	@Override
+	public void setMainDisplay(boolean b) {
+		if (b) {
+			repaint();
+		}
+	}
+	
 	/**
 	 * sets the window to a specific scale and position
 	 * @param scale the zoom scale for the image

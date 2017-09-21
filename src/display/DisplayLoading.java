@@ -132,6 +132,7 @@ public class DisplayLoading extends Display {
 	public void setMainDisplay(boolean b) {
 		if (b) {
 			restart(false);
+			repaint();
 		}
 		mainDisplay = b;
 	}

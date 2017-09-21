@@ -125,12 +125,20 @@ public class DisplayWindow extends JFrame {
 	 * @param oldMode the old mode displayed before
 	 */
 	public void setMode(Mode newMode, Mode oldMode) {
-		remove(Main.getDisplay(oldMode));
-		Main.getDisplay(oldMode).setMainDisplay(false);
-		add(Main.getDisplay(newMode));
-		Main.getDisplay(newMode).setMainDisplay(true);
-		validate();
-		repaint();
+		Thread thread = new Thread() {
+			@Override
+			public void run() {
+				super.run();
+				synchronized (Main.getControl()) {
+					remove(Main.getDisplay(oldMode));
+					Main.getDisplay(oldMode).setMainDisplay(false);
+					add(Main.getDisplay(newMode));
+					validate();
+					Main.getDisplay(newMode).setMainDisplay(true);
+				}
+			}
+		};
+		thread.start();
 	}
 	
 	/**
