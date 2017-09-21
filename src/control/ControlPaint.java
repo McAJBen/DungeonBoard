@@ -4,10 +4,13 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -15,7 +18,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
@@ -95,9 +97,28 @@ public class ControlPaint extends Control {
 				if (fileBox.getSelectedIndex() != 0) {
 					File file = new File(
 							Settings.FOLDERS[Mode.PAINT.ordinal()].getAbsolutePath() +
-							"/" + fileBox.getSelectedItem().toString());
+							File.separator + fileBox.getSelectedItem().toString());
 					
 					if (file.exists()) {
+						drawPanel.saveMask();
+						File maskFile = Settings.fileToMaskFile(file);
+						File dataFile = new File(Settings.DATA_FOLDER + File.separator + "Paint" + File.separator + maskFile.getName() + ".data");
+						if (dataFile.exists()) {
+							try {
+								BufferedReader br = new BufferedReader(new FileReader(dataFile));
+								
+								String data[] = br.readLine().split(" ");
+								double zoom = Double.parseDouble(data[0]);
+								Point p = new Point(Integer.parseInt(data[1]), Integer.parseInt(data[2]));
+								zoomSlider.setMaximum(10_000);
+								zoomSlider.setValue((int) (zoom * 100));
+								zoomText.setText(String.format("%.2f", zoom));
+								drawPanel.setWindow(zoom, p);
+								br.close();
+							} catch (IOException e2) {
+								Settings.showError("Cannot load Mask Data", e2);
+							}
+						}
 						if (file.isDirectory()) {
 							folderControlPanel.setVisible(true);
 							setFolder(file);
@@ -196,6 +217,7 @@ public class ControlPaint extends Control {
 					zoom = zoomSlider.getValue() / 100.0;
 				}
 				zoomText.setText(String.format("%.2f", zoom));
+				zoomSlider.setValue((int) (zoom * 100));
 			}
 		});
 		westPanel.add(zoomText);
@@ -232,7 +254,6 @@ public class ControlPaint extends Control {
 	 * @param name the folder name to load
 	 */
 	private void setFolder(File folder) {
-		drawPanel.saveMask(Settings.fileToMaskFile(Settings.PAINT_FOLDER));
 		Settings.PAINT_FOLDER = folder;
 		Settings.PAINT_FOLDER_SIZE = 0;
 		for (File f: Settings.PAINT_FOLDER.listFiles(File::isFile)) {
@@ -365,30 +386,15 @@ public class ControlPaint extends Control {
 	 */
 	private void setFile(File file) {
 		drawPanel.setImageLoading(true);
-		drawPanel.saveMask(Settings.fileToMaskFile(Settings.PAINT_FOLDER));
 		Settings.PAINT_FOLDER = file;
 		Thread fileLoadingThread = new Thread("fileLoadingThread") {
 			public void run() {
 				try {
-					Dimension oldImageSize = new Dimension(0, 0);
-					if (Settings.PAINT_IMAGE != null) {
-						oldImageSize = new Dimension(Settings.PAINT_IMAGE.getWidth(), Settings.PAINT_IMAGE.getHeight());
-					}
 					Settings.PAINT_IMAGE = null;
 					Settings.PAINT_IMAGE = ImageIO.read(file);
 					Settings.PAINT_CONTROL_IMAGE = Settings.PAINT_IMAGE;
 					if (Settings.PAINT_IMAGE != null) {
-						if (oldImageSize == null ||
-								Settings.PAINT_IMAGE.getWidth() != oldImageSize.getWidth() ||
-								Settings.PAINT_IMAGE.getHeight() != oldImageSize.getHeight() ||
-								JOptionPane.showConfirmDialog(drawPanel,
-									"Would you like to keep the same visibility mask?",
-									"Paint Image has been changed",
-									JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
-							
-							drawPanel.setImage();
-						}
-						
+						drawPanel.setImage();
 						Main.DISPLAY_PAINT.setMask(drawPanel.getMask());
 						Main.DISPLAY_PAINT.setImageSize();
 						setZoomMax();
@@ -444,6 +450,6 @@ public class ControlPaint extends Control {
 	 * saves the mask in {@code DrawPanel} to file
 	 */
 	public void saveMask() {
-		drawPanel.saveMask(Settings.fileToMaskFile(Settings.PAINT_FOLDER));
+		drawPanel.saveMask();
 	}
 }

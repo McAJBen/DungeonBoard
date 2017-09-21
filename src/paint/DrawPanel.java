@@ -16,7 +16,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -226,6 +228,18 @@ public class DrawPanel extends JComponent {
 	}
 	
 	/**
+	 * sets the zoom and position of the players view
+	 * @param zoom the number of pixels in the image per pixel on the output display
+	 * @param p the point of the click (middle point of window)
+	 */
+	public void setWindow(double zoom, Point p) {
+		displayZoom = zoom;
+		setWindowPos(p);
+		Main.DISPLAY_PAINT.setWindow(zoom, getWindowPos());
+		repaint();
+	}
+	
+	/**
 	 * creates the {@code drawingLayer} based on {@code Settings.PAINT_IMAGE}.
 	 * Also sets {@code g2} and clears everything for a new image.
 	 */
@@ -240,19 +254,20 @@ public class DrawPanel extends JComponent {
 					g2 = (Graphics2D) drawingLayer.getGraphics();
 					g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.6f));
 					g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-					return;
 				} catch (IOException e) {
 					Settings.showError("Cannot load Mask, file is probably too large", e);
 				}
 			}
-			drawingLayer = new BufferedImage(
-					Settings.PAINT_IMAGE.getWidth() / Settings.PIXELS_PER_MASK,
-					Settings.PAINT_IMAGE.getHeight() / Settings.PIXELS_PER_MASK,
-					BufferedImage.TYPE_INT_ARGB);
-			g2 = (Graphics2D) drawingLayer.getGraphics();
-			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.6f));
-			g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-			hideAll();
+			else {
+				drawingLayer = new BufferedImage(
+						Settings.PAINT_IMAGE.getWidth() / Settings.PIXELS_PER_MASK,
+						Settings.PAINT_IMAGE.getHeight() / Settings.PIXELS_PER_MASK,
+						BufferedImage.TYPE_INT_ARGB);
+				g2 = (Graphics2D) drawingLayer.getGraphics();
+				g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.6f));
+				g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+				hideAll();
+			}
 		}
 	}
 
@@ -630,10 +645,17 @@ public class DrawPanel extends JComponent {
 	/**
 	 * saves the mask to file
 	 */
-	public void saveMask(File f) {
+	public void saveMask() {
+		File f = Settings.fileToMaskFile(Settings.PAINT_FOLDER);
 		if (f != null) {
 			try {
 				ImageIO.write(drawingLayer, "png", f);
+				
+				File dataFile = new File(Settings.DATA_FOLDER + File.separator + "Paint" + File.separator + f.getName() + ".data");
+				BufferedWriter writer = new BufferedWriter(new FileWriter(dataFile));
+				writer.write(String.format("%f %d %d", displayZoom, lastWindowClick.x, lastWindowClick.y));
+				writer.close();
+				
 			} catch (IOException e) {
 				Settings.showError("Cannot save Mask", e);
 			}

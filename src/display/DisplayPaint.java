@@ -130,18 +130,6 @@ public class DisplayPaint extends Display {
 		}
 		repaint();
 	}
-	
-	/**
-	 * sets the zoom scale of the image
-	 * @param scale the zoom scale of the image
-	 */
-	public void setWindowScale(double scale) {
-		this.scale = scale;
-		if (Settings.PAINT_IMAGE != null) {
-			setImageSize();
-		}
-		repaint();
-	}
 
 	/**
 	 * sets the mask to completely opaque
