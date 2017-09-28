@@ -138,11 +138,6 @@ public class Main {
 				CONTROL_PAINT = new ControlPaint();
 				CONTROL_LOADING = new ControlLoading();
 				
-				CONTROL_WINDOW.setButton(Window.CONTROL, Mode.PAINT, true);
-				CONTROL_WINDOW.setButton(Window.DISPLAY, Mode.LOADING, true);
-				CONTROL_WINDOW.setMode(CONTROL_MODE, Mode.IMAGE);
-				DISPLAY_WINDOW.setMode(DISPLAY_MODE, Mode.IMAGE);
-				
 				CONTROL_WINDOW.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(WindowEvent windowEvent) {
@@ -150,8 +145,15 @@ public class Main {
 					}
 				});
 				
-				DISPLAY_WINDOW.setVisible(true);
-				CONTROL_WINDOW.setVisible(true);
+				CONTROL_WINDOW.setButton(Window.CONTROL, Mode.PAINT, true);
+				CONTROL_WINDOW.setButton(Window.DISPLAY, Mode.LOADING, true);
+				CONTROL_WINDOW.setMode(CONTROL_MODE, Mode.IMAGE);
+				DISPLAY_WINDOW.setMode(DISPLAY_MODE, Mode.IMAGE);
+				
+				synchronized (CONTROL_WINDOW) {
+					DISPLAY_WINDOW.setVisible(true);
+					CONTROL_WINDOW.setVisible(true);
+				}
 			}
 		} catch (SecurityException e) {
 			Settings.showError("Error - Loading resources", e);
