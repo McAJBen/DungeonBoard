@@ -94,6 +94,11 @@ public class DrawPanel extends JComponent {
 	private boolean loading;
 	
 	/**
+	 * true if the mouse has yet to be released
+	 */
+	private boolean dragging;
+	
+	/**
 	 * the state of the vertical or horizontal lock on the pen
 	 */
 	private Direction styleLock;
@@ -112,6 +117,11 @@ public class DrawPanel extends JComponent {
 	 * the position of the actual window on the {@code drawingLayer}
 	 */
 	private Point windowPos;
+	
+	/**
+	 * the position of the start of a click
+	 */
+	private Point startOfClick;
 	
 	/**
 	 * the {@code JButton} that causes the mask to be displayed to the players.
@@ -167,11 +177,15 @@ public class DrawPanel extends JComponent {
 								g2.setPaint(Settings.OPAQUE);
 								canDraw = true;
 							}
+							startOfClick = e.getPoint();
+							dragging = true;
 							addPoint(lastP);
 						}
 						break;
 					case INVISIBLE:
 					case VISIBLE:
+						startOfClick = e.getPoint();
+						dragging = true;
 						addPoint(lastP);
 						break;
 					case WINDOW:
@@ -181,6 +195,26 @@ public class DrawPanel extends JComponent {
 					}
 					repaint();
 				}
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (Settings.PAINT_IMAGE != null && canDraw) {
+					switch (penType) {
+					case RECT:
+						Point p = toDrawingPoint(e.getPoint());
+						Point p2 = toDrawingPoint(startOfClick);
+						g2.fillRect(
+								Math.min(p.x, p2.x),
+								Math.min(p.y, p2.y),
+								Math.abs(p.x - p2.x),
+								Math.abs(p.y - p2.y));
+						break;
+					default:
+						break;
+					}
+				}
+				dragging = false;
+				repaint();
 			}
 		});
 		addMouseMotionListener(new MouseMotionAdapter() {
@@ -434,6 +468,17 @@ public class DrawPanel extends JComponent {
 			case SQUARE:
 				g2d.drawRect(mousePos.x - radius, mousePos.y - radius, diameter, diameter);
 				break;
+			case RECT:
+				if (dragging) {
+					g2d.drawRect(
+							Math.min(mousePos.x, startOfClick.x),
+							Math.min(mousePos.y, startOfClick.y),
+							Math.abs(mousePos.x - startOfClick.x),
+							Math.abs(mousePos.y - startOfClick.y));
+				}
+				g2d.drawLine(mousePos.x, mousePos.y - 10, mousePos.x, mousePos.y + 10);
+				g2d.drawLine(mousePos.x - 10, mousePos.y, mousePos.x + 10, mousePos.y);
+				break;
 			}
 			
 			drawPlayerView(g2d);
@@ -548,6 +593,8 @@ public class DrawPanel extends JComponent {
 						newP.y - (int)rheight,
 						dwidth,
 						dheight);
+				break;
+			case RECT:
 				break;
 			}
 			lastP = newP;

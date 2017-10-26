@@ -100,7 +100,8 @@ public class Settings {
 	 */
 	public static final ImageIcon PEN_TYPE[] = {
 			load("circle.gif"),
-			load("square.gif")
+			load("square.gif"),
+			load("rect.gif")
 	};
 	
 	/**

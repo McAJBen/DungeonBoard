@@ -8,5 +8,6 @@ package paint;
  */
 public enum Pen {
 	CIRCLE,
-	SQUARE
+	SQUARE,
+	RECT
 }
