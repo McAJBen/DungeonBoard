@@ -44,7 +44,7 @@ public class PPButtonCreator {
 		queue = new LinkedList<>();
 		queueNumber = 0;
 		
-		for (File f: folder.listFiles()) {
+		for (File f: Settings.listFilesInOrder(folder)) {
 			String name = f.getName();
 			String suffix = name.substring(name.lastIndexOf('.') + 1);
 			if (suffix.equalsIgnoreCase("PNG") || suffix.equalsIgnoreCase("JPG") || suffix.equalsIgnoreCase("JPEG")) {
@@ -74,6 +74,7 @@ public class PPButtonCreator {
 			}
 			
 			for (JButton b: buttons) {
+				System.out.println(b.getText());
 				pp.add(b);
 			}
 		}

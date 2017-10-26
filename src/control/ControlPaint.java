@@ -431,7 +431,7 @@ public class ControlPaint extends Control {
 		File folder = Settings.FOLDERS[Mode.PAINT.ordinal()];
 		
 		if (folder.exists()) {
-			for (File f: folder.listFiles()) {
+			for (File f: Settings.listFilesInOrder(folder)) {
 				if (f.isDirectory()) {
 					fileBox.addItem(f.getName());
 				}

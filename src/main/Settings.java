@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Comparator;
+import java.util.LinkedList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -328,5 +330,24 @@ public class Settings {
 	 */
 	public static void showError(String message, Throwable error) {
 		JOptionPane.showMessageDialog(Main.getControl(), message + "\n" + error.getMessage());
+	}
+	
+	/**
+	 * An alternate to {@code File.listFiles()} which returns in alphabetical order
+	 * @param folder The folder to look for files in
+	 * @return a {@code LinkedList<File>} of all files in {@code folder} in alphabetical order
+	 */
+	public static LinkedList<File> listFilesInOrder(File folder) {
+		LinkedList<File> files = new LinkedList<>();
+		for (File f: folder.listFiles()) {
+			files.add(f);
+		}
+		files.sort(new Comparator<File>() {
+			@Override
+			public int compare(File o1, File o2) {
+				return o1.compareTo(o2);
+			}
+		});
+		return files;
 	}
 }
