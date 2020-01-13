@@ -49,10 +49,12 @@ public class AlphaImage {
 	 * @return a {@code BufferedImage} with the file name
 	 */
 	public BufferedImage getImage() {
+		OutOfMemoryError error = null;
 		for (int i = 0; i < 50; i++) {
 			try {
 				return ImageIO.read(file);
 			} catch (OutOfMemoryError e) {
+				error = e;
 				try {
 					Thread.sleep(10);
 				} catch (InterruptedException e1) {
@@ -63,7 +65,7 @@ public class AlphaImage {
 			}
 		}
 		Settings.showError("Cannot Load Image\"" + name + "\" after 50 attempts\n" +
-				"Allocate more memory, use smaller images");
+				"Allocate more memory, use smaller images", error);
 		return null;
 	}
 	

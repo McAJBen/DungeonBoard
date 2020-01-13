@@ -305,12 +305,8 @@ public class Settings {
 	 */
 	public static File fileToMaskFile(File f) {
 		if (f != null) {
-			if (f.isDirectory()) {
-				return new File(DATA_FOLDER.getAbsolutePath() + File.separator + "Paint" + File.separator + f.getName() + ".f");
-			}
-			else {
-				return new File(DATA_FOLDER.getAbsolutePath() + File.separator + "Paint" + File.separator + f.getName());
-			}
+			String s = DATA_FOLDER.getAbsolutePath() + File.separator + "Paint" + File.separator + f.getName();
+			return new File(s + (f.isDirectory() ? ".f" : ""));
 		}
 		return null;
 	}
@@ -329,6 +325,7 @@ public class Settings {
 	 * @param error the error that was thrown
 	 */
 	public static void showError(String message, Throwable error) {
+		error.printStackTrace();
 		JOptionPane.showMessageDialog(Main.getControl(), message + "\n" + error.getMessage());
 	}
 	
