@@ -14,8 +14,8 @@ import javax.swing.JScrollPane
  * a `Control` for the Layer and Image Utility
  * @param folder the folder that images are loaded from
  * @param display the display to post images to
- * @param allowList if more than 1 image should be allowed<br></br>
- * - true will be for Layer Utility<br></br>
+ * @param allowList if more than 1 image should be allowed
+ * - true will be for Layer Utility
  * - false will be for Image Utility
  * @author McAJBen@gmail.com
  * @since 2.0
@@ -25,21 +25,23 @@ class ControlPictures(
     private val display: DisplayPictures,
     allowList: Boolean
 ) : Control() {
+
+    companion object {
+        private const val serialVersionUID = -1679600820663944136L
+    }
+
     /**
      * the scroll menu of images inside the folder
      */
     private val picturePanel: PicturePanel
 
-    companion object {
-        private const val serialVersionUID = -1679600820663944136L
-    }
 
     init {
         val scaleComboBox: JComboBox<Scale> = JComboBox<Scale>(Scale.values()).apply {
             background = Settings.CONTROL_BACKGROUND
             maximumSize = Dimension(100, 5000)
             selectedItem = Scale.UP_SCALE
-            addActionListener { display.setScaleMode(selectedItem) }
+            addActionListener { display.setScaleMode(selectedItem as Scale) }
         }
 
         val flipButton = Settings.createButton(Settings.ICON_FLIP).apply {

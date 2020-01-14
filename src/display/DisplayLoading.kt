@@ -17,6 +17,16 @@ import javax.imageio.ImageIO
  * @since 1.0
  */
 class DisplayLoading : Display() {
+
+    companion object {
+        private const val serialVersionUID = -4364176757863161776L
+        /**
+         * the number of ticks while the images are changing
+         * 50ms tick time makes 20 ticks per second
+         */
+        private const val FADE_IN = 20
+    }
+
     /**
      * the total number of ticks to display the image
      */
@@ -24,11 +34,11 @@ class DisplayLoading : Display() {
     /**
      * a list of the cubes in the `DisplayLoading`
      */
-    private val cubePositions: LinkedList<Cube>
+    private val cubePositions = LinkedList<Cube>()
     /**
      * a list of the file names that haven't been shown this loop
      */
-    private val fileNames: LinkedList<String>
+    private val fileNames = LinkedList<String>()
     /**
      * the previous image that is fading out
      */
@@ -41,7 +51,7 @@ class DisplayLoading : Display() {
      * the thread that is repainting the `DisplayLoading`
      * and calculating motions and keeping track of time
      */
-    private var paintThread: Thread
+    private var paintThread = Thread()
     /**
      * tells if this is being shown and if we should be keeping track of time
      */
@@ -49,15 +59,21 @@ class DisplayLoading : Display() {
     /**
      * tells if the images should be up scaled
      */
-    private var upScale: Boolean
+    private var upScale = false
     /**
      * the count of how many ticks since the image has been changed
      */
-    private var timer: Short
+    private var timer = 20
     /**
      * the alpha part of how faded the images are
      */
-    private var fade: Float
+    private var fade = 1f
+
+    init {
+        getImage()
+        isVisible = true
+    }
+
 
     override fun paint(g: Graphics) {
         super.paint(g)
@@ -112,8 +128,8 @@ class DisplayLoading : Display() {
 
     /**
      * changes if the images are up scaled or not
-     * @param b <br></br>
-     * - true if the image is scaled up<br></br>
+     * @param b 
+     * - true if the image is scaled up
      * - false if the image is real size
      */
     fun setUpScale(b: Boolean) {
@@ -146,7 +162,7 @@ class DisplayLoading : Display() {
             fade = timer.toFloat() / FADE_IN
         } else if (timer > totalWait) {
             timer = 0
-            image
+            getImage()
         }
         for (c in cubePositions) {
             c.move()
@@ -156,23 +172,22 @@ class DisplayLoading : Display() {
     /**
      * changes images and loads a new one
      */
-    private val image: Unit
-        get() {
-            if (fileNames.isEmpty()) {
-                rePop()
-            }
-            if (!fileNames.isEmpty()) {
-                oldImage = currentImage
-                val file =
-                    Settings.FOLDERS[Mode.LOADING.ordinal].toString() + "/" + fileNames.removeFirst()
-                try {
-                    currentImage = ImageIO.read(File(file))
-                } catch (e: Exception) {
-                    currentImage = null
-                    e.printStackTrace()
-                }
+    private fun getImage() {
+        if (fileNames.isEmpty()) {
+            rePop()
+        }
+        if (!fileNames.isEmpty()) {
+            oldImage = currentImage
+            val file =
+                Settings.FOLDERS[Mode.LOADING.ordinal].toString() + "/" + fileNames.removeFirst()
+            try {
+                currentImage = ImageIO.read(File(file))
+            } catch (e: Exception) {
+                currentImage = null
+                e.printStackTrace()
             }
         }
+    }
 
     /**
      * re loads the list of images in the loading folder
@@ -181,13 +196,12 @@ class DisplayLoading : Display() {
         val folder = Settings.FOLDERS[Mode.LOADING.ordinal]
         if (folder.exists()) {
             val rand = Random()
-            for (f in folder.listFiles()) {
+            for (f in folder.listFiles()!!) {
                 val name = f.name
                 val suffix = name.substring(name.lastIndexOf('.') + 1)
-                if (suffix.equals("PNG", ignoreCase = true) || suffix.equals("JPG", ignoreCase = true) || suffix.equals(
-                        "JPEG",
-                        ignoreCase = true
-                    )
+                if (suffix.equals("PNG", ignoreCase = true)
+                    || suffix.equals("JPG", ignoreCase = true)
+                    || suffix.equals("JPEG", ignoreCase = true)
                 ) {
                     val index = rand.nextInt(fileNames.size + 1)
                     if (index == fileNames.size) {
@@ -212,7 +226,7 @@ class DisplayLoading : Display() {
             e1.printStackTrace()
         }
         if (changeImage) {
-            image
+            getImage()
         }
         paintThread = object : Thread("paintThread") {
             override fun run() {
@@ -227,28 +241,5 @@ class DisplayLoading : Display() {
             }
         }
         paintThread.start()
-    }
-
-    companion object {
-        private const val serialVersionUID = -4364176757863161776L
-        /**
-         * the number of ticks while the images are changing
-         * 50ms tick time makes 20 ticks per second
-         */
-        private const val FADE_IN = 20
-    }
-
-    /**
-     * creates a instance of `DisplayLoading`
-     */
-    init {
-        cubePositions = LinkedList()
-        paintThread = Thread()
-        fileNames = LinkedList()
-        upScale = false
-        timer = 20
-        fade = 1f
-        image
-        isVisible = true
     }
 }

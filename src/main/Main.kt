@@ -26,7 +26,7 @@ fun main() {
         val screens = getScreens()
 
         val displayIndex = JOptionPane.showOptionDialog(
-            null, "Select Display Window", Settings.NAME,
+            null, "Select Display Window", Settings.APP_TITLE,
             JOptionPane.DEFAULT_OPTION,
             JOptionPane.QUESTION_MESSAGE,
             null,

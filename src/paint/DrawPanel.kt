@@ -123,8 +123,8 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
 
     /**
      * sets the `displayZoom`, moves the display window and changes the window position based on edges
-     * @param zoom the number of pixels in the image per the pixel on the output display.<br></br>
-     * - a higher number will zoom out<br></br>
+     * @param zoom the number of pixels in the image per the pixel on the output display.
+     * - a higher number will zoom out
      * - a lower number will zoom in
      */
     fun setZoom(zoom: Double) {
@@ -237,8 +237,8 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
 
     /**
      * sets if the `DrawPanel` is loading right now or not
-     * @param b <br></br>
-     * - true if loading<br></br>
+     * @param b 
+     * - true if loading
      * - false if done loading
      */
     fun setImageLoading(b: Boolean) {
@@ -297,7 +297,7 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
 
     /**
      * tells if the `DrawPanel` currently has an image
-     * @return - true if there is an image<br></br>
+     * @return - true if there is an image
      * - false if there is not an image
      */
     private fun hasImage(): Boolean {
@@ -404,7 +404,7 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
 
     /**
      * uses the pen to draw onto the `drawingLayer`
-     * @param newP a point based on the placement on `Settings.PAINT_IMAGE`<br></br>
+     * @param newP a point based on the placement on `Settings.PAINT_IMAGE`
      * use `toDrawingPoint` to convert to the correct point
      */
     private fun addPoint(newP: Point) {
@@ -451,8 +451,8 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
     /**
      * returns a polygon for a rectangle connecting two circles
      * @param newP the center of one circle
-     * @param oldP the center of another circle<br></br>
-     * points based on the placement on `Settings.PAINT_IMAGE`<br></br>
+     * @param oldP the center of another circle
+     * points based on the placement on `Settings.PAINT_IMAGE`
      * use `toDrawingPoint` to convert to the correct point
      * @param rwidth the radius of the circle in the x direction
      * @param rheight the radius of the circle in the y direction
@@ -491,8 +491,8 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
     /**
      * returns a polygon for a rectangle connecting two squares
      * @param newP the center of one square
-     * @param oldP the center of another square<br></br>
-     * points based on the placement on `Settings.PAINT_IMAGE`<br></br>
+     * @param oldP the center of another square
+     * points based on the placement on `Settings.PAINT_IMAGE`
      * use `toDrawingPoint` to convert to the correct point
      * @param rwidth the radius of the square in the x direction
      * @param rheight the radius of the square in the y direction
@@ -620,12 +620,6 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
         repaint()
     }
 
-    override fun mouseEntered(e: MouseEvent?) {}
-
-    override fun mouseClicked(e: MouseEvent?) {}
-
-    override fun mouseExited(e: MouseEvent?) {}
-
     override fun mouseDragged(e: MouseEvent) {
         if (Settings.PAINT_IMAGE != null) {
             if (canDraw) {
@@ -644,14 +638,20 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
         repaint()
     }
 
-    override fun componentMoved(e: ComponentEvent?) {}
-
     override fun componentResized(e: ComponentEvent) {
         controlSize = size
         repaint()
     }
 
-    override fun componentHidden(e: ComponentEvent?) {}
+    override fun mouseEntered(e: MouseEvent?) {}
 
-    override fun componentShown(e: ComponentEvent?) {}
+    override fun mouseClicked(e: MouseEvent?) {}
+
+    override fun mouseExited(e: MouseEvent?) {}
+
+    override fun componentMoved(e: ComponentEvent) {}
+
+    override fun componentHidden(e: ComponentEvent) {}
+
+    override fun componentShown(e: ComponentEvent) {}
 }

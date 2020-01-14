@@ -12,42 +12,54 @@ import java.util.*
 
 /**
  * `JPanel` for displaying Image and Layer Utility
+ * @param folder the folder that contains images
  * @author McAJBen@gmail.com
  * @since 2.0
  */
 class DisplayPictures(
-    /**
-     * the folder to gather images from
-     */
     private val folder: File
 ) : Display() {
+
+    companion object {
+        private const val serialVersionUID = 350995921778402576L
+    }
+
     /**
      * a list of the images to be painted
      */
-    private val images: LinkedList<AlphaImage>
+    private val images: LinkedList<AlphaImage> = LinkedList()
     /**
      * the image being displayed by `DisplayPictures`
      */
-    private var image: BufferedImage?
+    private var image: BufferedImage? = null
     /**
-     * the method of scale to show the image<br></br>
+     * the method of scale to show the image
      */
-    private var scaleMode: Scale?
+    private var scaleMode = Scale.UP_SCALE
     /**
      * the thread that is in charge of repainting `image`
      */
     private var compileThread: Thread? = null
     /**
-     * tells if the image should be flipped<br></br>
-     * - true will rotate the image by 180 degrees before displaying<br></br>
+     * tells if the image should be flipped
+     * - true will rotate the image by 180 degrees before displaying
      * - false will display normally
      */
-    private var flip: Boolean
+    private var flip = false
+
+    init {
+        image = BufferedImage(
+            Settings.DISPLAY_SIZE!!.width,
+            Settings.DISPLAY_SIZE!!.height,
+            BufferedImage.TYPE_INT_ARGB
+        )
+        isVisible = true
+    }
 
     override fun paint(g: Graphics) {
         super.paint(g)
         val g2d = g as Graphics2D
-        drawImage(g2d, image)
+        drawImage(g2d, image!!)
         paintMouse(g2d)
         g2d.dispose()
     }
@@ -55,9 +67,9 @@ class DisplayPictures(
     /**
      * paints an image to the screen
      * @param g2d the graphics to draw onto
-     * @param aImage the image to draw
+     * @param img the image to draw
      */
-    fun paintImage(g2d: Graphics2D, img: BufferedImage?) {
+    fun paintImage(g2d: Graphics2D, img: BufferedImage) {
         when (scaleMode) {
             Scale.FILL -> g2d.drawImage(
                 img,
@@ -69,14 +81,14 @@ class DisplayPictures(
             )
             Scale.REAL_SIZE -> g2d.drawImage(
                 img,
-                (Settings.DISPLAY_SIZE!!.width - img!!.width) / 2,
+                (Settings.DISPLAY_SIZE!!.width - img.width) / 2,
                 (Settings.DISPLAY_SIZE!!.height - img.height) / 2,
                 img.width,
                 img.height, null
             )
             Scale.UP_SCALE -> {
                 val screenRatio = Settings.DISPLAY_SIZE!!.getWidth() / Settings.DISPLAY_SIZE!!.getHeight()
-                val imageRatio = img!!.width.toDouble() / img.height
+                val imageRatio = img.width.toDouble() / img.height
                 val imageScale: Dimension
                 imageScale = if (imageRatio > screenRatio) { // width > height
                     Dimension(Settings.DISPLAY_SIZE!!.width, (Settings.DISPLAY_SIZE!!.width / imageRatio).toInt())
@@ -99,7 +111,7 @@ class DisplayPictures(
      * @param g2d the graphics to draw to
      * @param c the color to draw
      */
-    private fun fillBackground(g2d: Graphics2D, c: Color?) {
+    private fun fillBackground(g2d: Graphics2D, c: Color) {
         g2d.color = c
         g2d.fillRect(0, 0, Settings.DISPLAY_SIZE!!.width, Settings.DISPLAY_SIZE!!.height)
     }
@@ -108,12 +120,8 @@ class DisplayPictures(
      * draws an image to the graphics with the given position and dimensions
      * @param g2d the graphics to draw to
      * @param img the image to draw
-     * @param x the x position of the top left corner
-     * @param y the y position of the top left corner
-     * @param w the width of the image
-     * @param h the height of the image
      */
-    private fun drawImage(g2d: Graphics2D, img: BufferedImage?) {
+    private fun drawImage(g2d: Graphics2D, img: BufferedImage) {
         if (flip) {
             val oldAT = g2d.transform
             val at = AffineTransform()
@@ -131,7 +139,7 @@ class DisplayPictures(
      * @param name the name of the file to load an image from
      */
     fun addImage(name: String) {
-        val ai = AlphaImage(folder, name)
+        val ai = AlphaImage(name, folder)
         stopCompile()
         images.add(ai)
         compileImage()
@@ -165,7 +173,7 @@ class DisplayPictures(
                     fillBackground(g2d, images.first.bGColor)
                     try {
                         for (image in images) {
-                            paintImage(g2d, image.image)
+                            paintImage(g2d, image.image!!)
                         }
                     } catch (e: NullPointerException) {
                         return
@@ -206,9 +214,9 @@ class DisplayPictures(
      * changes the scale mode
      * @param selectedItem the index of the new scale mode
      */
-    fun setScaleMode(selectedItem: Any?) {
+    fun setScaleMode(selectedItem: Scale) {
         stopCompile()
-        scaleMode = selectedItem as Scale?
+        scaleMode = selectedItem
         compileImage()
         repaint()
     }
@@ -239,22 +247,5 @@ class DisplayPictures(
         } else {
             image = null
         }
-    }
-
-    companion object {
-        private const val serialVersionUID = 350995921778402576L
-    }
-
-    /**
-     * creates an instance of `DisplayPictures`
-     * @param folder the folder that contains images
-     */
-    init {
-        image =
-            BufferedImage(Settings.DISPLAY_SIZE!!.width, Settings.DISPLAY_SIZE!!.height, BufferedImage.TYPE_INT_ARGB)
-        images = LinkedList()
-        scaleMode = Scale.UP_SCALE
-        flip = false
-        isVisible = true
     }
 }

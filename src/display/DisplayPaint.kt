@@ -10,8 +10,13 @@ import java.awt.image.BufferedImage
  * @since 1.0
  */
 class DisplayPaint : Display() {
+
+    companion object {
+        private const val serialVersionUID = -8389531693546434519L
+    }
+
     /**
-     * the image used as a mask for the player's display<br></br>
+     * the image used as a mask for the player's display
      * each pixel should be either Color.BLACK or transparent
      */
     private var mask: BufferedImage? = null
@@ -20,16 +25,20 @@ class DisplayPaint : Display() {
      */
     private var imageSize: Dimension? = null
     /**
-     * the top left corner of the window<br></br>
+     * the top left corner of the window
      * the negative of this will be the position to start drawing
      */
-    private var windowPos: Point
+    private var windowPos = Point(0, 0)
     /**
-     * the zoom scale of the image<br></br>
-     * - larger means zoomed out and a smaller image<br></br>
+     * the zoom scale of the image
+     * - larger means zoomed out and a smaller image
      * - smaller means zoomed in and a larger image
      */
-    private var scale: Double
+    private var scale = 1.0
+
+    init {
+        isVisible = true
+    }
 
     override fun paint(g: Graphics) {
         super.paint(g)
@@ -113,18 +122,5 @@ class DisplayPaint : Display() {
     fun resetImage() {
         mask = Settings.BLANK_CURSOR
         repaint()
-    }
-
-    companion object {
-        private const val serialVersionUID = -8389531693546434519L
-    }
-
-    /**
-     * creates in instance of `DisplayPaint`
-     */
-    init {
-        windowPos = Point(0, 0)
-        scale = 1.0
-        isVisible = true
     }
 }

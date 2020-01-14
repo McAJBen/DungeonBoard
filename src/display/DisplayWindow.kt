@@ -9,28 +9,66 @@ import java.awt.Point
 import java.awt.Rectangle
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
-import java.awt.event.MouseMotionAdapter
+import java.awt.event.MouseMotionListener
 import javax.swing.JFrame
 
 /**
  * `JFrame` for displaying players screen
+ * @param r the position and dimensions of the `JFrame`
  * @author McAJBen@gmail.com
  * @since 1.0
  */
-class DisplayWindow(r: Rectangle) : JFrame() {
+class DisplayWindow(r: Rectangle) : JFrame(), MouseListener, MouseMotionListener {
+
+    companion object {
+        private const val serialVersionUID = -251787008359029888L
+        /**
+         * the offsets used to display the cursor hand
+         */
+        private val HANDS_OFFSET = intArrayOf(-5, -100, -45, 0)
+        /**
+         * the position a cursor is placed when not on screen
+         */
+        private val NULL_POS = Point(-100, -100)
+        /**
+         * the images for cursor hands
+         */
+        private val HANDS = arrayOf(
+            Settings.loadResource("hand0.png"),
+            Settings.loadResource("hand1.png"),
+            Settings.loadResource("hand2.png"),
+            Settings.loadResource("hand3.png")
+        )
+    }
+
     /**
-     * the position that the mouse is on the screen<br></br>
+     * the position that the mouse is on the screen
      * used to place the hand cursor
      */
-    private var mousePos: Point
+    private var mousePos = NULL_POS
     /**
      * the direction that the hand cursor is facing
      */
-    private var handDirection: Direction
+    private var handDirection = Direction.UP
     /**
      * handler for displaying a timer created from `DisplayLoading`
      */
-    private val displayTimer: DisplayTimer
+    private val displayTimer = DisplayTimer(size)
+
+    init {
+        title = "Display"
+        isUndecorated = true
+        iconImage = Settings.ICON.image
+        size = r.size
+        location = r.location
+        defaultCloseOperation = EXIT_ON_CLOSE
+        cursor = toolkit.createCustomCursor(
+            Settings.BLANK_CURSOR, Point(0, 0),
+            "null"
+        )
+        addMouseListener(this)
+        addMouseMotionListener(this)
+    }
 
     /**
      * paints the hand cursor to the screen
@@ -92,69 +130,28 @@ class DisplayWindow(r: Rectangle) : JFrame() {
         displayTimer.clearTimer()
     }
 
-    companion object {
-        private const val serialVersionUID = -251787008359029888L
-        /**
-         * the offsets used to display the cursor hand
-         */
-        private val HANDS_OFFSET = intArrayOf(-5, -100, -45, 0)
-        /**
-         * the position a cursor is placed when not on screen
-         */
-        private val NULL_POS = Point(-100, -100)
-        /**
-         * the images for cursor hands
-         */
-        private val HANDS = arrayOf(
-            Settings.loadResource("hand0.png"),
-            Settings.loadResource("hand1.png"),
-            Settings.loadResource("hand2.png"),
-            Settings.loadResource("hand3.png")
-        )
+    override fun mouseReleased(e: MouseEvent) {}
+
+    override fun mousePressed(e: MouseEvent) {
+        handDirection = Direction.values()[(handDirection.ordinal + 1) % Direction.values().size]
+        repaint()
     }
 
-    /**
-     * creates an instance of `DisplayWindow`
-     * @param r the position and dimensions of the `JFrame`
-     */
-    init {
-        title = "Display"
-        isUndecorated = true
-        iconImage = Settings.ICON.image
-        size = r.size
-        location = r.location
-        defaultCloseOperation = EXIT_ON_CLOSE
-        cursor = toolkit.createCustomCursor(
-            Settings.BLANK_CURSOR, Point(0, 0),
-            "null"
-        )
-        mousePos = NULL_POS
-        handDirection = Direction.UP
-        displayTimer = DisplayTimer(size)
-        addMouseMotionListener(object : MouseMotionAdapter() {
-            override fun mouseDragged(e: MouseEvent) {
-                setMouse(e.point)
-            }
+    override fun mouseClicked(e: MouseEvent) {}
 
-            override fun mouseMoved(e: MouseEvent) {
-                setMouse(e.point)
-            }
-        })
-        addMouseListener(object : MouseListener {
-            override fun mouseReleased(e: MouseEvent) {}
-            override fun mousePressed(e: MouseEvent) {
-                handDirection = Direction.values().get((handDirection.ordinal + 1) % Direction.values().size)
-                repaint()
-            }
+    override fun mouseExited(e: MouseEvent) {
+        setMouse(NULL_POS)
+    }
 
-            override fun mouseClicked(e: MouseEvent) {}
-            override fun mouseExited(e: MouseEvent) {
-                setMouse(NULL_POS)
-            }
+    override fun mouseEntered(e: MouseEvent) {
+        setMouse(e.point)
+    }
 
-            override fun mouseEntered(e: MouseEvent) {
-                setMouse(e.point)
-            }
-        })
+    override fun mouseDragged(e: MouseEvent) {
+        setMouse(e.point)
+    }
+
+    override fun mouseMoved(e: MouseEvent) {
+        setMouse(e.point)
     }
 }

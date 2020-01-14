@@ -5,6 +5,8 @@ import java.awt.Color
 import java.awt.Dimension
 import java.awt.Font
 import java.awt.Graphics2D
+import kotlin.math.log10
+import kotlin.math.max
 
 /**
  * container for count down timer
@@ -13,27 +15,51 @@ import java.awt.Graphics2D
  * @since 2.3.3
  */
 class DisplayTimer(size: Dimension) {
+
+    companion object {
+        /**
+         * width of the timer block
+         */
+        private const val TIMER_WIDTH = 220
+        /**
+         * width added for extra length timers
+         */
+        private const val TIMER_WIDTH_MULT = 60
+        /**
+         * height of the timer block
+         */
+        private const val TIMER_HEIGHT = 90
+        /**
+         * the number of seconds to display a completed timer
+         */
+        private const val TIMER_DONE_TIME = 60
+        /**
+         * the font used for `DisplayTimer`
+         */
+        private val FONT = Font("TimesRoman", Font.BOLD, 120)
+    }
+
     /**
      * the number of seconds the timer has left
      */
-    private var timerSeconds: Int
+    private var timerSeconds = -TIMER_DONE_TIME
     /**
      * the thread that is repainting the `DisplayTimer`
      * and calculating timers and keeping track of time
      */
-    private var paintThread: Thread
+    private var paintThread = Thread()
     /**
      * the x position of the left side of `DisplayTimer`
      */
-    private val left: Int
+    private val left = (size.width - TIMER_WIDTH) / 2
     /**
      * the y position of the top side of `DisplayTimer`
      */
-    private val top: Int
+    private val top = size.height - TIMER_HEIGHT
     /**
      * the y position of the bottom side of `DisplayTimer`
      */
-    private val bottom: Int
+    private val bottom: Int = size.height - 4
 
     /**
      * draws the timer to a `Graphics2D`
@@ -57,7 +83,7 @@ class DisplayTimer(size: Dimension) {
      * @param seconds the number of seconds to display
      */
     private fun paintTimer(g2d: Graphics2D, background: Color, seconds: Int) {
-        val digits = Math.max(Math.log10(seconds / 60.toDouble()).toInt(), 0)
+        val digits = max(log10(seconds / 60.toDouble()).toInt(), 0)
         val x = left - TIMER_WIDTH_MULT * digits / 2
         val w = TIMER_WIDTH + TIMER_WIDTH_MULT * digits
         g2d.color = background
@@ -112,36 +138,5 @@ class DisplayTimer(size: Dimension) {
             e1.printStackTrace()
         }
         display.repaint()
-    }
-
-    companion object {
-        /**
-         * width of the timer block
-         */
-        private const val TIMER_WIDTH = 220
-        /**
-         * width added for extra length timers
-         */
-        private const val TIMER_WIDTH_MULT = 60
-        /**
-         * height of the timer block
-         */
-        private const val TIMER_HEIGHT = 90
-        /**
-         * the number of seconds to display a completed timer
-         */
-        private const val TIMER_DONE_TIME = 60
-        /**
-         * the font used for `DisplayTimer`
-         */
-        private val FONT = Font("TimesRoman", Font.BOLD, 120)
-    }
-
-    init {
-        left = (size.width - TIMER_WIDTH) / 2
-        top = size.height - TIMER_HEIGHT
-        bottom = size.height - 4
-        timerSeconds = -TIMER_DONE_TIME
-        paintThread = Thread()
     }
 }

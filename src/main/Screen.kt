@@ -6,6 +6,7 @@ import java.awt.Rectangle
 
 /**
  * a container for a name and rectangle of a display
+ * @param graphicsDevice the {@code GraphicsDevice} related to the display
  * @author McAJBen@gmail.com
  * @since 2.0
  */

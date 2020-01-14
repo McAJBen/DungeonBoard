@@ -18,7 +18,12 @@ import javax.swing.JOptionPane
  */
 object Settings {
 
-    const val NAME = "Dungeon Board"
+    private const val NAME = "Dungeon Board"
+    /**
+     * The title of windows
+     */
+    val APP_TITLE: String
+        get() = "$NAME ${Build.versionText}"
     /**
      * The Dungeon Board directory that contains all images
      */
@@ -162,10 +167,6 @@ object Settings {
      */
     val CONTROL_BACKGROUND = Color(200, 200, 200)
     /**
-     * true if the environment's Operating System is Window, false if not (currently unused)
-     */
-    val IS_WINDOWS = System.getProperty("os.name").startsWith("Windows")
-    /**
      * The active layers in `DisplayPaint`
      */
     var PAINT_IMAGES: BooleanArray? = null
@@ -178,8 +179,8 @@ object Settings {
      */
     const val PAINT_GUIDE_SCALE = 5
     /**
-     * number of pixels on the Paint image that are being covered by a single pixel on the mask.<br></br>
-     * - higher number means the shadows will be more blocky<br></br>
+     * number of pixels on the Paint image that are being covered by a single pixel on the mask.
+     * - higher number means the shadows will be more blocky
      * - lower number means the shadows will be more fine, but will use more memory and CPU time
      */
     const val PIXELS_PER_MASK = 5

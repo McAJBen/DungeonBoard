@@ -1,5 +1,6 @@
 package control
 
+import main.Main
 import main.Main.getControl
 import main.Mode
 import main.Settings
@@ -16,32 +17,33 @@ import javax.swing.*
  * @since 1.0
  */
 class ControlWindow(r: Rectangle) : JFrame() {
-    /**
-     * an array of the buttons to change control mode
-     */
-    private val controlButtons = Mode.values().map {
-        Settings.createButton(it.name).apply {
-            background = Settings.INACTIVE
-            addActionListener(ModeListener(Window.CONTROL, it))
-        }
-    }
-    /**
-     * an array of the buttons to change display mode
-     */
-    private val displayButtons = Mode.values().map {
-        Settings.createButton(it.name).apply {
-            background = Settings.INACTIVE
-            addActionListener(ModeListener(Window.DISPLAY, it))
-        }
-    }
 
     companion object {
         private const val serialVersionUID = -2980231396321368085L
     }
 
+    /**
+     * an array of the buttons to change control mode
+     */
+    private val controlButtons = Mode.values().map { mode ->
+        Settings.createButton(mode.name).apply {
+            background = Settings.INACTIVE
+            addActionListener { Main.changeButton(Window.CONTROL, mode) }
+        }
+    }
+    /**
+     * an array of the buttons to change display mode
+     */
+    private val displayButtons = Mode.values().map { mode ->
+        Settings.createButton(mode.name).apply {
+            background = Settings.INACTIVE
+            addActionListener { Main.changeButton(Window.DISPLAY, mode) }
+        }
+    }
+
     init {
         iconImage = Settings.ICON.image
-        title = Settings.NAME
+        title = Settings.APP_TITLE
         size = Settings.CONTROL_SIZE
         defaultCloseOperation = EXIT_ON_CLOSE
         setLocation(

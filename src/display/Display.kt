@@ -10,6 +10,11 @@ import javax.swing.JPanel
  * @since 1.0
  */
 abstract class Display : JPanel() {
+
+    companion object {
+        private const val serialVersionUID = 3464890244015717841L
+    }
+
     /**
      * paints the mouse over the screen
      * @param g2d the graphics to paint onto
@@ -20,13 +25,9 @@ abstract class Display : JPanel() {
 
     /**
      * tells the Display if it is visible
-     * @param b <br></br>
-     * - true if it is now the main display<br></br>
+     * @param b 
+     * - true if it is now the main display
      * - false if it is not the main display
      */
     open fun setMainDisplay(b: Boolean) {}
-
-    companion object {
-        private const val serialVersionUID = 3464890244015717841L
-    }
 }

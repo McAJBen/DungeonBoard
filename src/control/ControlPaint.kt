@@ -195,7 +195,7 @@ class ControlPaint : Control() {
     }
 
     /**
-     * sets up the selected folder for painting<br></br>
+     * sets up the selected folder for painting
      * loads it into control and the display
      * @param folder the folder name to load
      */
@@ -337,7 +337,7 @@ class ControlPaint : Control() {
     }
 
     /**
-     * sets up the selected file for painting<br></br>
+     * sets up the selected file for painting
      * loads it into control and the display
      * @param file the file name to load
      */

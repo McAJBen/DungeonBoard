@@ -94,6 +94,7 @@ class ControlLoading : Control() {
     }
 
     override fun load() {}
+
     override fun setMainControl(b: Boolean) {}
 
 }

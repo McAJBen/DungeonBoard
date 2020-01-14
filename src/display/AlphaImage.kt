@@ -9,28 +9,22 @@ import javax.imageio.ImageIO
 
 /**
  * a container for name and an image
+ * @param name the name of the specific file
+ * @param folder the folder that contains the file named n
  * @author McAJBen@gmail.com
  * @since 1.6
  */
 class AlphaImage(
-    folder: File,
-    /**
-     * the name of the file that is loaded
-     */
-    val name: String
+    val name: String,
+    folder: File
 ) {
-    /**
-     * gets the name of the file
-     * @return a `String` for the file name
-     */
     /**
      * the file used to load the image
      */
-    private val file: File
+    private val file = File(folder, name)
 
     /**
-     * gets the Image
-     * @return a `BufferedImage` with the file name
+     * the `BufferedImage` from the file
      */
     val image: BufferedImage?
         get() {
@@ -58,8 +52,7 @@ class AlphaImage(
         }
 
     /**
-     * gets the background color of the image by using the top left corner pixel
-     * @return the color of the top left corner of the image
+     * the background color of the image by using the top left corner pixel
      */
     val bGColor: Color
         get() {
@@ -74,12 +67,4 @@ class AlphaImage(
             return Color.BLACK
         }
 
-    /**
-     * creates an instance of `AlphaImage`
-     * @param folder the folder that contains the file named n
-     * @param n the name of the specific file
-     */
-    init {
-        file = File(folder.absolutePath + File.separator + name)
-    }
 }
