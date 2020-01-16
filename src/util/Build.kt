@@ -6,8 +6,8 @@ package util
  * @since 2.5
  */
 object Build {
-    private const val MAJOR = 0
-    private const val MINOR = 0
+    private const val MAJOR = 2
+    private const val MINOR = 5
     private const val PATCH = 0
     private const val RELEASE = false
 
