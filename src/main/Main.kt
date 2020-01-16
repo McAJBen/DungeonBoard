@@ -1,8 +1,8 @@
 package main
 
-import util.Log
 import util.Colors
 import util.Labels
+import util.Log
 import util.Settings
 import java.awt.GraphicsEnvironment
 import java.awt.HeadlessException

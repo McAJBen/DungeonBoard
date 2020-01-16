@@ -75,7 +75,7 @@ class ControlPaint(
                 return@addActionListener
             }
 
-            val file = File(Settings.getFolder(Mode.PAINT),  fileBox.selectedItem as String)
+            val file = File(Settings.getFolder(Mode.PAINT), fileBox.selectedItem as String)
             if (file.exists()) {
                 drawPanel.saveMask()
                 val maskFile = Settings.fileToMaskFile(file)
@@ -162,7 +162,8 @@ class ControlPaint(
             addChangeListener { drawPanel.setRadius(value) }
         }
 
-        add(JPanel().apply {
+        add(
+            JPanel().apply {
                 layout = BoxLayout(this, BoxLayout.Y_AXIS)
                 background = Colors.CONTROL_BACKGROUND
                 add(JLabel(Labels.ZOOM, SwingConstants.LEFT))
@@ -209,7 +210,7 @@ class ControlPaint(
                     Settings.PAINT_FOLDER_SIZE++
                 }
             } catch (e: NumberFormatException) {
-                if (!f.name.equals("Guide.png", ignoreCase = true)) {
+                if (!f.name.equals("Guide.png", ignoreCase = true) && !f.name.equals("Background.png", ignoreCase = true)) {
                     Log.debug(
                         String.format(
                             Labels.FILE_NOT_IN_CORRECT_FORMAT,

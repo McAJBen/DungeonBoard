@@ -27,7 +27,7 @@ abstract class Display(
 
     /**
      * tells the Display if it is visible
-     * @param b 
+     * @param b
      * - true if it is now the main display
      * - false if it is not the main display
      */

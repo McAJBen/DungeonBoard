@@ -38,7 +38,8 @@ class AlphaImage(
                     error = e
                     try {
                         Thread.sleep(10)
-                    } catch (e1: InterruptedException) {}
+                    } catch (e1: InterruptedException) {
+                    }
                 } catch (e: Exception) {
                     Log.error(String.format(Labels.CANNOT_LOAD_IMAGE, name), e)
                 }

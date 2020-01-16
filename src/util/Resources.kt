@@ -65,6 +65,7 @@ object Resources {
     val PEN_TYPE = arrayOf(
         loadResource("circle.gif"),
         loadResource("square.gif"),
+        loadResource("hex.gif"),
         loadResource("rect.gif")
     )
 

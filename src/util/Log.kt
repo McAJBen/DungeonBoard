@@ -1,6 +1,5 @@
 package util
 
-import java.lang.Error
 import javax.swing.JOptionPane
 
 /**

@@ -1,7 +1,7 @@
 package display
 
-import util.Settings
 import util.Resources
+import util.Settings
 import java.awt.Graphics2D
 import java.awt.Point
 import java.util.*

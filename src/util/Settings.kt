@@ -77,6 +77,14 @@ object Settings {
         }
 
     /**
+     * The background file inside of PAINT_FOLDER
+     */
+    val PAINT_BACKGROUND_FILE: File
+        get() {
+            return File(PAINT_FOLDER, "Background.png")
+        }
+
+    /**
      * The folder containing saved paint masks
      */
     val PAINT_MASK_FOLDER = File(DATA_FOLDER, "Paint")

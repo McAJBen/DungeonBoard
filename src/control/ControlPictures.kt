@@ -2,9 +2,9 @@ package control
 
 import display.DisplayPictures
 import display.Scale
-import util.Settings
 import util.Colors
 import util.Resources
+import util.Settings
 import util.createButton
 import java.awt.BorderLayout
 import java.awt.Dimension

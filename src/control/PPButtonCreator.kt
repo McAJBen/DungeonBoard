@@ -1,5 +1,6 @@
 package control
 
+import util.Log
 import util.Settings
 import util.listFilesInOrder
 import java.io.File
@@ -31,8 +32,8 @@ class PPButtonCreator(
     init {
         folder.listFilesInOrder().filter {
             it.extension.equals("PNG", ignoreCase = true)
-                || it.extension.equals("JPG", ignoreCase = true)
-                || it.extension.equals("JPEG", ignoreCase = true)
+                    || it.extension.equals("JPG", ignoreCase = true)
+                    || it.extension.equals("JPEG", ignoreCase = true)
         }.forEachIndexed { index, file ->
             queue.add(ButtonInfo(index, file))
         }
@@ -59,10 +60,7 @@ class PPButtonCreator(
             }
         }
 
-        for (b in buttons) {
-            println(b!!.text)
-            picturePanel.add(b)
-        }
+        buttons.forEach { picturePanel.add(it) }
     }
 
     /**
@@ -76,8 +74,10 @@ class PPButtonCreator(
                 while (true) {
                     val info = queue.removeAt(0)
                     buttons[info.position] = picturePanel.createPPButton(info.file)
+                    Log.debug("Created Button ${info.position} - ${info.file.name}")
                 }
-            } catch (e: IndexOutOfBoundsException) {}
+            } catch (e: IndexOutOfBoundsException) {
+            }
         }
     }
 

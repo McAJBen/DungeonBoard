@@ -9,5 +9,6 @@ package paint
 enum class Pen {
     CIRCLE,
     SQUARE,
+    HEX,
     RECT
 }

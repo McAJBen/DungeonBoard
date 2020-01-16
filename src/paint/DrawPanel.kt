@@ -256,7 +256,7 @@ class DrawPanel(
 
     /**
      * sets if the `DrawPanel` is loading right now or not
-     * @param b 
+     * @param b
      * - true if loading
      * - false if done loading
      */
@@ -293,13 +293,28 @@ class DrawPanel(
                 drawingLayer!!.height,
                 BufferedImage.TYPE_INT_ARGB
             )
-            for (i in 0 until drawingLayer!!.width) {
-                for (j in 0 until drawingLayer!!.height) {
-                    val dl = drawingLayer!!.getRGB(i, j)
-                    if (dl == -1721434268) { // CLEAR
-                        mask.setRGB(i, j, 0)
-                    } else if (dl == -1711315868) { // OPAQUE
-                        mask.setRGB(i, j, -16777215)
+
+            if (Settings.PAINT_BACKGROUND_FILE.exists()) {
+                val background = ImageIO.read(Settings.PAINT_BACKGROUND_FILE)
+                for (i in 0 until drawingLayer!!.width) {
+                    for (j in 0 until drawingLayer!!.height) {
+                        val dl = drawingLayer!!.getRGB(i, j)
+                        if (dl == -1721434268) { // CLEAR
+                            mask.setRGB(i, j, 0)
+                        } else if (dl == -1711315868) { // OPAQUE
+                            mask.setRGB(i, j, background.getPixelAverage(i, j))
+                        }
+                    }
+                }
+            } else {
+                for (i in 0 until drawingLayer!!.width) {
+                    for (j in 0 until drawingLayer!!.height) {
+                        val dl = drawingLayer!!.getRGB(i, j)
+                        if (dl == -1721434268) { // CLEAR
+                            mask.setRGB(i, j, 0)
+                        } else if (dl == -1711315868) { // OPAQUE
+                            mask.setRGB(i, j, -16777215)
+                        }
                     }
                 }
             }
@@ -311,7 +326,7 @@ class DrawPanel(
      * @return the position of the window by the top left corner of it in the `drawingLayer`
      */
     private fun getWindowPos(): Point {
-        return Point((windowPos.x / displayZoom).toInt(), (windowPos.y / displayZoom).toInt())
+        return Point((windowPos.x / displayZoom).roundToInt(), (windowPos.y / displayZoom).roundToInt())
     }
 
     /**
@@ -329,9 +344,9 @@ class DrawPanel(
      */
     private fun drawPlayerView(g2d: Graphics2D) {
         val w =
-            (Settings.DISPLAY_SIZE!!.width * displayZoom * controlSize!!.width / Settings.PAINT_IMAGE!!.width).toInt()
+            (Settings.DISPLAY_SIZE!!.width * displayZoom * controlSize!!.width / Settings.PAINT_IMAGE!!.width).roundToInt()
         val h =
-            (Settings.DISPLAY_SIZE!!.height * displayZoom * controlSize!!.height / Settings.PAINT_IMAGE!!.height).toInt()
+            (Settings.DISPLAY_SIZE!!.height * displayZoom * controlSize!!.height / Settings.PAINT_IMAGE!!.height).roundToInt()
         val x: Int
         val y: Int
         x = if (w > controlSize!!.width) {
@@ -369,17 +384,17 @@ class DrawPanel(
      */
     private fun setWindowPos(p: Point) {
         lastWindowClick = p
-        windowPos.x = (p.x * Settings.PIXELS_PER_MASK - Settings.DISPLAY_SIZE!!.width * displayZoom / 2).toInt()
-        windowPos.y = (p.y * Settings.PIXELS_PER_MASK - Settings.DISPLAY_SIZE!!.height * displayZoom / 2).toInt()
+        windowPos.x = (p.x * Settings.PIXELS_PER_MASK - Settings.DISPLAY_SIZE!!.width * displayZoom / 2).roundToInt()
+        windowPos.y = (p.y * Settings.PIXELS_PER_MASK - Settings.DISPLAY_SIZE!!.height * displayZoom / 2).roundToInt()
         if (Settings.PAINT_IMAGE != null) {
             if (windowPos.x > Settings.PAINT_IMAGE!!.width - Settings.DISPLAY_SIZE!!.width * displayZoom) {
-                windowPos.x = (Settings.PAINT_IMAGE!!.width - Settings.DISPLAY_SIZE!!.width * displayZoom).toInt()
+                windowPos.x = (Settings.PAINT_IMAGE!!.width - Settings.DISPLAY_SIZE!!.width * displayZoom).roundToInt()
             }
             if (windowPos.x < 0) {
                 windowPos.x = 0
             }
             if (windowPos.y > Settings.PAINT_IMAGE!!.height - Settings.DISPLAY_SIZE!!.height * displayZoom) {
-                windowPos.y = (Settings.PAINT_IMAGE!!.height - Settings.DISPLAY_SIZE!!.height * displayZoom).toInt()
+                windowPos.y = (Settings.PAINT_IMAGE!!.height - Settings.DISPLAY_SIZE!!.height * displayZoom).roundToInt()
             }
             if (windowPos.y < 0) {
                 windowPos.y = 0
@@ -397,32 +412,37 @@ class DrawPanel(
             when (styleLock) {
                 Direction.HORIZONTAL -> newP.y = lastP.y
                 Direction.VERTICAL -> newP.x = lastP.x
-                else -> {}
+                else -> {
+                }
             }
             val widthMod = drawingLayer!!.width.toDouble() / controlSize!!.width
             val heightMod = drawingLayer!!.height.toDouble() / controlSize!!.height
             val radiusWidth = radius * widthMod
             val radiusHeight = radius * heightMod
-            val diameterWidth = (diameter * widthMod).toInt()
-            val diameterHeight = (diameter * heightMod).toInt()
+            val diameterWidth = (diameter * widthMod).roundToInt()
+            val diameterHeight = (diameter * heightMod).roundToInt()
             when (penType) {
                 Pen.CIRCLE -> {
-                    g2!!.fillPolygon(getCirclePolygon(newP, lastP, radiusWidth, radiusHeight))
+                    g2!!.fillPolygon(getCircleDragPolygon(newP, lastP, radiusWidth, radiusHeight))
                     g2!!.fillOval(
-                        newP.x - radiusWidth.toInt(),
-                        newP.y - radiusHeight.toInt(),
+                        newP.x - radiusWidth.roundToInt(),
+                        newP.y - radiusHeight.roundToInt(),
                         diameterWidth,
                         diameterHeight
                     )
                 }
                 Pen.SQUARE -> {
-                    g2!!.fillPolygon(getSquarePolygon(newP, lastP, radiusWidth.toInt(), radiusHeight.toInt()))
+                    g2!!.fillPolygon(getSquareDragPolygon(newP, lastP, radiusWidth.roundToInt(), radiusHeight.roundToInt()))
                     g2!!.fillRect(
-                        newP.x - radiusWidth.toInt(),
-                        newP.y - radiusHeight.toInt(),
+                        newP.x - radiusWidth.roundToInt(),
+                        newP.y - radiusHeight.roundToInt(),
                         diameterWidth,
                         diameterHeight
                     )
+                }
+                Pen.HEX -> {
+                    // TODO create the polygon for dragging
+                    g2!!.fillPolygon(getHexPolygon(newP, radiusWidth.roundToInt(), radiusHeight.roundToInt()))
                 }
                 Pen.RECT -> {
                 }
@@ -443,7 +463,7 @@ class DrawPanel(
      * @param radiusHeight the radius of the circle in the y direction
      * @return a `Polygon` with 4 points
      */
-    private fun getCirclePolygon(
+    private fun getCircleDragPolygon(
         newP: Point?,
         oldP: Point?,
         radiusWidth: Double,
@@ -452,10 +472,10 @@ class DrawPanel(
         val angle = -atan2(newP!!.getY() - oldP!!.getY(), newP.getX() - oldP.getX())
         val anglePos = angle + Math.PI / 2
         val angleNeg = angle - Math.PI / 2
-        val cosP = (cos(anglePos) * radiusWidth).toInt()
-        val cosN = (cos(angleNeg) * radiusWidth).toInt()
-        val sinP = (sin(anglePos) * radiusHeight).toInt()
-        val sinN = (sin(angleNeg) * radiusHeight).toInt()
+        val cosP = (cos(anglePos) * radiusWidth).roundToInt()
+        val cosN = (cos(angleNeg) * radiusWidth).roundToInt()
+        val sinP = (sin(anglePos) * radiusHeight).roundToInt()
+        val sinN = (sin(angleNeg) * radiusHeight).roundToInt()
         return Polygon(
             intArrayOf(
                 newP.x + cosP,
@@ -483,7 +503,7 @@ class DrawPanel(
      * @param radiusHeight the radius of the square in the y direction
      * @return a `Polygon` with 4 points
      */
-    private fun getSquarePolygon(newP: Point, oldP: Point, radiusWidth: Int, radiusHeight: Int): Polygon {
+    private fun getSquareDragPolygon(newP: Point, oldP: Point, radiusWidth: Int, radiusHeight: Int): Polygon {
         var newRadiusHeight = radiusHeight
         if (newP.x > oldP.x && newP.y > oldP.y || newP.x < oldP.x && newP.y < oldP.y) {
             newRadiusHeight *= -1
@@ -502,6 +522,37 @@ class DrawPanel(
                 oldP.y - newRadiusHeight
             ),
             4
+        )
+    }
+
+    /**
+     * returns a polygon for a hex cursor
+     * @param center the center of one hex
+     * points based on the placement on `Settings.PAINT_IMAGE`
+     * use `toDrawingPoint` to convert to the correct point
+     * @param radiusWidth the radius of the hex in the x direction
+     * @param radiusHeight the radius of the hex in the y direction
+     * @return a `Polygon` with 6 points
+     */
+    private fun getHexPolygon(center: Point, radiusWidth: Int, radiusHeight: Int): Polygon {
+        return Polygon(
+            intArrayOf(
+                center.x + radiusWidth,
+                (center.x + radiusWidth * cos(PI / 3)).roundToInt(),
+                (center.x + radiusWidth * cos(PI * 2 / 3)).roundToInt(),
+                center.x - radiusWidth,
+                (center.x + radiusWidth * cos(PI * 4 / 3)).roundToInt(),
+                (center.x + radiusWidth * cos(PI * 5 / 3)).roundToInt()
+            ),
+            intArrayOf(
+                center.y,
+                (center.y + radiusHeight * sin(PI / 3)).roundToInt(),
+                (center.y + radiusHeight * sin(PI * 2 / 3)).roundToInt(),
+                center.y,
+                (center.y + radiusHeight * sin(PI * 4 / 3)).roundToInt(),
+                (center.y + radiusHeight * sin(PI * 5 / 3)).roundToInt()
+            ),
+            6
         )
     }
 
@@ -549,6 +600,34 @@ class DrawPanel(
         }
     }
 
+    private fun BufferedImage.getPixelAverage(x: Int, y: Int): Int {
+        val subImage = getSubimage(
+            Settings.PIXELS_PER_MASK * x,
+            Settings.PIXELS_PER_MASK * y,
+            Settings.PIXELS_PER_MASK,
+            Settings.PIXELS_PER_MASK
+        )
+
+        var averageRed = 0.0
+        var averageGreen = 0.0
+        var averageBlue = 0.0
+
+        for (i in 0 until subImage.width) {
+            for (j in 0 until subImage.height) {
+                val color = Color(subImage.getRGB(i, j))
+                averageRed += color.red
+                averageGreen += color.green
+                averageBlue += color.blue
+            }
+        }
+
+        return Color(
+            (averageRed / (subImage.width * subImage.height)).roundToInt(),
+            (averageGreen / (subImage.width * subImage.height)).roundToInt(),
+            (averageBlue / (subImage.width * subImage.height)).roundToInt()
+        ).rgb
+    }
+
     override fun paintComponent(g: Graphics) {
         val g2d = g as Graphics2D
         when {
@@ -562,6 +641,7 @@ class DrawPanel(
                 when (penType) {
                     Pen.CIRCLE -> g2d.drawOval(mousePos.x - radius, mousePos.y - radius, diameter, diameter)
                     Pen.SQUARE -> g2d.drawRect(mousePos.x - radius, mousePos.y - radius, diameter, diameter)
+                    Pen.HEX -> g2d.drawPolygon(getHexPolygon(mousePos, radius, radius))
                     Pen.RECT -> {
                         if (dragging) {
                             g2d.drawRect(
@@ -632,7 +712,8 @@ class DrawPanel(
                         abs(p.y - p2.y)
                     )
                 }
-                else -> {}
+                else -> {
+                }
             }
         }
         dragging = false
