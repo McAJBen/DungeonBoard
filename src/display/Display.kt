@@ -1,15 +1,17 @@
 package display
 
-import main.Main.display
 import java.awt.Graphics2D
 import javax.swing.JPanel
 
 /**
  * a `JPanel` for all Displays
+ * @param window callback to `DisplayWindow`
  * @author McAJBen@gmail.com
  * @since 1.0
  */
-abstract class Display : JPanel() {
+abstract class Display(
+    private val window: DisplayWindow
+) : JPanel() {
 
     companion object {
         private const val serialVersionUID = 3464890244015717841L
@@ -20,7 +22,7 @@ abstract class Display : JPanel() {
      * @param g2d the graphics to paint onto
      */
     protected fun paintMouse(g2d: Graphics2D) {
-        display.paintDisplay(g2d)
+        window.paintDisplay(g2d)
     }
 
     /**

@@ -1,7 +1,6 @@
 package paint
 
-import main.Main
-import main.Settings
+import util.*
 import java.awt.*
 import java.awt.event.*
 import java.awt.image.BufferedImage
@@ -15,10 +14,13 @@ import kotlin.math.*
 /**
  * Similar to `PicturePanel` this is used by the `ControlPaint` to handle user inputs
  * This is also the area that the user draws to update the `DisplayPaint`
+ * @param listener callback for `ControlPaint`
  * @author McAJBen@gmail.com
  * @since 1.0
  */
-class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentListener {
+class DrawPanel(
+    private val listener: DrawPanelListener
+) : JComponent(), MouseListener, MouseMotionListener, ComponentListener {
 
     companion object {
         private const val serialVersionUID = -3142625453462827948L
@@ -28,93 +30,110 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
      * the radius of the users Pen. Or in the case of a square, half the width
      */
     private var radius = 0
+
     /**
      * the diameter of the users Pen. Or in the case of a square this will be the width
      */
     private var diameter = 0
+
     /**
      * the drawing utensil in use (CIRCLE, SQUARE)
      */
     private var penType = Pen.CIRCLE
+
     /**
      * the actual `BufferedImage` that is being drawn onto and the mask is created from
      */
     private var drawingLayer: BufferedImage? = null
+
     /**
      * the `Graphics2D` for `drawingLayer`
      */
     private var g2: Graphics2D? = null
+
     /**
      * the size of the `DrawPanel`, used to find the size that the image needs to be drawn to
      */
     private var controlSize: Dimension? = null
+
     /**
      * the zoom of the `DisplayPaint` for the players to see
      */
     private var displayZoom = 1.0
+
     /**
      * the position of the previous click inside the `drawingLayer`
      */
     private lateinit var lastP: Point
+
     /**
      * the current position of the mouse inside of (@code drawingLayer}
      */
     private var mousePos = Point(Int.MIN_VALUE, Int.MIN_VALUE)
+
     /**
      * true if the pen is drawing, false if you ignore it
      */
     private var canDraw = false
+
     /**
      * true if an image is being loaded and the `drawingLayer` should not be displayed
      */
     private var loading = false
+
     /**
      * true if the mouse has yet to be released
      */
     private var dragging = false
+
     /**
      * the state of the vertical or horizontal lock on the pen
      */
     private var styleLock: Direction = Direction.NONE
+
     /**
      * the state of the pen used for touch pads
      */
     var drawMode: DrawMode = DrawMode.ANY
         private set
+
     /**
      * the position of the previous click that changed the window position
      */
     private var lastWindowClick = Point(0, 0)
+
     /**
      * the position of the actual window on the `drawingLayer`
      */
     private val windowPos = Point(0, 0)
+
     /**
      * the position of the start of a click
      */
     private var startOfClick: Point? = null
+
     /**
      * the `JButton` that causes the mask to be displayed to the players.
      * It only becomes enabled when the mask has been changed
      */
-    val updateButton = Settings.createButton("Update Screen").apply {
+    val updateButton = createButton(Labels.UPDATE_SCREEN).apply {
         addActionListener {
             if (hasImage()) {
                 try {
-                    Main.displayPaint.setMask(mask)
+                    listener.setMask(mask)
                 } catch (error: OutOfMemoryError) {
-                    Settings.showError("Cannot update Image, file is probably large", error)
+                    Log.error(Labels.CANNOT_UPDATE_IMAGE, error)
                 }
                 isEnabled = false
-                background = Settings.CONTROL_BACKGROUND
+                background = Colors.CONTROL_BACKGROUND
             }
         }
     }
 
     init {
         isDoubleBuffered = false
-        setRadius(25)
 
+        setRadius(25)
         addMouseListener(this)
         addMouseMotionListener(this)
         addComponentListener(this)
@@ -130,7 +149,7 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
     fun setZoom(zoom: Double) {
         displayZoom = zoom
         setWindowPos(lastWindowClick)
-        Main.displayPaint.setWindow(zoom, getWindowPos())
+        listener.setWindow(zoom, getWindowPos())
         repaint()
     }
 
@@ -142,7 +161,7 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
     fun setWindow(zoom: Double, p: Point) {
         displayZoom = zoom
         setWindowPos(p)
-        Main.displayPaint.setWindow(zoom, getWindowPos())
+        listener.setWindow(zoom, getWindowPos())
         repaint()
     }
 
@@ -161,7 +180,7 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
                     g2!!.composite = AlphaComposite.getInstance(AlphaComposite.SRC, 0.6f)
                     g2!!.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED)
                 } catch (e: IOException) {
-                    Settings.showError("Cannot load Mask, file is probably too large", e)
+                    Log.error("Cannot load Mask, file is probably too large", e)
                 }
             } else {
                 drawingLayer = BufferedImage(
@@ -223,11 +242,11 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
                 DrawMode.ANY -> {
                 }
                 DrawMode.VISIBLE -> {
-                    g2!!.paint = Settings.CLEAR
+                    g2!!.paint = Colors.CLEAR
                     canDraw = true
                 }
                 DrawMode.INVISIBLE -> {
-                    g2!!.paint = Settings.OPAQUE
+                    g2!!.paint = Colors.OPAQUE
                     canDraw = true
                 }
                 DrawMode.WINDOW -> canDraw = false
@@ -304,40 +323,6 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
         return drawingLayer != null
     }
 
-    override fun paintComponent(g: Graphics) {
-        val g2d = g as Graphics2D
-        when {
-            loading -> {
-                g2d.drawString("Loading...", controlSize!!.width / 2, controlSize!!.height / 2)
-            }
-            Settings.PAINT_CONTROL_IMAGE != null -> {
-                g2d.drawImage(Settings.PAINT_CONTROL_IMAGE, 0, 0, controlSize!!.width, controlSize!!.height, null)
-                g2d.drawImage(drawingLayer, 0, 0, controlSize!!.width, controlSize!!.height, null)
-                g2d.color = Settings.PINK
-                when (penType) {
-                    Pen.CIRCLE -> g2d.drawOval(mousePos.x - radius, mousePos.y - radius, diameter, diameter)
-                    Pen.SQUARE -> g2d.drawRect(mousePos.x - radius, mousePos.y - radius, diameter, diameter)
-                    Pen.RECT -> {
-                        if (dragging) {
-                            g2d.drawRect(
-                                min(mousePos.x, startOfClick!!.x),
-                                min(mousePos.y, startOfClick!!.y),
-                                abs(mousePos.x - startOfClick!!.x),
-                                abs(mousePos.y - startOfClick!!.y)
-                            )
-                        }
-                        g2d.drawLine(mousePos.x, mousePos.y - 10, mousePos.x, mousePos.y + 10)
-                        g2d.drawLine(mousePos.x - 10, mousePos.y, mousePos.x + 10, mousePos.y)
-                    }
-                }
-                drawPlayerView(g2d)
-            }
-            controlSize != null -> {
-                g2d.drawString("No image loaded", controlSize!!.width / 2, controlSize!!.height / 2)
-            }
-        }
-    }
-
     /**
      * Draws a rectangle on the area of a `DrawPanel` to tell what the players can see
      * @param g2d the graphics component to draw to
@@ -362,7 +347,7 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
         g2d.drawRect(x, y, w, h)
         g2d.drawLine(x, y, x + w, y + h)
         g2d.drawLine(x + w, y, x, y + h)
-        g2d.color = Settings.PINK_CLEAR
+        g2d.color = Colors.PINK_CLEAR
         g2d.fillRect(x, y, w, h)
     }
 
@@ -416,27 +401,27 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
             }
             val widthMod = drawingLayer!!.width.toDouble() / controlSize!!.width
             val heightMod = drawingLayer!!.height.toDouble() / controlSize!!.height
-            val rwidth = radius * widthMod
-            val rheight = radius * heightMod
-            val dwidth = (diameter * widthMod).toInt()
-            val dheight = (diameter * heightMod).toInt()
+            val radiusWidth = radius * widthMod
+            val radiusHeight = radius * heightMod
+            val diameterWidth = (diameter * widthMod).toInt()
+            val diameterHeight = (diameter * heightMod).toInt()
             when (penType) {
                 Pen.CIRCLE -> {
-                    g2!!.fillPolygon(getCirclePolygon(newP, lastP, rwidth, rheight))
+                    g2!!.fillPolygon(getCirclePolygon(newP, lastP, radiusWidth, radiusHeight))
                     g2!!.fillOval(
-                        newP.x - rwidth.toInt(),
-                        newP.y - rheight.toInt(),
-                        dwidth,
-                        dheight
+                        newP.x - radiusWidth.toInt(),
+                        newP.y - radiusHeight.toInt(),
+                        diameterWidth,
+                        diameterHeight
                     )
                 }
                 Pen.SQUARE -> {
-                    g2!!.fillPolygon(getSquarePolygon(newP, lastP, rwidth.toInt(), rheight.toInt()))
+                    g2!!.fillPolygon(getSquarePolygon(newP, lastP, radiusWidth.toInt(), radiusHeight.toInt()))
                     g2!!.fillRect(
-                        newP.x - rwidth.toInt(),
-                        newP.y - rheight.toInt(),
-                        dwidth,
-                        dheight
+                        newP.x - radiusWidth.toInt(),
+                        newP.y - radiusHeight.toInt(),
+                        diameterWidth,
+                        diameterHeight
                     )
                 }
                 Pen.RECT -> {
@@ -444,7 +429,7 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
             }
             lastP = newP
             updateButton.isEnabled = true
-            updateButton.background = Settings.ACTIVE
+            updateButton.background = Colors.ACTIVE
         }
     }
 
@@ -454,23 +439,23 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
      * @param oldP the center of another circle
      * points based on the placement on `Settings.PAINT_IMAGE`
      * use `toDrawingPoint` to convert to the correct point
-     * @param rwidth the radius of the circle in the x direction
-     * @param rheight the radius of the circle in the y direction
+     * @param radiusWidth the radius of the circle in the x direction
+     * @param radiusHeight the radius of the circle in the y direction
      * @return a `Polygon` with 4 points
      */
     private fun getCirclePolygon(
         newP: Point?,
         oldP: Point?,
-        rwidth: Double,
-        rheight: Double
+        radiusWidth: Double,
+        radiusHeight: Double
     ): Polygon {
         val angle = -atan2(newP!!.getY() - oldP!!.getY(), newP.getX() - oldP.getX())
         val anglePos = angle + Math.PI / 2
         val angleNeg = angle - Math.PI / 2
-        val cosP = (cos(anglePos) * rwidth).toInt()
-        val cosN = (cos(angleNeg) * rwidth).toInt()
-        val sinP = (sin(anglePos) * rheight).toInt()
-        val sinN = (sin(angleNeg) * rheight).toInt()
+        val cosP = (cos(anglePos) * radiusWidth).toInt()
+        val cosN = (cos(angleNeg) * radiusWidth).toInt()
+        val sinP = (sin(anglePos) * radiusHeight).toInt()
+        val sinN = (sin(angleNeg) * radiusHeight).toInt()
         return Polygon(
             intArrayOf(
                 newP.x + cosP,
@@ -494,27 +479,27 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
      * @param oldP the center of another square
      * points based on the placement on `Settings.PAINT_IMAGE`
      * use `toDrawingPoint` to convert to the correct point
-     * @param rwidth the radius of the square in the x direction
-     * @param rheight the radius of the square in the y direction
+     * @param radiusWidth the radius of the square in the x direction
+     * @param radiusHeight the radius of the square in the y direction
      * @return a `Polygon` with 4 points
      */
-    private fun getSquarePolygon(newP: Point, oldP: Point, rwidth: Int, rheight: Int): Polygon {
-        var nrheight = rheight
+    private fun getSquarePolygon(newP: Point, oldP: Point, radiusWidth: Int, radiusHeight: Int): Polygon {
+        var newRadiusHeight = radiusHeight
         if (newP.x > oldP.x && newP.y > oldP.y || newP.x < oldP.x && newP.y < oldP.y) {
-            nrheight *= -1
+            newRadiusHeight *= -1
         }
         return Polygon(
             intArrayOf(
-                newP.x - rwidth,
-                newP.x + rwidth,
-                oldP.x + rwidth,
-                oldP.x - rwidth
+                newP.x - radiusWidth,
+                newP.x + radiusWidth,
+                oldP.x + radiusWidth,
+                oldP.x - radiusWidth
             ),
             intArrayOf(
-                newP.y - nrheight,
-                newP.y + nrheight,
-                oldP.y + nrheight,
-                oldP.y - nrheight
+                newP.y - newRadiusHeight,
+                newP.y + newRadiusHeight,
+                oldP.y + newRadiusHeight,
+                oldP.y - newRadiusHeight
             ),
             4
         )
@@ -530,7 +515,7 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
             g2!!.fillRect(0, 0, drawingLayer!!.width, drawingLayer!!.height)
             repaint()
             updateButton.isEnabled = true
-            updateButton.background = Settings.ACTIVE
+            updateButton.background = Colors.ACTIVE
         }
     }
 
@@ -538,14 +523,14 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
      * sets all of `drawingLayer` to Opaque and unseen to players
      */
     fun hideAll() {
-        fillAll(Settings.OPAQUE)
+        fillAll(Colors.OPAQUE)
     }
 
     /**
      * sets all of `drawingLayer` to Clear and seen to players
      */
     fun showAll() {
-        fillAll(Settings.CLEAR)
+        fillAll(Colors.CLEAR)
     }
 
     /**
@@ -559,7 +544,41 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
                 val dataFile = File(Settings.PAINT_MASK_FOLDER, "${f.name}.data")
                 dataFile.writeText("$displayZoom ${lastWindowClick.x} ${lastWindowClick.y}")
             } catch (e: IOException) {
-                Settings.showError("Cannot save Mask", e)
+                Log.error("Cannot save Mask", e)
+            }
+        }
+    }
+
+    override fun paintComponent(g: Graphics) {
+        val g2d = g as Graphics2D
+        when {
+            loading -> {
+                g2d.drawString("Loading...", controlSize!!.width / 2, controlSize!!.height / 2)
+            }
+            Settings.PAINT_CONTROL_IMAGE != null -> {
+                g2d.drawImage(Settings.PAINT_CONTROL_IMAGE, 0, 0, controlSize!!.width, controlSize!!.height, null)
+                g2d.drawImage(drawingLayer, 0, 0, controlSize!!.width, controlSize!!.height, null)
+                g2d.color = Colors.PINK
+                when (penType) {
+                    Pen.CIRCLE -> g2d.drawOval(mousePos.x - radius, mousePos.y - radius, diameter, diameter)
+                    Pen.SQUARE -> g2d.drawRect(mousePos.x - radius, mousePos.y - radius, diameter, diameter)
+                    Pen.RECT -> {
+                        if (dragging) {
+                            g2d.drawRect(
+                                min(mousePos.x, startOfClick!!.x),
+                                min(mousePos.y, startOfClick!!.y),
+                                abs(mousePos.x - startOfClick!!.x),
+                                abs(mousePos.y - startOfClick!!.y)
+                            )
+                        }
+                        g2d.drawLine(mousePos.x, mousePos.y - 10, mousePos.x, mousePos.y + 10)
+                        g2d.drawLine(mousePos.x - 10, mousePos.y, mousePos.x + 10, mousePos.y)
+                    }
+                }
+                drawPlayerView(g2d)
+            }
+            controlSize != null -> {
+                g2d.drawString("No image loaded", controlSize!!.width / 2, controlSize!!.height / 2)
             }
         }
     }
@@ -571,14 +590,14 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
                 DrawMode.ANY -> {
                     if (e.button == MouseEvent.BUTTON2) {
                         setWindowPos(lastP)
-                        Main.displayPaint.setWindowPos(getWindowPos())
+                        listener.setWindowPos(getWindowPos())
                         canDraw = false
                     } else {
                         if (e.button == MouseEvent.BUTTON1) {
-                            g2!!.paint = Settings.CLEAR
+                            g2!!.paint = Colors.CLEAR
                             canDraw = true
                         } else if (e.button == MouseEvent.BUTTON3) {
-                            g2!!.paint = Settings.OPAQUE
+                            g2!!.paint = Colors.OPAQUE
                             canDraw = true
                         }
                         startOfClick = e.point
@@ -593,7 +612,7 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
                 }
                 DrawMode.WINDOW -> {
                     setWindowPos(lastP)
-                    Main.displayPaint.setWindowPos(getWindowPos())
+                    listener.setWindowPos(getWindowPos())
                 }
             }
             repaint()
@@ -626,7 +645,7 @@ class DrawPanel : JComponent(), MouseListener, MouseMotionListener, ComponentLis
                 addPoint(toDrawingPoint(e.point))
             } else {
                 setWindowPos(toDrawingPoint(e.point))
-                Main.displayPaint.setWindowPos(getWindowPos())
+                listener.setWindowPos(getWindowPos())
             }
             mousePos = e.point
             repaint()

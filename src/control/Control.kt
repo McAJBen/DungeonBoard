@@ -1,6 +1,8 @@
 package control
 
-import main.Settings
+import util.Colors
+import util.Resources
+import util.createButton
 import java.awt.BorderLayout
 import javax.swing.BorderFactory
 import javax.swing.BoxLayout
@@ -23,7 +25,7 @@ abstract class Control : JPanel() {
      */
     protected val northPanel: JPanel
         get() {
-            val refreshButton = Settings.createButton(Settings.ICON_REFRESH).apply {
+            val refreshButton = createButton(Resources.ICON_REFRESH).apply {
                 addActionListener { load() }
             }
 
@@ -40,7 +42,7 @@ abstract class Control : JPanel() {
     protected val emptyNorthPanel: JPanel
         get() {
             return JPanel().apply {
-                background = Settings.CONTROL_BACKGROUND
+                background = Colors.CONTROL_BACKGROUND
                 layout = BoxLayout(this, BoxLayout.X_AXIS)
                 repaint()
             }
@@ -48,11 +50,11 @@ abstract class Control : JPanel() {
 
     init {
         layout = BorderLayout()
-        border = BorderFactory.createLineBorder(Settings.BACKGROUND, 5)
+        border = BorderFactory.createLineBorder(Colors.BACKGROUND, 5)
     }
 
     /**
-     * loads all of the image from the file
+     * reloads all images from file
      */
     protected abstract fun load()
 
@@ -61,4 +63,9 @@ abstract class Control : JPanel() {
      * @param b true if it is displayed, false if it is not
      */
     abstract fun setMainControl(b: Boolean)
+
+    /**
+     * perform any operations that need to happen before the application is closed
+     */
+    abstract fun onClosing()
 }

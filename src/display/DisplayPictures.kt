@@ -1,6 +1,6 @@
 package display
 
-import main.Settings
+import util.Settings
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Graphics
@@ -12,13 +12,15 @@ import java.util.*
 
 /**
  * `JPanel` for displaying Image and Layer Utility
+ * @param window callback to `DisplayWindow`
  * @param folder the folder that contains images
  * @author McAJBen@gmail.com
  * @since 2.0
  */
 class DisplayPictures(
+    window: DisplayWindow,
     private val folder: File
-) : Display() {
+) : Display(window) {
 
     companion object {
         private const val serialVersionUID = 350995921778402576L
@@ -28,18 +30,22 @@ class DisplayPictures(
      * a list of the images to be painted
      */
     private val images: LinkedList<AlphaImage> = LinkedList()
+
     /**
      * the image being displayed by `DisplayPictures`
      */
     private var image: BufferedImage? = null
+
     /**
      * the method of scale to show the image
      */
     private var scaleMode = Scale.UP_SCALE
+
     /**
      * the thread that is in charge of repainting `image`
      */
     private var compileThread: Thread? = null
+
     /**
      * tells if the image should be flipped
      * - true will rotate the image by 180 degrees before displaying
@@ -54,14 +60,6 @@ class DisplayPictures(
             BufferedImage.TYPE_INT_ARGB
         )
         isVisible = true
-    }
-
-    override fun paint(g: Graphics) {
-        super.paint(g)
-        val g2d = g as Graphics2D
-        drawImage(g2d, image!!)
-        paintMouse(g2d)
-        g2d.dispose()
     }
 
     /**
@@ -84,13 +82,13 @@ class DisplayPictures(
                 (Settings.DISPLAY_SIZE!!.width - img.width) / 2,
                 (Settings.DISPLAY_SIZE!!.height - img.height) / 2,
                 img.width,
-                img.height, null
+                img.height,
+                null
             )
             Scale.UP_SCALE -> {
                 val screenRatio = Settings.DISPLAY_SIZE!!.getWidth() / Settings.DISPLAY_SIZE!!.getHeight()
                 val imageRatio = img.width.toDouble() / img.height
-                val imageScale: Dimension
-                imageScale = if (imageRatio > screenRatio) { // width > height
+                val imageScale = if (imageRatio > screenRatio) { // width > height
                     Dimension(Settings.DISPLAY_SIZE!!.width, (Settings.DISPLAY_SIZE!!.width / imageRatio).toInt())
                 } else { // width < height
                     Dimension((Settings.DISPLAY_SIZE!!.height * imageRatio).toInt(), Settings.DISPLAY_SIZE!!.height)
@@ -100,7 +98,8 @@ class DisplayPictures(
                     (Settings.DISPLAY_SIZE!!.width - imageScale.width) / 2,
                     (Settings.DISPLAY_SIZE!!.height - imageScale.height) / 2,
                     imageScale.width,
-                    imageScale.height, null
+                    imageScale.height,
+                    null
                 )
             }
         }
@@ -198,14 +197,7 @@ class DisplayPictures(
      */
     fun removeImage(name: String) {
         stopCompile()
-        var i = 0
-        while (i < images.size) {
-            if (images[i].name == name) {
-                images.removeAt(i)
-            } else {
-                i++
-            }
-        }
+        images.removeIf { it.name == name }
         compileImage()
         repaint()
     }
@@ -237,6 +229,14 @@ class DisplayPictures(
     fun flip() {
         flip = !flip
         repaint()
+    }
+
+    override fun paint(g: Graphics) {
+        super.paint(g)
+        val g2d = g as Graphics2D
+        drawImage(g2d, image!!)
+        paintMouse(g2d)
+        g2d.dispose()
     }
 
     @Synchronized

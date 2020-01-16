@@ -1,6 +1,7 @@
 package display
 
-import main.Settings
+import util.Settings
+import util.Resources
 import java.awt.Graphics2D
 import java.awt.Point
 import java.util.*
@@ -20,25 +21,29 @@ class Cube {
      * how many pixels per movement the cube makes
      */
     private val speed = rand.nextInt(5) + 1
+
     /**
      * the current position of the top left corner
      */
     private val point = Point(
-        rand.nextInt(Settings.DISPLAY_SIZE!!.width - Settings.ICON_DVD.iconWidth),
-        rand.nextInt(Settings.DISPLAY_SIZE!!.height - Settings.ICON_DVD.iconHeight)
+        rand.nextInt(Settings.DISPLAY_SIZE!!.width - Resources.ICON_DVD.iconWidth),
+        rand.nextInt(Settings.DISPLAY_SIZE!!.height - Resources.ICON_DVD.iconHeight)
     )
+
     /**
      * the vertical velocity direction
      * - true moves up
      * - false moves down
      */
     private var vertical = rand.nextBoolean()
+
     /**
      * the horizontal velocity direction
      * - true moves left
      * - false moves right
      */
     private var horizontal = rand.nextBoolean()
+
     /**
      * a flag for if the cube has 'hit the corner'
      * - true if it is in the corner
@@ -53,9 +58,9 @@ class Cube {
     fun paint(g2d: Graphics2D) {
         g2d.drawImage(
             if (flag) {
-                Settings.ICON_DVD2.image
+                Resources.ICON_DVD2.image
             } else {
-                Settings.ICON_DVD.image
+                Resources.ICON_DVD.image
             },
             point.x,
             point.y,
@@ -78,8 +83,8 @@ class Cube {
                 }
             } else {
                 point.x += speed
-                if (point.x > Settings.DISPLAY_SIZE!!.width - Settings.ICON_DVD.iconWidth) {
-                    point.x = Settings.DISPLAY_SIZE!!.width - Settings.ICON_DVD.iconWidth
+                if (point.x > Settings.DISPLAY_SIZE!!.width - Resources.ICON_DVD.iconWidth) {
+                    point.x = Settings.DISPLAY_SIZE!!.width - Resources.ICON_DVD.iconWidth
                     vertical = true
                     verticalHit = true
                 }
@@ -95,8 +100,8 @@ class Cube {
                 }
             } else {
                 point.y += speed
-                if (point.y > Settings.DISPLAY_SIZE!!.height - Settings.ICON_DVD.iconHeight) {
-                    point.y = Settings.DISPLAY_SIZE!!.height - Settings.ICON_DVD.iconHeight
+                if (point.y > Settings.DISPLAY_SIZE!!.height - Resources.ICON_DVD.iconHeight) {
+                    point.y = Settings.DISPLAY_SIZE!!.height - Resources.ICON_DVD.iconHeight
                     horizontal = true
                     if (verticalHit) {
                         flag = true

@@ -1,12 +1,14 @@
 package control
 
-import main.Settings
+import util.Colors
+import util.Labels
+import util.Log
+import util.Settings
 import java.awt.Dimension
 import java.awt.GridLayout
 import java.awt.Insets
 import java.awt.image.BufferedImage
 import java.io.File
-import java.io.IOException
 import javax.imageio.ImageIO
 import javax.swing.*
 
@@ -18,11 +20,14 @@ import javax.swing.*
 abstract class PicturePanel : JPanel() {
 
     companion object {
+
         private const val serialVersionUID = 2972394170217781329L
+
         /**
          * The number of picture per row of a picture panel
          */
         private const val GRID_WIDTH = 4
+
         /**
          * The size of the `ImageIcon` in each of the buttons
          */
@@ -50,12 +55,8 @@ abstract class PicturePanel : JPanel() {
                         0, 0, null
                     )
                     ImageIO.write(bufferedImage, "GIF", tFile)
-                } catch (e: OutOfMemoryError) {
-                    Settings.showError("Cannot create Thumbnail, file is probably too large", e)
-                    e.printStackTrace()
-                } catch (e: IOException) {
-                    Settings.showError("Cannot create Thumbnail, file is probably too large", e)
-                    e.printStackTrace()
+                } catch (e: Exception) {
+                    Log.error(Labels.CANNOT_CREATE_THUMBNAIL, e)
                 }
             }
         }
@@ -79,16 +80,16 @@ abstract class PicturePanel : JPanel() {
             isFocusPainted = false
             verticalTextPosition = SwingConstants.TOP
             horizontalTextPosition = SwingConstants.CENTER
-            background = Settings.DISABLE_COLOR
+            background = Colors.DISABLE_COLOR
             addActionListener {
                 val button = it.source as JButton
                 val name = button.text
-                if (button.background === Settings.DISABLE_COLOR) {
+                if (button.background === Colors.DISABLE_COLOR) {
                     select(name)
-                    button.background = Settings.ENABLE_COLOR
+                    button.background = Colors.ENABLE_COLOR
                 } else {
                     deselect(name)
-                    button.background = Settings.DISABLE_COLOR
+                    button.background = Colors.DISABLE_COLOR
                 }
             }
         }
@@ -129,12 +130,8 @@ abstract class PicturePanel : JPanel() {
                 f = Settings.fileToThumb(f)
                 try {
                     b.icon = ImageIcon(ImageIO.read(f))
-                } catch (e: OutOfMemoryError) {
-                    Settings.showError("Cannot load Thumbnail, file is probably too large", e)
-                    e.printStackTrace()
-                } catch (e: IOException) {
-                    Settings.showError("Cannot load Thumbnail, file is probably too large", e)
-                    e.printStackTrace()
+                } catch (e: Exception) {
+                    Log.error(Labels.CANNOT_LOAD_THUMBNAIL, e)
                 }
             }
         }
@@ -144,11 +141,8 @@ abstract class PicturePanel : JPanel() {
      * removes the thumbnails from local memory
      */
     fun forgetThumbnails() {
-        for (c in components) {
-            if (c.javaClass == JButton::class.java) {
-                val b = c as JButton
-                b.icon = null
-            }
+        components.filterIsInstance<JButton>().forEach {
+            it.icon = null
         }
     }
 }

@@ -1,6 +1,7 @@
 package control
 
-import main.Settings
+import util.Settings
+import util.listFilesInOrder
 import java.io.File
 import java.util.*
 import javax.swing.JButton
@@ -16,21 +17,22 @@ class PPButtonCreator(
     private val picturePanel: PicturePanel,
     folder: File
 ) {
+
     /**
      * the queue of files to be loaded
      */
     private val queue = Collections.synchronizedList(LinkedList<ButtonInfo>())
+
     /**
      * the returned buttons that should be placed in the `ControlPicture`
      */
     private val buttons: Array<JButton?>
 
     init {
-        Settings.listFilesInOrder(folder).filter {
-            val suffix = it.name.substring(it.name.lastIndexOf('.') + 1)
-            suffix.equals("PNG", ignoreCase = true)
-                || suffix.equals("JPG", ignoreCase = true)
-                || suffix.equals("JPEG", ignoreCase = true)
+        folder.listFilesInOrder().filter {
+            it.extension.equals("PNG", ignoreCase = true)
+                || it.extension.equals("JPG", ignoreCase = true)
+                || it.extension.equals("JPEG", ignoreCase = true)
         }.forEachIndexed { index, file ->
             queue.add(ButtonInfo(index, file))
         }
@@ -48,6 +50,7 @@ class PPButtonCreator(
             bmt[i] = ButtonMakerThread(ButtonMakerThread::class.java.name + "-" + i)
             bmt[i]!!.start()
         }
+
         for (i in bmt.indices) {
             try {
                 bmt[i]!!.join()
@@ -55,6 +58,7 @@ class PPButtonCreator(
                 e.printStackTrace()
             }
         }
+
         for (b in buttons) {
             println(b!!.text)
             picturePanel.add(b)
@@ -77,6 +81,9 @@ class PPButtonCreator(
         }
     }
 
+    /**
+     * stores information on a single button in the queue
+     */
     private data class ButtonInfo(
         val position: Int,
         val file: File

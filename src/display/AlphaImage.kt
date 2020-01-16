@@ -1,10 +1,11 @@
 package display
 
-import main.Settings
+import util.Labels
+import util.Log
+import util.Settings
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
-import java.io.IOException
 import javax.imageio.ImageIO
 
 /**
@@ -18,6 +19,7 @@ class AlphaImage(
     val name: String,
     folder: File
 ) {
+
     /**
      * the file used to load the image
      */
@@ -36,18 +38,14 @@ class AlphaImage(
                     error = e
                     try {
                         Thread.sleep(10)
-                    } catch (e1: InterruptedException) {
-                    }
-                } catch (e: IllegalArgumentException) {
-                    Settings.showError("Cannot load Image \"$name", e)
-                } catch (e: IOException) {
-                    Settings.showError("Cannot load Image \"$name", e)
+                    } catch (e1: InterruptedException) {}
+                } catch (e: Exception) {
+                    Log.error(String.format(Labels.CANNOT_LOAD_IMAGE, name), e)
                 }
             }
-            Settings.showError(
-                "Cannot Load Image\"" + name + "\" after 50 attempts\n" +
-                        "Allocate more memory, use smaller images", error
-            )
+            if (error != null) {
+                Log.error(String.format(Labels.CANNOT_LOAD_IMAGE_ERROR_MULTIPLE, name), error)
+            }
             return null
         }
 
@@ -59,10 +57,8 @@ class AlphaImage(
             val f = Settings.fileToThumb(file)
             try {
                 return Color(ImageIO.read(f).getRGB(0, 0))
-            } catch (e: IllegalArgumentException) {
-                Settings.showError("Cannot load Image RGB \"$name", e)
-            } catch (e: IOException) {
-                Settings.showError("Cannot load Image RGB \"$name", e)
+            } catch (e: Exception) {
+                Log.error(String.format(Labels.CANNOT_LOAD_IMAGE_RGB, name), e)
             }
             return Color.BLACK
         }

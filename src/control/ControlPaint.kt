@@ -1,9 +1,9 @@
 package control
 
-import main.Main
 import main.Mode
-import main.Settings
 import paint.DrawPanel
+import paint.DrawPanelListener
+import util.*
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Dimension
@@ -18,10 +18,13 @@ import javax.swing.*
 
 /**
  * a `Control` for the Paint Utility
+ * @param displayListener callback to `DisplayPaint`
  * @author McAJBen@gmail.com
  * @since 1.0
  */
-class ControlPaint : Control() {
+class ControlPaint(
+    private val displayListener: ControlPaintListener
+) : Control(), DrawPanelListener {
 
     companion object {
         private const val serialVersionUID = -3231530555502467648L
@@ -30,28 +33,33 @@ class ControlPaint : Control() {
     /**
      * the main panel the user draws onto to create a mask
      */
-    private val drawPanel = DrawPanel()
+    private val drawPanel = DrawPanel(this)
+
     /**
      * the drop down menu for selecting a file
      */
     private val fileBox = JComboBox<String>().apply {
-        background = Settings.CONTROL_BACKGROUND
+        background = Colors.CONTROL_BACKGROUND
         addItem("")
     }
+
     /**
      * the maximum zoom this image is allowed
      */
     private var maxZoom = 10.0
+
     /**
      * the text field for changing zoom
      */
     private val zoomText = JTextField("1.00", 1).apply {
         maximumSize = Dimension(5000, 25)
     }
+
     /**
      * the slider for changing zoom
      */
     private val zoomSlider = JSlider(SwingConstants.VERTICAL, 1, (maxZoom * 100).toInt(), 100)
+
     /**
      * the `JPanel` holding options for which file in a folder to display
      */
@@ -63,52 +71,47 @@ class ControlPaint : Control() {
         load()
 
         fileBox.addActionListener {
-            if (fileBox.selectedIndex != 0) {
-                val file = File(Settings.FOLDERS[Mode.PAINT.ordinal],  fileBox.selectedItem as String)
-                if (file.exists()) {
-                    drawPanel.saveMask()
-                    val maskFile = Settings.fileToMaskFile(file)
-                    val dataFile =
-                        File(Settings.PAINT_MASK_FOLDER, "${maskFile.name}.data")
-                    if (dataFile.exists()) {
-                        try {
-                            val br = BufferedReader(FileReader(dataFile))
-                            val data =
-                                br.readLine().split(" ".toRegex()).toTypedArray()
-                            val zoom = data[0].toDouble()
-                            val p = Point(data[1].toInt(), data[2].toInt())
-                            zoomSlider.maximum = 10000
-                            zoomSlider.value = (zoom * 100).toInt()
-                            zoomText.text = String.format("%.2f", zoom)
-                            drawPanel.setWindow(zoom, p)
-                            br.close()
-                        } catch (e2: IOException) {
-                            Settings.showError("Cannot load Mask Data", e2)
-                        }
+            if (fileBox.selectedIndex == 0) {
+                return@addActionListener
+            }
+
+            val file = File(Settings.getFolder(Mode.PAINT),  fileBox.selectedItem as String)
+            if (file.exists()) {
+                drawPanel.saveMask()
+                val maskFile = Settings.fileToMaskFile(file)
+                val dataFile = File(Settings.PAINT_MASK_FOLDER, "${maskFile.name}.data")
+                if (dataFile.exists()) {
+                    try {
+                        val br = BufferedReader(FileReader(dataFile))
+                        val data =
+                            br.readLine().split(" ".toRegex()).toTypedArray()
+                        val zoom = data[0].toDouble()
+                        val p = Point(data[1].toInt(), data[2].toInt())
+                        zoomSlider.maximum = 10000
+                        zoomSlider.value = (zoom * 100).toInt()
+                        zoomText.text = String.format("%.2f", zoom)
+                        drawPanel.setWindow(zoom, p)
+                        br.close()
+                    } catch (e2: IOException) {
+                        Log.error(Labels.CANNOT_LOAD_MASK_DATA, e2)
                     }
-                    if (file.isDirectory) {
-                        folderControlPanel.isVisible = true
-                        setFolder(file)
-                    } else {
-                        folderControlPanel.isVisible = false
-                        setFile(file)
-                    }
-                } else {
-                    Settings.showError("Cannot load Image, file does not exist")
                 }
+                if (file.isDirectory) {
+                    folderControlPanel.isVisible = true
+                    setFolder(file)
+                } else {
+                    folderControlPanel.isVisible = false
+                    setFile(file)
+                }
+            } else {
+                Log.error(Labels.CANNOT_LOAD_IMAGE_DOES_NOT_EXIST)
             }
         }
 
         zoomText.addActionListener {
             var zoom: Double
             try {
-                zoom = zoomText.text.toDouble().let {
-                    when {
-                        it < 0.01 -> 0.01
-                        it > maxZoom -> maxZoom
-                        else -> it
-                    }
-                }
+                zoom = zoomText.text.toDouble().boundZoom()
                 drawPanel.setZoom(zoom)
             } catch (nfe: NumberFormatException) {
                 zoom = zoomSlider.value / 100.0
@@ -118,62 +121,58 @@ class ControlPaint : Control() {
         }
 
         zoomSlider.addChangeListener {
-            var zoom = zoomSlider.value / 100.0
-            if (zoom < 0.01) {
-                zoom = 0.01
-            } else if (zoom > maxZoom) {
-                zoom = maxZoom
-            }
+            val zoom = (zoomSlider.value / 100.0).boundZoom()
             zoomText.text = String.format("%.2f", zoom)
             drawPanel.setZoom(zoom)
         }
 
-        val drawStyleButton = Settings.createButton(Settings.DRAW_STYLE[0]).apply {
+        val drawStyleButton = createButton(Resources.DRAW_STYLE[0]).apply {
             addActionListener {
                 drawPanel.toggleStyle()
-                icon = Settings.DRAW_STYLE[drawPanel.style]
+                icon = Resources.DRAW_STYLE[drawPanel.style]
             }
         }
 
-        val shapeButton = Settings.createButton(Settings.PEN_TYPE[0]).apply {
+        val shapeButton = createButton(Resources.PEN_TYPE[0]).apply {
             addActionListener {
                 drawPanel.togglePen()
-                icon = Settings.PEN_TYPE[drawPanel.pen]
+                icon = Resources.PEN_TYPE[drawPanel.pen]
             }
         }
 
-        val drawModeButton = Settings.createButton(Settings.DRAW_MODE[0]).apply {
+        val drawModeButton = createButton(Resources.DRAW_MODE[0]).apply {
             addActionListener {
                 drawPanel.toggleDrawMode()
-                icon = Settings.DRAW_MODE[drawPanel.drawMode.ordinal]
+                icon = Resources.DRAW_MODE[drawPanel.drawMode.ordinal]
             }
         }
 
-        val showButton = Settings.createButton("Show").apply {
-            background = Settings.ACTIVE
+        val showButton = createButton(Labels.SHOW).apply {
+            background = Colors.ACTIVE
             addActionListener { drawPanel.showAll() }
         }
 
-        val hideButton = Settings.createButton("Hide").apply {
-            background = Settings.INACTIVE
+        val hideButton = createButton(Labels.HIDE).apply {
+            background = Colors.INACTIVE
             addActionListener { drawPanel.hideAll() }
         }
 
         val sizeSlider = JSlider(SwingConstants.HORIZONTAL, 10, 100, 25).apply {
-            background = Settings.CONTROL_BACKGROUND
+            background = Colors.CONTROL_BACKGROUND
             addChangeListener { drawPanel.setRadius(value) }
         }
 
         add(JPanel().apply {
-                background = Settings.CONTROL_BACKGROUND
                 layout = BoxLayout(this, BoxLayout.Y_AXIS)
-                add(JLabel("Zoom", SwingConstants.LEFT))
+                background = Colors.CONTROL_BACKGROUND
+                add(JLabel(Labels.ZOOM, SwingConstants.LEFT))
                 add(zoomText)
                 add(zoomSlider)
             },
             BorderLayout.WEST
         )
-        add(JPanel().apply {
+        add(
+            JPanel().apply {
                 layout = BoxLayout(this, BoxLayout.Y_AXIS)
                 add(folderControlPanel)
                 add(northPanel.apply {
@@ -202,97 +201,93 @@ class ControlPaint : Control() {
     private fun setFolder(folder: File) {
         Settings.PAINT_FOLDER = folder
         Settings.PAINT_FOLDER_SIZE = 0
-        for (f in Settings.listFilesInOrder(Settings.PAINT_FOLDER!!).filter { obj: File -> obj.isFile }) {
-            val fileName = f.name
-            val prefix = fileName.substring(0, fileName.lastIndexOf('.'))
-            val suffix = fileName.substring(fileName.lastIndexOf('.') + 1)
+        for (f in Settings.PAINT_FOLDER!!.listFilesInOrder().filter { obj: File -> obj.isFile }) {
             try {
-                if (suffix.equals("PNG", ignoreCase = true) && prefix.toInt() == Settings.PAINT_FOLDER_SIZE + 1) {
+                if (f.extension.equals("PNG", ignoreCase = true)
+                    && f.nameWithoutExtension.toInt() == Settings.PAINT_FOLDER_SIZE + 1
+                ) {
                     Settings.PAINT_FOLDER_SIZE++
                 }
             } catch (e: NumberFormatException) {
-                if (!fileName.equals("Guide.png", ignoreCase = true)) {
-                    println(
-                        "File not in correct format: " + fileName +
-                                ". Should be named with a number, ex: '" + Settings.PAINT_FOLDER_SIZE + ".png'"
+                if (!f.name.equals("Guide.png", ignoreCase = true)) {
+                    Log.debug(
+                        String.format(
+                            Labels.FILE_NOT_IN_CORRECT_FORMAT,
+                            f.name,
+                            Settings.PAINT_FOLDER_SIZE
+                        )
                     )
                 }
             }
         }
         Settings.PAINT_IMAGES = BooleanArray(Settings.PAINT_FOLDER_SIZE)
         folderControlPanel.removeAll()
-        // creates all buttons
-        for (i in 1..Settings.PAINT_FOLDER_SIZE) {
-            val button = Settings.createButton(i.toString() + "")
-            button.background = Settings.INACTIVE
-            button.addActionListener { e ->
-                val number = (e.source as JButton).text.toInt()
-                if (button.background == Settings.ACTIVE) {
-                    button.background = Settings.INACTIVE
-                    Settings.PAINT_IMAGES!![number - 1] = false
-                } else {
-                    button.background = Settings.ACTIVE
-                    Settings.PAINT_IMAGES!![number - 1] = true
-                }
-                val fileLoadingThread: Thread = object : Thread("fileLoadingThread") {
-                    override fun run() {
-                        try {
-                            synchronized(Settings.PAINT_IMAGE!!) {
-                                val g2d = Settings.PAINT_IMAGE!!.createGraphics()
-                                g2d.color = Color.BLACK
-                                g2d.fillRect(
-                                    0,
-                                    0,
-                                    Settings.PAINT_IMAGE!!.width,
-                                    Settings.PAINT_IMAGE!!.height
-                                )
-                                for (j in Settings.PAINT_FOLDER_SIZE downTo 1) {
-                                    if (Settings.PAINT_IMAGES!![j - 1]) {
-                                        val f =
-                                            File(Settings.PAINT_FOLDER.toString() + "/" + j + ".png")
-                                        g2d.drawImage(ImageIO.read(f), 0, 0, null)
+
+        // create all buttons
+        for (fileNum in 1..Settings.PAINT_FOLDER_SIZE) {
+            folderControlPanel.add(createButton(fileNum.toString()).apply {
+                background = Colors.INACTIVE
+                addActionListener { e ->
+                    val number = (e.source as JButton).text.toInt()
+                    if (background == Colors.ACTIVE) {
+                        background = Colors.INACTIVE
+                        Settings.PAINT_IMAGES!![number - 1] = false
+                    } else {
+                        background = Colors.ACTIVE
+                        Settings.PAINT_IMAGES!![number - 1] = true
+                    }
+                    object : Thread("fileLoadingThread") {
+                        override fun run() {
+                            try {
+                                synchronized(Settings.PAINT_IMAGE!!) {
+                                    val g2d = Settings.PAINT_IMAGE!!.createGraphics()
+                                    g2d.color = Color.BLACK
+                                    g2d.fillRect(
+                                        0,
+                                        0,
+                                        Settings.PAINT_IMAGE!!.width,
+                                        Settings.PAINT_IMAGE!!.height
+                                    )
+                                    for (j in Settings.PAINT_FOLDER_SIZE downTo 1) {
+                                        if (Settings.PAINT_IMAGES!![j - 1]) {
+                                            val f = File(Settings.PAINT_FOLDER, "$j.png")
+                                            g2d.drawImage(ImageIO.read(f), 0, 0, null)
+                                        }
+                                    }
+                                    g2d.dispose()
+                                    if (Settings.PAINT_IMAGE != null) {
+                                        displayListener.setMask(drawPanel.mask)
+                                        displayListener.setImageSize()
+                                        setZoomMax()
                                     }
                                 }
-                                g2d.dispose()
-                                if (Settings.PAINT_IMAGE != null) {
-                                    Main.displayPaint.setMask(drawPanel.mask)
-                                    Main.displayPaint.setImageSize()
-                                    setZoomMax()
-                                }
+                            } catch (error: Exception) {
+                                drawPanel.resetImage()
+                                displayListener.setMask()
+                                Settings.PAINT_IMAGE = null
+                                Log.error(Labels.CANNOT_LOAD_IMAGE_ERROR, error)
                             }
-                        } catch (error: IOException) {
-                            drawPanel.resetImage()
-                            Main.displayPaint.resetImage()
-                            Settings.PAINT_IMAGE = null
-                            Settings.showError("Cannot load Image, file is probably too large", error)
-                        } catch (error: OutOfMemoryError) {
-                            drawPanel.resetImage()
-                            Main.displayPaint.resetImage()
-                            Settings.PAINT_IMAGE = null
-                            Settings.showError("Cannot load Image, file is probably too large", error)
+                            displayListener.repaint()
+                            drawPanel.repaint()
+                            drawPanel.setImageLoading(false)
                         }
-                        Main.displayPaint.repaint()
-                        drawPanel.repaint()
-                        drawPanel.setImageLoading(false)
-                    }
+                    }.start()
                 }
-                fileLoadingThread.start()
-            }
-            folderControlPanel.add(button)
+            })
         }
         folderControlPanel.revalidate()
+
         // loads guide
-        val guide = File(Settings.PAINT_FOLDER!!.absolutePath + "/Guide.png")
         if (Settings.PAINT_FOLDER != null && Settings.PAINT_FOLDER!!.exists()) {
             drawPanel.setImageLoading(true)
-            val folderLoadingThread: Thread = object : Thread("folderLoadingThread") {
+            object : Thread("folderLoadingThread") {
                 override fun run() {
                     try {
                         Settings.PAINT_IMAGE = null
                         Settings.PAINT_CONTROL_IMAGE = null
                         var imageSize: Dimension
                         run {
-                            val guideImg = ImageIO.read(guide)
+                            val guideImg = ImageIO.read(Settings.PAINT_GUIDE_FILE)
                             imageSize = Dimension(guideImg.width, guideImg.height)
                             Settings.PAINT_CONTROL_IMAGE = BufferedImage(
                                 imageSize.width / Settings.PAINT_GUIDE_SCALE,
@@ -313,26 +308,20 @@ class ControlPaint : Control() {
                             BufferedImage.TYPE_INT_ARGB
                         )
                         drawPanel.setImage()
-                        Main.displayPaint.setMask(drawPanel.mask)
-                        Main.displayPaint.setImageSize()
+                        displayListener.setMask(drawPanel.mask)
+                        displayListener.setImageSize()
                         setZoomMax()
-                    } catch (error: IOException) {
+                    } catch (error: Exception) {
                         drawPanel.resetImage()
-                        Main.displayPaint.resetImage()
+                        displayListener.setMask()
                         Settings.PAINT_IMAGE = null
-                        Settings.showError("Cannot load Image, file is probably too large", error)
-                    } catch (error: OutOfMemoryError) {
-                        drawPanel.resetImage()
-                        Main.displayPaint.resetImage()
-                        Settings.PAINT_IMAGE = null
-                        Settings.showError("Cannot load Image, file is probably too large", error)
+                        Log.error(Labels.CANNOT_LOAD_IMAGE_ERROR, error)
                     }
-                    Main.displayPaint.repaint()
+                    displayListener.repaint()
                     drawPanel.repaint()
                     drawPanel.setImageLoading(false)
                 }
-            }
-            folderLoadingThread.start()
+            }.start()
         }
     }
 
@@ -344,7 +333,7 @@ class ControlPaint : Control() {
     private fun setFile(file: File) {
         drawPanel.setImageLoading(true)
         Settings.PAINT_FOLDER = file
-        val fileLoadingThread: Thread = object : Thread("fileLoadingThread") {
+        object : Thread("fileLoadingThread") {
             override fun run() {
                 try {
                     Settings.PAINT_IMAGE = null
@@ -352,27 +341,21 @@ class ControlPaint : Control() {
                     Settings.PAINT_CONTROL_IMAGE = Settings.PAINT_IMAGE
                     if (Settings.PAINT_IMAGE != null) {
                         drawPanel.setImage()
-                        Main.displayPaint.setMask(drawPanel.mask)
-                        Main.displayPaint.setImageSize()
+                        displayListener.setMask(drawPanel.mask)
+                        displayListener.setImageSize()
                         setZoomMax()
                     }
-                } catch (error: IOException) {
+                } catch (error: Exception) {
                     drawPanel.resetImage()
-                    Main.displayPaint.resetImage()
+                    displayListener.setMask()
                     Settings.PAINT_IMAGE = null
-                    Settings.showError("Cannot load Image, file is probably too large", error)
-                } catch (error: OutOfMemoryError) {
-                    drawPanel.resetImage()
-                    Main.displayPaint.resetImage()
-                    Settings.PAINT_IMAGE = null
-                    Settings.showError("Cannot load Image, file is probably too large", error)
+                    Log.error(Labels.CANNOT_LOAD_IMAGE_ERROR, error)
                 }
-                Main.displayPaint.repaint()
+                displayListener.repaint()
                 drawPanel.repaint()
                 drawPanel.setImageLoading(false)
             }
-        }
-        fileLoadingThread.start()
+        }.start()
     }
 
     /**
@@ -389,31 +372,47 @@ class ControlPaint : Control() {
         while (fileBox.itemCount > 1) {
             fileBox.removeItemAt(1)
         }
-        val folder = Settings.FOLDERS[Mode.PAINT.ordinal]
+        val folder = Settings.getFolder(Mode.PAINT)
         if (folder.exists()) {
-            Settings.listFilesInOrder(folder).forEach {
+            folder.listFilesInOrder().forEach {
                 if (it.isDirectory) {
                     fileBox.addItem(it.name)
-                } else {
-                    val name = it.name
-                    val suffix = name.substring(name.lastIndexOf('.') + 1)
-                    if (suffix.equals("PNG", ignoreCase = true)
-                        || suffix.equals("JPG", ignoreCase = true)
-                        || suffix.equals("JPEG", ignoreCase = true)
-                    ) {
-                        fileBox.addItem(name)
-                    }
+                } else if (it.extension.equals("PNG", ignoreCase = true)
+                    || it.extension.equals("JPG", ignoreCase = true)
+                    || it.extension.equals("JPEG", ignoreCase = true)
+                ) {
+                    fileBox.addItem(it.name)
                 }
             }
         }
     }
 
+    /**
+     * transforms the value to be between 0.01 and maxZoom
+     */
+    private fun Double.boundZoom(): Double {
+        return when {
+            this < 0.01 -> 0.01
+            this > maxZoom -> maxZoom
+            else -> this
+        }
+    }
+
     override fun setMainControl(b: Boolean) {}
 
-    /**
-     * saves the mask in `DrawPanel` to file
-     */
-    fun saveMask() {
+    override fun onClosing() {
         drawPanel.saveMask()
+    }
+
+    override fun setMask(mask: BufferedImage) {
+        displayListener.setMask(mask)
+    }
+
+    override fun setWindow(zoom: Double, windowPos: Point) {
+        displayListener.setWindow(zoom, windowPos)
+    }
+
+    override fun setWindowPos(windowPos: Point) {
+        displayListener.setWindowPos(windowPos)
     }
 }

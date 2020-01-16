@@ -1,12 +1,9 @@
 package control
 
-import main.Main
-import main.Main.controlWindow
-import main.Main.display
-import main.Settings
+import display.DisplayLoading
+import util.*
 import java.awt.BorderLayout
 import java.awt.Dimension
-import java.lang.NumberFormatException
 import javax.swing.JLabel
 import javax.swing.JOptionPane
 import javax.swing.JSlider
@@ -14,72 +11,87 @@ import javax.swing.SwingConstants
 
 /**
  * a `Control` for the Loading Utility
+ * @param listener callback to `WindowManager`
+ * @param displayLoading callback to `DisplayLoader`
  * @author McAJBen@gmail.com
  * @since 1.0
  */
-class ControlLoading : Control() {
+class ControlLoading(
+    private val listener: ControlLoadingListener,
+    private val displayLoading: DisplayLoading
+) : Control() {
 
     companion object {
         private const val serialVersionUID = 5986059033234358609L
     }
 
     init {
-        val upScaleButton = Settings.createButton("Up Scale").apply {
-            background = Settings.INACTIVE
+        val upScaleButton = createButton(Labels.UP_SCALE).apply {
+            background = Colors.INACTIVE
             addActionListener {
-                if (background === Settings.ACTIVE) {
-                    Main.displayLoading.setUpScale(false)
-                    background = Settings.INACTIVE
-                } else if (background === Settings.INACTIVE) {
-                    Main.displayLoading.setUpScale(true)
-                    background = Settings.ACTIVE
+                when (background) {
+                    Colors.ACTIVE -> {
+                        displayLoading.setUpScale(false)
+                        background = Colors.INACTIVE
+                    }
+                    Colors.INACTIVE -> {
+                        displayLoading.setUpScale(true)
+                        background = Colors.ACTIVE
+                    }
                 }
             }
         }
 
-        val addCubeButton = Settings.createButton("Add Cube").apply {
-            addActionListener { Main.displayLoading.addCube() }
+        val addCubeButton = createButton(Labels.ADD_CUBE).apply {
+            addActionListener { displayLoading.addCube() }
         }
 
-        val clearCubesButton = Settings.createButton("Clear Cubes").apply {
-            addActionListener { Main.displayLoading.clearCubes() }
+        val clearCubesButton = createButton(Labels.CLEAR_CUBES).apply {
+            addActionListener { displayLoading.clearCubes() }
         }
 
         val timeLabel = JLabel("08").apply {
-            background = Settings.CONTROL_BACKGROUND
+            background = Colors.CONTROL_BACKGROUND
             horizontalAlignment = SwingConstants.CENTER
         }
 
         val timeSlider = JSlider(SwingConstants.HORIZONTAL, 1, 20, 8).apply {
-            background = Settings.CONTROL_BACKGROUND
+            background = Colors.CONTROL_BACKGROUND
             minimumSize = Dimension(100, 0)
             addChangeListener {
                 timeLabel.text = String.format("%02d", value)
-                Main.displayLoading.setTotalWait(value)
+                displayLoading.setTotalWait(value)
             }
         }
 
-        val createTimerButton = Settings.createButton("Create Timer").apply {
+        val createTimerButton = createButton(Labels.CREATE_TIMER).apply {
             addActionListener {
-                val input = JOptionPane.showInputDialog(controlWindow, "Enter minutes or M:SS", "")
+                val input = JOptionPane.showInputDialog(
+                    this,
+                    Labels.ENTER_MINUTES_OR_SECONDS,
+                    ""
+                )
+
                 try {
-                    val seconds = if (input.contains(":")) {
-                        val split = input.split(":".toRegex())
-                        split[0].toInt() * 60 + split[1].toInt()
+                    val seconds = if (input.matches("[0-9]*:[0-9]*".toRegex())) {
+                        val colon = input.indexOf(':')
+                        input.substring(0, colon).toInt() * 60 + input.substring(colon + 1).toInt()
                     } else {
                         input.toInt() * 60
                     }
-                    display.setTimer(seconds)
-                } catch (e: NumberFormatException) {}
+                    listener.setTimer(seconds)
+                } catch (e: NumberFormatException) {
+                    Log.error(Labels.INVALID_TIME_FORMAT)
+                }
             }
         }
 
-        val clearTimerButton = Settings.createButton("Clear Timer").apply {
-            addActionListener { display.clearTimer() }
+        val clearTimerButton = createButton(Labels.CLEAR_TIMER).apply {
+            addActionListener { listener.clearTimer() }
         }
 
         add(
-            northPanel.apply {
+            emptyNorthPanel.apply {
                 add(upScaleButton)
                 add(addCubeButton)
                 add(clearCubesButton)
@@ -96,5 +108,7 @@ class ControlLoading : Control() {
     override fun load() {}
 
     override fun setMainControl(b: Boolean) {}
+
+    override fun onClosing() {}
 
 }

@@ -1,7 +1,7 @@
 package display
 
 import main.Mode
-import main.Settings
+import util.Settings
 import java.awt.AlphaComposite
 import java.awt.Color
 import java.awt.Graphics
@@ -13,13 +13,16 @@ import javax.imageio.ImageIO
 
 /**
  * `JPanel` for displaying Loading Utility
+ * @param window callback to `DisplayWindow`
  * @author McAJBen@gmail.com
  * @since 1.0
  */
-class DisplayLoading : Display() {
+class DisplayLoading(window: DisplayWindow) : Display(window) {
 
     companion object {
+
         private const val serialVersionUID = -4364176757863161776L
+
         /**
          * the number of ticks while the images are changing
          * 50ms tick time makes 20 ticks per second
@@ -31,39 +34,48 @@ class DisplayLoading : Display() {
      * the total number of ticks to display the image
      */
     private var totalWait = 400
+
     /**
      * a list of the cubes in the `DisplayLoading`
      */
     private val cubePositions = LinkedList<Cube>()
+
     /**
      * a list of the file names that haven't been shown this loop
      */
     private val fileNames = LinkedList<String>()
+
     /**
      * the previous image that is fading out
      */
     private var oldImage: BufferedImage? = null
+
     /**
      * the current image being displayed
      */
     private var currentImage: BufferedImage? = null
+
     /**
      * the thread that is repainting the `DisplayLoading`
      * and calculating motions and keeping track of time
      */
     private var paintThread = Thread()
+
     /**
      * tells if this is being shown and if we should be keeping track of time
      */
     private var mainDisplay = false
+
     /**
      * tells if the images should be up scaled
      */
     private var upScale = false
+
     /**
      * the count of how many ticks since the image has been changed
      */
     private var timer = 20
+
     /**
      * the alpha part of how faded the images are
      */
@@ -72,50 +84,6 @@ class DisplayLoading : Display() {
     init {
         getImage()
         isVisible = true
-    }
-
-
-    override fun paint(g: Graphics) {
-        super.paint(g)
-        val g2d = g as Graphics2D
-        if (currentImage != null) {
-            if (upScale) {
-                if (timer <= FADE_IN) {
-                    g2d.drawImage(oldImage, 0, 0, Settings.DISPLAY_SIZE!!.width, Settings.DISPLAY_SIZE!!.height, null)
-                }
-                g2d.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade)
-                g2d.drawImage(currentImage, 0, 0, Settings.DISPLAY_SIZE!!.width, Settings.DISPLAY_SIZE!!.height, null)
-            } else {
-                g2d.color = Color(currentImage!!.getRGB(0, 0))
-                g2d.fillRect(0, 0, Settings.DISPLAY_SIZE!!.width, Settings.DISPLAY_SIZE!!.height)
-                if (timer <= FADE_IN && oldImage != null) {
-                    g2d.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1 - fade)
-                    g2d.drawImage(
-                        oldImage, (Settings.DISPLAY_SIZE!!.width - oldImage!!.width) / 2,
-                        (Settings.DISPLAY_SIZE!!.height - oldImage!!.height) / 2, null
-                    )
-                }
-                g2d.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade)
-                g2d.drawImage(
-                    currentImage, (Settings.DISPLAY_SIZE!!.width - currentImage!!.width) / 2,
-                    (Settings.DISPLAY_SIZE!!.height - currentImage!!.height) / 2, null
-                )
-            }
-        }
-        g2d.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f)
-        for (c in cubePositions) {
-            c.paint(g2d)
-        }
-        paintMouse(g2d)
-        g2d.dispose()
-    }
-
-    override fun setMainDisplay(b: Boolean) {
-        if (b) {
-            restart(false)
-            repaint()
-        }
-        mainDisplay = b
     }
 
     /**
@@ -128,7 +96,7 @@ class DisplayLoading : Display() {
 
     /**
      * changes if the images are up scaled or not
-     * @param b 
+     * @param b
      * - true if the image is scaled up
      * - false if the image is real size
      */
@@ -178,10 +146,9 @@ class DisplayLoading : Display() {
         }
         if (!fileNames.isEmpty()) {
             oldImage = currentImage
-            val file =
-                Settings.FOLDERS[Mode.LOADING.ordinal].toString() + "/" + fileNames.removeFirst()
+            val file = File(Settings.getFolder(Mode.LOADING), fileNames.removeFirst())
             try {
-                currentImage = ImageIO.read(File(file))
+                currentImage = ImageIO.read(file)
             } catch (e: Exception) {
                 currentImage = null
                 e.printStackTrace()
@@ -193,21 +160,19 @@ class DisplayLoading : Display() {
      * re loads the list of images in the loading folder
      */
     private fun rePop() {
-        val folder = Settings.FOLDERS[Mode.LOADING.ordinal]
+        val folder = Settings.getFolder(Mode.LOADING)
         if (folder.exists()) {
             val rand = Random()
             for (f in folder.listFiles()!!) {
-                val name = f.name
-                val suffix = name.substring(name.lastIndexOf('.') + 1)
-                if (suffix.equals("PNG", ignoreCase = true)
-                    || suffix.equals("JPG", ignoreCase = true)
-                    || suffix.equals("JPEG", ignoreCase = true)
+                if (f.extension.equals("PNG", ignoreCase = true)
+                    || f.extension.equals("JPG", ignoreCase = true)
+                    || f.extension.equals("JPEG", ignoreCase = true)
                 ) {
                     val index = rand.nextInt(fileNames.size + 1)
                     if (index == fileNames.size) {
-                        fileNames.add(name)
+                        fileNames.add(f.name)
                     } else {
-                        fileNames.add(index, name)
+                        fileNames.add(index, f.name)
                     }
                 }
             }
@@ -241,5 +206,48 @@ class DisplayLoading : Display() {
             }
         }
         paintThread.start()
+    }
+
+    override fun paint(g: Graphics) {
+        super.paint(g)
+        val g2d = g as Graphics2D
+        if (currentImage != null) {
+            if (upScale) {
+                if (timer <= FADE_IN) {
+                    g2d.drawImage(oldImage, 0, 0, Settings.DISPLAY_SIZE!!.width, Settings.DISPLAY_SIZE!!.height, null)
+                }
+                g2d.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade)
+                g2d.drawImage(currentImage, 0, 0, Settings.DISPLAY_SIZE!!.width, Settings.DISPLAY_SIZE!!.height, null)
+            } else {
+                g2d.color = Color(currentImage!!.getRGB(0, 0))
+                g2d.fillRect(0, 0, Settings.DISPLAY_SIZE!!.width, Settings.DISPLAY_SIZE!!.height)
+                if (timer <= FADE_IN && oldImage != null) {
+                    g2d.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1 - fade)
+                    g2d.drawImage(
+                        oldImage, (Settings.DISPLAY_SIZE!!.width - oldImage!!.width) / 2,
+                        (Settings.DISPLAY_SIZE!!.height - oldImage!!.height) / 2, null
+                    )
+                }
+                g2d.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade)
+                g2d.drawImage(
+                    currentImage, (Settings.DISPLAY_SIZE!!.width - currentImage!!.width) / 2,
+                    (Settings.DISPLAY_SIZE!!.height - currentImage!!.height) / 2, null
+                )
+            }
+        }
+        g2d.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f)
+        for (c in cubePositions) {
+            c.paint(g2d)
+        }
+        paintMouse(g2d)
+        g2d.dispose()
+    }
+
+    override fun setMainDisplay(b: Boolean) {
+        if (b) {
+            restart(false)
+            repaint()
+        }
+        mainDisplay = b
     }
 }

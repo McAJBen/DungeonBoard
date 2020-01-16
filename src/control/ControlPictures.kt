@@ -2,7 +2,10 @@ package control
 
 import display.DisplayPictures
 import display.Scale
-import main.Settings
+import util.Settings
+import util.Colors
+import util.Resources
+import util.createButton
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.io.File
@@ -35,17 +38,16 @@ class ControlPictures(
      */
     private val picturePanel: PicturePanel
 
-
     init {
         val scaleComboBox: JComboBox<Scale> = JComboBox<Scale>(Scale.values()).apply {
-            background = Settings.CONTROL_BACKGROUND
+            background = Colors.CONTROL_BACKGROUND
             maximumSize = Dimension(100, 5000)
             selectedItem = Scale.UP_SCALE
             addActionListener { display.setScaleMode(selectedItem as Scale) }
         }
 
-        val flipButton = Settings.createButton(Settings.ICON_FLIP).apply {
-            background = Settings.CONTROL_BACKGROUND
+        val flipButton = createButton(Resources.ICON_FLIP).apply {
+            background = Colors.CONTROL_BACKGROUND
             addActionListener { display.flip() }
         }
 
@@ -54,7 +56,7 @@ class ControlPictures(
                 if (!allowList) {
                     display.removeAllImages()
                     for (c in components) {
-                        c.background = Settings.DISABLE_COLOR
+                        c.background = Colors.DISABLE_COLOR
                     }
                 }
                 display.addImage(name)
@@ -74,7 +76,7 @@ class ControlPictures(
         )
         add(
             JScrollPane(picturePanel).apply {
-                background = Settings.CONTROL_BACKGROUND
+                background = Colors.CONTROL_BACKGROUND
                 border = BorderFactory.createEmptyBorder()
             },
             BorderLayout.CENTER
@@ -108,4 +110,6 @@ class ControlPictures(
             picturePanel.rememberThumbnails(folder)
         }
     }
+
+    override fun onClosing() {}
 }

@@ -1,5 +1,10 @@
-package main
+package util
 
+/**
+ * contains build information
+ * @author McAJBen@gmail.com
+ * @since 2.5
+ */
 object Build {
     private const val MAJOR = 0
     private const val MINOR = 0
