@@ -3,7 +3,6 @@ package control
 import util.Colors
 import util.Labels
 import util.Log
-import util.Settings
 import java.awt.Dimension
 import java.awt.GridLayout
 import java.awt.Insets
@@ -14,10 +13,13 @@ import javax.swing.*
 
 /**
  * a scroll menu to display images on as buttons
+ * @param thumbnailFolder directory to hold thumbnail caches
  * @author McAJBen@gmail.com
  * @since 1.0
  */
-abstract class PicturePanel : JPanel() {
+abstract class PicturePanel(
+    private val thumbnailFolder: File
+) : JPanel() {
 
     companion object {
 
@@ -32,34 +34,6 @@ abstract class PicturePanel : JPanel() {
          * The size of the `ImageIcon` in each of the buttons
          */
         private val IMAGE_ICON_SIZE = Dimension(100, 60)
-
-        /**
-         * re-sizes an image and saves a lower quality version as a thumbnail
-         * @param file the file input of the full size image
-         */
-        private fun createThumbnail(file: File) {
-            val tFile = Settings.fileToThumb(file)
-            if (!tFile.exists() || file.lastModified() > tFile.lastModified()) {
-                try {
-                    val bufferedImage = BufferedImage(
-                        IMAGE_ICON_SIZE.width,
-                        IMAGE_ICON_SIZE.height,
-                        BufferedImage.TYPE_INT_RGB
-                    )
-                    bufferedImage.graphics.drawImage(
-                        ImageIO.read(file).getScaledInstance(
-                            IMAGE_ICON_SIZE.width,
-                            IMAGE_ICON_SIZE.height,
-                            BufferedImage.SCALE_SMOOTH
-                        ),
-                        0, 0, null
-                    )
-                    ImageIO.write(bufferedImage, "GIF", tFile)
-                } catch (e: Exception) {
-                    Log.error(Labels.CANNOT_CREATE_THUMBNAIL, e)
-                }
-            }
-        }
     }
 
     init {
@@ -96,13 +70,39 @@ abstract class PicturePanel : JPanel() {
     }
 
     /**
+     * re-sizes an image and saves a lower quality version as a thumbnail
+     * @param file the file input of the full size image
+     */
+    private fun createThumbnail(file: File) {
+        val tFile = File(thumbnailFolder, file.name)
+        if (!tFile.exists() || file.lastModified() > tFile.lastModified()) {
+            try {
+                val bufferedImage = BufferedImage(
+                    IMAGE_ICON_SIZE.width,
+                    IMAGE_ICON_SIZE.height,
+                    BufferedImage.TYPE_INT_RGB
+                )
+                bufferedImage.graphics.drawImage(
+                    ImageIO.read(file).getScaledInstance(
+                        IMAGE_ICON_SIZE.width,
+                        IMAGE_ICON_SIZE.height,
+                        BufferedImage.SCALE_SMOOTH
+                    ),
+                    0, 0, null
+                )
+                ImageIO.write(bufferedImage, "GIF", tFile)
+            } catch (e: Exception) {
+                Log.error(Labels.CANNOT_CREATE_THUMBNAIL, e)
+            }
+        }
+    }
+
+    /**
      * removes all images
      */
     fun clearButtons() {
-        for (c in components) {
-            if (c.javaClass == JButton::class.java) {
-                remove(c)
-            }
+        components.filterIsInstance<JButton>().forEach {
+            remove(it)
         }
     }
 
@@ -120,19 +120,13 @@ abstract class PicturePanel : JPanel() {
 
     /**
      * loads the thumbnails from file
-     * @param folder the folder that the original image was in
      */
-    fun rememberThumbnails(folder: File) {
-        for (c in components) {
-            if (c.javaClass == JButton::class.java) {
-                val b = c as JButton
-                var f = File(folder, b.text)
-                f = Settings.fileToThumb(f)
-                try {
-                    b.icon = ImageIcon(ImageIO.read(f))
-                } catch (e: Exception) {
-                    Log.error(Labels.CANNOT_LOAD_THUMBNAIL, e)
-                }
+    fun rememberThumbnails() {
+        components.filterIsInstance<JButton>().forEach {
+            try {
+                it.icon = ImageIcon(ImageIO.read(File(thumbnailFolder, it.text)))
+            } catch (e: Exception) {
+                Log.error(Labels.CANNOT_LOAD_THUMBNAIL, e)
             }
         }
     }

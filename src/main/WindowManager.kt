@@ -5,7 +5,6 @@ import display.DisplayLoading
 import display.DisplayPaint
 import display.DisplayPictures
 import display.DisplayWindow
-import util.Settings
 import java.awt.Rectangle
 
 /**
@@ -34,8 +33,8 @@ class WindowManager(
      * a list of all possible displays to be shown to players
      */
     private val displays = arrayOf(
-        DisplayPictures(displayWindow, Settings.getFolder(Mode.LAYER)),
-        DisplayPictures(displayWindow, Settings.getFolder(Mode.IMAGE)),
+        DisplayPictures(displayWindow, Mode.LAYER),
+        DisplayPictures(displayWindow, Mode.IMAGE),
         DisplayPaint(displayWindow),
         DisplayLoading(displayWindow)
     )
@@ -45,14 +44,12 @@ class WindowManager(
      */
     private val controls = arrayOf(
         ControlPictures(
-            Settings.getFolder(Mode.LAYER),
             displays[0] as DisplayPictures,
-            true
+            Mode.LAYER
         ),
         ControlPictures(
-            Settings.getFolder(Mode.IMAGE),
             displays[1] as DisplayPictures,
-            false
+            Mode.IMAGE
         ),
         ControlPaint(
             displays[2] as ControlPaintListener

@@ -1,5 +1,6 @@
 package display
 
+import main.Mode
 import util.Labels
 import util.Log
 import util.Settings
@@ -10,20 +11,25 @@ import javax.imageio.ImageIO
 
 /**
  * a container for name and an image
+ * @param mode used to determine the folder that contains the file
  * @param name the name of the specific file
- * @param folder the folder that contains the file named n
  * @author McAJBen@gmail.com
  * @since 1.6
  */
 class AlphaImage(
-    val name: String,
-    folder: File
+    mode: Mode,
+    val name: String
 ) {
 
     /**
      * the file used to load the image
      */
-    private val file = File(folder, name)
+    private val file = File(Settings.getFolder(mode), name)
+
+    /**
+     * the thumbnail file for this image
+     */
+    private val thumbnail = File(Settings.getDataFolder(mode), name)
 
     /**
      * the `BufferedImage` from the file
@@ -36,10 +42,7 @@ class AlphaImage(
                     return ImageIO.read(file)
                 } catch (e: OutOfMemoryError) {
                     error = e
-                    try {
-                        Thread.sleep(10)
-                    } catch (e1: InterruptedException) {
-                    }
+                    Thread.sleep(10)
                 } catch (e: Exception) {
                     Log.error(String.format(Labels.CANNOT_LOAD_IMAGE, name), e)
                 }
@@ -55,9 +58,8 @@ class AlphaImage(
      */
     val bGColor: Color
         get() {
-            val f = Settings.fileToThumb(file)
             try {
-                return Color(ImageIO.read(f).getRGB(0, 0))
+                return Color(ImageIO.read(thumbnail).getRGB(0, 0))
             } catch (e: Exception) {
                 Log.error(String.format(Labels.CANNOT_LOAD_IMAGE_RGB, name), e)
             }

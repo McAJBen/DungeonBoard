@@ -1,5 +1,6 @@
 package display
 
+import main.Mode
 import util.Settings
 import java.awt.Color
 import java.awt.Dimension
@@ -7,19 +8,18 @@ import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage
-import java.io.File
 import java.util.*
 
 /**
  * `JPanel` for displaying Image and Layer Utility
  * @param window callback to `DisplayWindow`
- * @param folder the folder that contains images
+ * @param mode used to determine the folder that contains images
  * @author McAJBen@gmail.com
  * @since 2.0
  */
 class DisplayPictures(
     window: DisplayWindow,
-    private val folder: File
+    private val mode: Mode
 ) : Display(window) {
 
     companion object {
@@ -138,7 +138,7 @@ class DisplayPictures(
      * @param name the name of the file to load an image from
      */
     fun addImage(name: String) {
-        val ai = AlphaImage(name, folder)
+        val ai = AlphaImage(mode, name)
         stopCompile()
         images.add(ai)
         compileImage()

@@ -2,6 +2,7 @@ package control
 
 import display.DisplayPictures
 import display.Scale
+import main.Mode
 import util.Colors
 import util.Resources
 import util.Settings
@@ -15,23 +16,34 @@ import javax.swing.JScrollPane
 
 /**
  * a `Control` for the Layer and Image Utility
- * @param folder the folder that images are loaded from
  * @param display the display to post images to
- * @param allowList if more than 1 image should be allowed
- * - true will be for Layer Utility
- * - false will be for Image Utility
+ * @param mode which mode this panel is running
  * @author McAJBen@gmail.com
  * @since 2.0
  */
 class ControlPictures(
-    private val folder: File,
     private val display: DisplayPictures,
-    allowList: Boolean
+    mode: Mode
 ) : Control() {
 
     companion object {
         private const val serialVersionUID = -1679600820663944136L
     }
+
+    /**
+     * the folder that images are loaded from
+     */
+    private val folder = Settings.getFolder(mode)
+
+    /**
+     * data folder that contains cached thumbnails
+     */
+    private val thumbnailFolder = Settings.getDataFolder(mode)
+
+    /**
+     * if more than 1 image should be allowed
+     */
+    private val allowList = mode == Mode.LAYER
 
     /**
      * the scroll menu of images inside the folder
@@ -51,13 +63,11 @@ class ControlPictures(
             addActionListener { display.flip() }
         }
 
-        picturePanel = object : PicturePanel() {
+        picturePanel = object : PicturePanel(thumbnailFolder) {
             override fun select(name: String) {
                 if (!allowList) {
                     display.removeAllImages()
-                    for (c in components) {
-                        c.background = Colors.DISABLE_COLOR
-                    }
+                    components.forEach { it.background = Colors.DISABLE_COLOR }
                 }
                 display.addImage(name)
             }
@@ -86,9 +96,17 @@ class ControlPictures(
         isVisible = true
     }
 
+    /**
+     * turns a thumbnail file into its normal file equal
+     * @return a file in the normal folders
+     */
+    private fun File.thumbToFile(): File {
+        return File(folder, name)
+    }
+
     override fun setMainControl(b: Boolean) {
         if (b) {
-            picturePanel.rememberThumbnails(folder)
+            picturePanel.rememberThumbnails()
         } else {
             picturePanel.forgetThumbnails()
         }
@@ -96,18 +114,20 @@ class ControlPictures(
 
     override fun load() {
         if (folder.exists()) {
-            for (file in Settings.folderToDataFolder(folder).listFiles()!!) {
-                val fileFromThumbnail = Settings.thumbToFile(file)
-                if (!fileFromThumbnail.exists()) {
-                    file.delete()
-                }
+
+            // remove any thumbnails for files that don't exist
+            thumbnailFolder.listFiles()!!.filterNot {
+                it.thumbToFile().exists()
+            }.forEach {
+                it.delete()
             }
+
             picturePanel.clearButtons()
             PPButtonCreator(picturePanel, folder).run()
             repaint()
             revalidate()
             display.removeAllImages()
-            picturePanel.rememberThumbnails(folder)
+            picturePanel.rememberThumbnails()
         }
     }
 
