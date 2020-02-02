@@ -1,7 +1,7 @@
 package display
 
 import util.Resources
-import util.Settings
+import util.Settings.DISPLAY_SIZE
 import java.awt.Graphics2D
 import java.awt.Point
 import java.util.*
@@ -26,8 +26,8 @@ class Cube {
      * the current position of the top left corner
      */
     private val point = Point(
-        rand.nextInt(Settings.DISPLAY_SIZE!!.width - Resources.ICON_DVD.iconWidth),
-        rand.nextInt(Settings.DISPLAY_SIZE!!.height - Resources.ICON_DVD.iconHeight)
+        rand.nextInt(DISPLAY_SIZE.width - Resources.ICON_DVD.iconWidth),
+        rand.nextInt(DISPLAY_SIZE.height - Resources.ICON_DVD.iconHeight)
     )
 
     /**
@@ -83,8 +83,8 @@ class Cube {
                 }
             } else {
                 point.x += speed
-                if (point.x > Settings.DISPLAY_SIZE!!.width - Resources.ICON_DVD.iconWidth) {
-                    point.x = Settings.DISPLAY_SIZE!!.width - Resources.ICON_DVD.iconWidth
+                if (point.x > DISPLAY_SIZE.width - Resources.ICON_DVD.iconWidth) {
+                    point.x = DISPLAY_SIZE.width - Resources.ICON_DVD.iconWidth
                     vertical = true
                     verticalHit = true
                 }
@@ -100,8 +100,8 @@ class Cube {
                 }
             } else {
                 point.y += speed
-                if (point.y > Settings.DISPLAY_SIZE!!.height - Resources.ICON_DVD.iconHeight) {
-                    point.y = Settings.DISPLAY_SIZE!!.height - Resources.ICON_DVD.iconHeight
+                if (point.y > DISPLAY_SIZE.height - Resources.ICON_DVD.iconHeight) {
+                    point.y = DISPLAY_SIZE.height - Resources.ICON_DVD.iconHeight
                     horizontal = true
                     if (verticalHit) {
                         flag = true

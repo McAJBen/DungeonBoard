@@ -2,7 +2,6 @@ package util
 
 import main.Mode
 import java.awt.Dimension
-import java.awt.image.BufferedImage
 import java.io.File
 import java.lang.Integer.max
 
@@ -36,19 +35,14 @@ object Settings {
     private val DATA_FOLDER = File(FOLDER, "Data")
 
     /**
-     * The folder containing image thumbnails
+     * an array of all the sub folders that contain meta data by their `Mode`
      */
-    private val IMAGE_THUMB_FOLDER = File(DATA_FOLDER, "Layer")
-
-    /**
-     * The folder containing layer thumbnails
-     */
-    private val LAYER_THUMB_FOLDER = File(DATA_FOLDER, "Image")
-
-    /**
-     * how much to scale down the image for `ControlPaint`
-     */
-    const val PAINT_GUIDE_SCALE = 5
+    private val DATA_FOLDERS = arrayOf(
+        File(DATA_FOLDER, "Layer"),
+        File(DATA_FOLDER, "Image"),
+        File(DATA_FOLDER, "Paint"),
+        File(DATA_FOLDER, "Loading")
+    )
 
     /**
      * number of pixels on the Paint image that are being covered by a single pixel on the mask.
@@ -64,42 +58,6 @@ object Settings {
         get() = "$NAME ${Build.versionText}"
 
     /**
-     * The folder currently in use on the paint layer
-     */
-    var PAINT_FOLDER: File? = null
-
-    /**
-     * The Guide file inside of PAINT_FOLDER
-     */
-    val PAINT_GUIDE_FILE: File
-        get() {
-            return File(PAINT_FOLDER, "Guide.png")
-        }
-
-    /**
-     * The background file inside of PAINT_FOLDER
-     */
-    val PAINT_BACKGROUND_FILE: File
-        get() {
-            return File(PAINT_FOLDER, "Background.png")
-        }
-
-    /**
-     * The folder containing saved paint masks
-     */
-    val PAINT_MASK_FOLDER = File(DATA_FOLDER, "Paint")
-
-    /**
-     * the image used by `DisplayPaint`
-     */
-    var PAINT_IMAGE: BufferedImage? = null
-
-    /**
-     * the image used by `ControlPaint`
-     */
-    var PAINT_CONTROL_IMAGE: BufferedImage? = null
-
-    /**
      * the default size of the `ControlWindow`
      */
     val CONTROL_SIZE = Dimension(900, 700)
@@ -107,22 +65,12 @@ object Settings {
     /**
      * the size of the display that players see
      */
-    var DISPLAY_SIZE: Dimension? = null
-
-    /**
-     * The active layers in `DisplayPaint`
-     */
-    var PAINT_IMAGES: BooleanArray? = null
+    var DISPLAY_SIZE = Dimension(1, 1)
 
     /**
      * the number of threads this computer has
      */
     val SYS_THREADS = max(1, Runtime.getRuntime().availableProcessors() - 1)
-
-    /**
-     * number of files in the current PAINT_FOLDER
-     */
-    var PAINT_FOLDER_SIZE = 0
 
     /**
      * initializes the `FOLDERS` and creates them if they do not exist
@@ -132,10 +80,7 @@ object Settings {
     fun load() {
         listOf(
             *FOLDERS,
-            DATA_FOLDER,
-            IMAGE_THUMB_FOLDER,
-            LAYER_THUMB_FOLDER,
-            PAINT_MASK_FOLDER
+            *DATA_FOLDERS
         ).forEach {
             if (!it.exists()) {
                 it.mkdirs()
@@ -153,43 +98,11 @@ object Settings {
     }
 
     /**
-     * turns a file into its thumbnail equal
-     * @param f the file referring to an image
-     * @return a file in the thumbnail folder
+     * gets the folder that contains data for the specific mode
+     * @param mode the `Mode`
+     * @return the folder that contains data for the mode
      */
-    fun fileToThumb(f: File): File {
-        return File(File(DATA_FOLDER, f.parentFile.name), f.name)
-    }
-
-    /**
-     * turns a thumbnail file into its normal file equal
-     * @param f the file referring to the thumbnail
-     * @return a file in the normal folders
-     */
-    fun thumbToFile(f: File): File {
-        return File(File(FOLDER, f.parentFile.name), f.name)
-    }
-
-    /**
-     * turns a folder into its data folder equal
-     * @param f the folder referring to one in Settings.FOLDERS
-     * @return a folder in the data folder
-     */
-    fun folderToDataFolder(f: File): File {
-        return File(DATA_FOLDER, f.name)
-    }
-
-    /**
-     * turns a file/folder into its data folder equal to store a mask for Paint
-     * @param f the file referring to one in Settings.PAINT_FOLDER
-     * @return a file in the data folder
-     */
-    fun fileToMaskFile(f: File): File {
-        val filename = if (f.isDirectory) {
-            "${f.name}.f"
-        } else {
-            f.name
-        }
-        return File(File(DATA_FOLDER, "Paint"), filename)
+    fun getDataFolder(mode: Mode): File {
+        return DATA_FOLDERS[mode.ordinal]
     }
 }

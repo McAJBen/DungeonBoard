@@ -1,31 +1,24 @@
 package paint
 
-import java.awt.Point
-import java.awt.image.BufferedImage
-
 /**
- * a listener for events coming from `DrawPanel
+ * a listener for events coming from `DrawPanel`
  * @author McAJBen@gmail.com
  * @since 2.5
  */
 interface DrawPanelListener {
 
     /**
-     * updates the mask on display
-     * @param mask the new mask
+     * the reference to paint data, used to update controlMask and MaskGraphics
      */
-    fun setMask(mask: BufferedImage)
+    var paintRef: PaintReference?
 
     /**
-     * updates the window position and zoom on display
-     * @param zoom the new zoom
-     * @param windowPos the new window position
+     * called when the mask in `DrawPanel` has changed
      */
-    fun setWindow(zoom: Double, windowPos: Point)
+    fun maskHasChanged()
 
     /**
-     * updates the window position on display
-     * @param windowPos the new window position
+     * called when the `DisplayPaint` should be repainted
      */
-    fun setWindowPos(windowPos: Point)
+    fun repaintDisplay()
 }

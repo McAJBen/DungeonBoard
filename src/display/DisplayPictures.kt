@@ -2,6 +2,7 @@ package display
 
 import main.Mode
 import util.Settings
+import util.Settings.DISPLAY_SIZE
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Graphics
@@ -55,8 +56,8 @@ class DisplayPictures(
 
     init {
         image = BufferedImage(
-            Settings.DISPLAY_SIZE!!.width,
-            Settings.DISPLAY_SIZE!!.height,
+            DISPLAY_SIZE.width,
+            DISPLAY_SIZE.height,
             BufferedImage.TYPE_INT_ARGB
         )
         isVisible = true
@@ -73,30 +74,30 @@ class DisplayPictures(
                 img,
                 0,
                 0,
-                Settings.DISPLAY_SIZE!!.width,
-                Settings.DISPLAY_SIZE!!.height,
+                DISPLAY_SIZE.width,
+                DISPLAY_SIZE.height,
                 null
             )
             Scale.REAL_SIZE -> g2d.drawImage(
                 img,
-                (Settings.DISPLAY_SIZE!!.width - img.width) / 2,
-                (Settings.DISPLAY_SIZE!!.height - img.height) / 2,
+                (DISPLAY_SIZE.width - img.width) / 2,
+                (DISPLAY_SIZE.height - img.height) / 2,
                 img.width,
                 img.height,
                 null
             )
             Scale.UP_SCALE -> {
-                val screenRatio = Settings.DISPLAY_SIZE!!.getWidth() / Settings.DISPLAY_SIZE!!.getHeight()
+                val screenRatio = DISPLAY_SIZE.getWidth() / DISPLAY_SIZE.getHeight()
                 val imageRatio = img.width.toDouble() / img.height
                 val imageScale = if (imageRatio > screenRatio) { // width > height
-                    Dimension(Settings.DISPLAY_SIZE!!.width, (Settings.DISPLAY_SIZE!!.width / imageRatio).toInt())
+                    Dimension(DISPLAY_SIZE.width, (DISPLAY_SIZE.width / imageRatio).toInt())
                 } else { // width < height
-                    Dimension((Settings.DISPLAY_SIZE!!.height * imageRatio).toInt(), Settings.DISPLAY_SIZE!!.height)
+                    Dimension((DISPLAY_SIZE.height * imageRatio).toInt(), DISPLAY_SIZE.height)
                 }
                 g2d.drawImage(
                     img,
-                    (Settings.DISPLAY_SIZE!!.width - imageScale.width) / 2,
-                    (Settings.DISPLAY_SIZE!!.height - imageScale.height) / 2,
+                    (DISPLAY_SIZE.width - imageScale.width) / 2,
+                    (DISPLAY_SIZE.height - imageScale.height) / 2,
                     imageScale.width,
                     imageScale.height,
                     null
@@ -112,7 +113,7 @@ class DisplayPictures(
      */
     private fun fillBackground(g2d: Graphics2D, c: Color) {
         g2d.color = c
-        g2d.fillRect(0, 0, Settings.DISPLAY_SIZE!!.width, Settings.DISPLAY_SIZE!!.height)
+        g2d.fillRect(0, 0, DISPLAY_SIZE.width, DISPLAY_SIZE.height)
     }
 
     /**
@@ -161,8 +162,8 @@ class DisplayPictures(
         compileThread = object : Thread("compileImage") {
             override fun run() {
                 val img = BufferedImage(
-                    Settings.DISPLAY_SIZE!!.width,
-                    Settings.DISPLAY_SIZE!!.height,
+                    DISPLAY_SIZE.width,
+                    DISPLAY_SIZE.height,
                     BufferedImage.TYPE_INT_ARGB
                 )
                 val g2d = img.createGraphics()

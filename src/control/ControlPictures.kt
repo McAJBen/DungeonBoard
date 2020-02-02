@@ -3,14 +3,13 @@ package control
 import display.DisplayPictures
 import display.Scale
 import main.Mode
-import util.Colors
-import util.Resources
-import util.Settings
-import util.createButton
+import util.*
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.io.File
+import java.util.concurrent.Executors
 import javax.swing.BorderFactory
+import javax.swing.JButton
 import javax.swing.JComboBox
 import javax.swing.JScrollPane
 
@@ -123,7 +122,21 @@ class ControlPictures(
             }
 
             picturePanel.clearButtons()
-            PPButtonCreator(picturePanel, folder).run()
+
+            val executor = Executors.newFixedThreadPool(Settings.SYS_THREADS)
+            folder.listFilesInOrder().filter {
+                it.extension.equals("PNG", ignoreCase = true)
+                        || it.extension.equals("JPG", ignoreCase = true)
+                        || it.extension.equals("JPEG", ignoreCase = true)
+            }.map {
+                executor.submit<JButton> {
+                    picturePanel.createPPButton(it)
+                }
+            }.forEach {
+                picturePanel.add(it.get())
+            }
+            executor.shutdown()
+
             repaint()
             revalidate()
             display.removeAllImages()

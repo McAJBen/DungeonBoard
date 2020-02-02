@@ -32,12 +32,22 @@ object Colors {
     /**
      * the green color used on `DrawPanel` to show a visible part of the map
      */
-    val CLEAR = Color(100, 255, 100)
+    val CLEAR = Color(100, 255, 100, 153)
 
     /**
      * the red color used on `DrawPanel` to show a blocked part of the map
      */
-    val OPAQUE = Color(255, 100, 100)
+    val OPAQUE = Color(255, 100, 100, 153)
+
+    /**
+     * the clear color used on `DisplayPaint` to show through the mask
+     */
+    val TRANSPARENT = Color(0, 0, 0, 0)
+
+    /**
+     * the black color used on `DisplayPaint` to hide with the mask
+     */
+    val BLACK = Color(0, 0, 0)
 
     /**
      * the pink color used on `DrawPanel` to show the cursor and outline of player's view

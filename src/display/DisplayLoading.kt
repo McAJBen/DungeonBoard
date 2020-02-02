@@ -2,6 +2,7 @@ package display
 
 import main.Mode
 import util.Settings
+import util.Settings.DISPLAY_SIZE
 import java.awt.AlphaComposite
 import java.awt.Color
 import java.awt.Graphics
@@ -214,24 +215,24 @@ class DisplayLoading(window: DisplayWindow) : Display(window) {
         if (currentImage != null) {
             if (upScale) {
                 if (timer <= FADE_IN) {
-                    g2d.drawImage(oldImage, 0, 0, Settings.DISPLAY_SIZE!!.width, Settings.DISPLAY_SIZE!!.height, null)
+                    g2d.drawImage(oldImage, 0, 0, DISPLAY_SIZE.width, DISPLAY_SIZE.height, null)
                 }
                 g2d.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade)
-                g2d.drawImage(currentImage, 0, 0, Settings.DISPLAY_SIZE!!.width, Settings.DISPLAY_SIZE!!.height, null)
+                g2d.drawImage(currentImage, 0, 0, DISPLAY_SIZE.width, DISPLAY_SIZE.height, null)
             } else {
                 g2d.color = Color(currentImage!!.getRGB(0, 0))
-                g2d.fillRect(0, 0, Settings.DISPLAY_SIZE!!.width, Settings.DISPLAY_SIZE!!.height)
+                g2d.fillRect(0, 0, DISPLAY_SIZE.width, DISPLAY_SIZE.height)
                 if (timer <= FADE_IN && oldImage != null) {
                     g2d.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1 - fade)
                     g2d.drawImage(
-                        oldImage, (Settings.DISPLAY_SIZE!!.width - oldImage!!.width) / 2,
-                        (Settings.DISPLAY_SIZE!!.height - oldImage!!.height) / 2, null
+                        oldImage, (DISPLAY_SIZE.width - oldImage!!.width) / 2,
+                        (DISPLAY_SIZE.height - oldImage!!.height) / 2, null
                     )
                 }
                 g2d.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade)
                 g2d.drawImage(
-                    currentImage, (Settings.DISPLAY_SIZE!!.width - currentImage!!.width) / 2,
-                    (Settings.DISPLAY_SIZE!!.height - currentImage!!.height) / 2, null
+                    currentImage, (DISPLAY_SIZE.width - currentImage!!.width) / 2,
+                    (DISPLAY_SIZE.height - currentImage!!.height) / 2, null
                 )
             }
         }
