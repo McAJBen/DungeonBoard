@@ -55,7 +55,7 @@ object Settings {
      * The title of windows
      */
     val APP_TITLE: String
-        get() = "$NAME ${Build.versionText}"
+        get() = "$NAME ${Build.VERSION}"
 
     /**
      * the default size of the `ControlWindow`

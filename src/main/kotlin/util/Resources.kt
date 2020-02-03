@@ -90,6 +90,6 @@ object Resources {
      * @return an `ImageIcon` from the resources folder
      */
     private fun loadResource(res: String): ImageIcon {
-        return ImageIcon(Resources::class.java.getResource("/resources/$res"))
+        return ImageIcon(Resources::class.java.getResource("/$res"))
     }
 }

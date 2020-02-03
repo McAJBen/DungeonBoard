@@ -1,0 +1,49 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.3.61'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.3.60'
+}
+
+def isRelease = false
+def resourcesDir = "${buildDir}/resources/main"
+
+group 'mcajben.dungeonboard'
+version "3.0.0${isRelease ? "" : "-dev"}"
+
+sourceSets {
+    main {
+        output.dir(resourcesDir, builtBy: 'generateVersionProperties')
+    }
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.14.0"
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'main.MainKt'
+    }
+    from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
+task generateVersionProperties {
+    doLast {
+        def propertiesFile = file "$resourcesDir/version.properties"
+        propertiesFile.parentFile.mkdirs()
+        def properties = new Properties()
+        properties.setProperty("version", rootProject.version.toString())
+        propertiesFile.withWriter { properties.store(it, null) }
+    }
+}
+
+processResources.dependsOn generateVersionProperties

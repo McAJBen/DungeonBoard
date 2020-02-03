@@ -199,7 +199,7 @@ class DisplayLoading(window: DisplayWindow) : Display(window) {
                 while (mainDisplay) {
                     try {
                         motion()
-                        sleep(50)
+                        sleep(20)
                     } catch (e: InterruptedException) {
                         break
                     }

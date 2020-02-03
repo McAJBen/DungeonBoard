@@ -14,6 +14,8 @@ hs_err_pid*
 /.settings/
 .classpath
 .project
+/.gradle
+/gradle
 
-/out
+build
 /Dungeon Board/Data
