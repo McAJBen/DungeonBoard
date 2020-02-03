@@ -9,12 +9,6 @@ def resourcesDir = "${buildDir}/resources/main"
 group 'mcajben.dungeonboard'
 version "3.0.0${isRelease ? "" : "-dev"}"
 
-sourceSets {
-    main {
-        output.dir(resourcesDir, builtBy: 'generateVersionProperties')
-    }
-}
-
 repositories {
     jcenter()
     mavenCentral()

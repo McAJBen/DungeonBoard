@@ -1,7 +1,7 @@
 package display
 
 import main.Mode
-import util.Settings
+import util.*
 import util.Settings.DISPLAY_SIZE
 import java.awt.AlphaComposite
 import java.awt.Color
@@ -9,6 +9,7 @@ import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.io.File
+import java.lang.Long.max
 import java.util.*
 import javax.imageio.ImageIO
 
@@ -25,26 +26,31 @@ class DisplayLoading(window: DisplayWindow) : Display(window) {
         private const val serialVersionUID = -4364176757863161776L
 
         /**
-         * the number of ticks while the images are changing
-         * 50ms tick time makes 20 ticks per second
+         * number of milliseconds between repaints.
+         * 20ms = ~50fps
          */
-        private const val FADE_IN = 20
+        private const val FRAME_TIME_MS = 20L
+
+        /**
+         * the number of milliseconds while the images are changing
+         */
+        private const val FADE_IN_MS = 1000L
     }
 
     /**
-     * the total number of ticks to display the image
+     * the total number of ms to display the image
      */
-    private var totalWait = 400
+    private var totalWait = 8000L
 
     /**
      * a list of the cubes in the `DisplayLoading`
      */
-    private val cubePositions = LinkedList<Cube>()
+    private val cubes = LinkedList<Cube>()
 
     /**
      * a list of the file names that haven't been shown this loop
      */
-    private val fileNames = LinkedList<String>()
+    private val fileNames = LinkedList<File>()
 
     /**
      * the previous image that is fading out
@@ -73,17 +79,17 @@ class DisplayLoading(window: DisplayWindow) : Display(window) {
     private var upScale = false
 
     /**
-     * the count of how many ticks since the image has been changed
+     * the next time that image has to be changed
      */
-    private var timer = 20
+    private var nextSwapTime = 0L
 
     /**
-     * the alpha part of how faded the images are
+     * the next time that image has to be changed
      */
-    private var fade = 1f
+    private var lastSwapTime = 0L
 
     init {
-        getImage()
+        loadNextImage()
         isVisible = true
     }
 
@@ -92,7 +98,7 @@ class DisplayLoading(window: DisplayWindow) : Display(window) {
      * @param seconds the number of seconds between loading images
      */
     fun setTotalWait(seconds: Int) {
-        totalWait = seconds * 20
+        totalWait = 1000L * seconds
     }
 
     /**
@@ -110,7 +116,7 @@ class DisplayLoading(window: DisplayWindow) : Display(window) {
      * creates a cube and adds it to the list of displaying cubes
      */
     fun addCube() {
-        cubePositions.add(Cube())
+        cubes.add(Cube())
         repaint()
     }
 
@@ -118,42 +124,30 @@ class DisplayLoading(window: DisplayWindow) : Display(window) {
      * removes all cubes
      */
     fun clearCubes() {
-        synchronized(cubePositions) { cubePositions.clear() }
-    }
-
-    /**
-     * progresses one tick forward
-     */
-    private fun motion() {
-        timer++
-        repaint()
-        if (timer <= FADE_IN) {
-            fade = timer.toFloat() / FADE_IN
-        } else if (timer > totalWait) {
-            timer = 0
-            getImage()
-        }
-        for (c in cubePositions) {
-            c.move()
+        synchronized(cubes) {
+            cubes.clear()
         }
     }
 
     /**
      * changes images and loads a new one
      */
-    private fun getImage() {
+    private fun loadNextImage() {
         if (fileNames.isEmpty()) {
             rePop()
         }
         if (!fileNames.isEmpty()) {
+
             oldImage = currentImage
-            val file = File(Settings.getFolder(Mode.LOADING), fileNames.removeFirst())
-            try {
-                currentImage = ImageIO.read(file)
+            currentImage = try {
+                ImageIO.read(fileNames.removeFirst())
             } catch (e: Exception) {
-                currentImage = null
-                e.printStackTrace()
+                Log.error(Labels.CANNOT_LOAD_IMAGE, e)
+                null
             }
+
+            lastSwapTime = System.currentTimeMillis()
+            nextSwapTime = lastSwapTime + totalWait + FADE_IN_MS
         }
     }
 
@@ -162,44 +156,43 @@ class DisplayLoading(window: DisplayWindow) : Display(window) {
      */
     private fun rePop() {
         val folder = Settings.getFolder(Mode.LOADING)
+
         if (folder.exists()) {
-            val rand = Random()
-            for (f in folder.listFiles()!!) {
-                if (f.extension.equals("PNG", ignoreCase = true)
-                    || f.extension.equals("JPG", ignoreCase = true)
-                    || f.extension.equals("JPEG", ignoreCase = true)
-                ) {
-                    val index = rand.nextInt(fileNames.size + 1)
-                    if (index == fileNames.size) {
-                        fileNames.add(f.name)
-                    } else {
-                        fileNames.add(index, f.name)
-                    }
-                }
-            }
+            fileNames.addAll(
+                folder.listFilesInOrder().filter {
+                    it.extension.equals("PNG", ignoreCase = true)
+                            || it.extension.equals("JPG", ignoreCase = true)
+                            || it.extension.equals("JPEG", ignoreCase = true)
+                }.shuffled()
+            )
         }
     }
 
     /**
      * restarts the screen when it starts displaying again or is disabled
-     * @param changeImage whether the image should be changed first or not
      */
-    private fun restart(changeImage: Boolean) {
+    private fun restart() {
         paintThread.interrupt()
         try {
             paintThread.join()
         } catch (e1: InterruptedException) {
             e1.printStackTrace()
         }
-        if (changeImage) {
-            getImage()
-        }
         paintThread = object : Thread("paintThread") {
             override fun run() {
                 while (mainDisplay) {
                     try {
-                        motion()
-                        sleep(20)
+                        val nextFrame = System.currentTimeMillis() + FRAME_TIME_MS
+                        repaint()
+
+                        if (nextSwapTime < System.currentTimeMillis()) {
+                            loadNextImage()
+                        }
+                        for (c in cubes) {
+                            c.move()
+                        }
+
+                        sleep(max(0, nextFrame - System.currentTimeMillis()))
                     } catch (e: InterruptedException) {
                         break
                     }
@@ -209,35 +202,50 @@ class DisplayLoading(window: DisplayWindow) : Display(window) {
         paintThread.start()
     }
 
+    /**
+     * draws the given image to the graphics dependant on settings
+     * @param g2d graphics to draw to
+     * @param img image to draw
+     */
+    private fun drawImage(g2d: Graphics2D, img: BufferedImage?) {
+        if (img == null) return
+        if (upScale) {
+            g2d.drawImage(
+                img,
+                0,
+                0,
+                DISPLAY_SIZE.width,
+                DISPLAY_SIZE.height,
+                null
+            )
+        } else {
+            g2d.drawImage(
+                img,
+                (DISPLAY_SIZE.width - img.width) / 2,
+                (DISPLAY_SIZE.height - img.height) / 2,
+                null
+            )
+        }
+    }
+
     override fun paint(g: Graphics) {
         super.paint(g)
         val g2d = g as Graphics2D
-        if (currentImage != null) {
-            if (upScale) {
-                if (timer <= FADE_IN) {
-                    g2d.drawImage(oldImage, 0, 0, DISPLAY_SIZE.width, DISPLAY_SIZE.height, null)
-                }
-                g2d.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade)
-                g2d.drawImage(currentImage, 0, 0, DISPLAY_SIZE.width, DISPLAY_SIZE.height, null)
-            } else {
-                g2d.color = Color(currentImage!!.getRGB(0, 0))
-                g2d.fillRect(0, 0, DISPLAY_SIZE.width, DISPLAY_SIZE.height)
-                if (timer <= FADE_IN && oldImage != null) {
-                    g2d.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1 - fade)
-                    g2d.drawImage(
-                        oldImage, (DISPLAY_SIZE.width - oldImage!!.width) / 2,
-                        (DISPLAY_SIZE.height - oldImage!!.height) / 2, null
-                    )
-                }
-                g2d.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade)
-                g2d.drawImage(
-                    currentImage, (DISPLAY_SIZE.width - currentImage!!.width) / 2,
-                    (DISPLAY_SIZE.height - currentImage!!.height) / 2, null
-                )
-            }
+
+        g2d.color = Color(currentImage?.getRGB(0, 0) ?: Colors.BLACK.rgb)
+        g2d.fillRect(0, 0, DISPLAY_SIZE.width, DISPLAY_SIZE.height)
+
+        drawImage(g2d, currentImage)
+
+        val cycleTime = System.currentTimeMillis() - lastSwapTime
+        if (cycleTime < FADE_IN_MS) {
+            val fade = 1 - cycleTime / FADE_IN_MS.toFloat()
+            g2d.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade)
+            drawImage(g2d, oldImage)
         }
+
         g2d.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f)
-        for (c in cubePositions) {
+        for (c in cubes) {
             c.paint(g2d)
         }
         paintMouse(g2d)
@@ -246,7 +254,7 @@ class DisplayLoading(window: DisplayWindow) : Display(window) {
 
     override fun setMainDisplay(b: Boolean) {
         if (b) {
-            restart(false)
+            restart()
             repaint()
         }
         mainDisplay = b
