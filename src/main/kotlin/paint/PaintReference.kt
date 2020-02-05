@@ -1,6 +1,8 @@
 package paint
 
+import model.GridData
 import main.Mode
+import model.PaintData
 import util.*
 import util.Settings.DISPLAY_SIZE
 import util.Settings.PIXELS_PER_MASK
@@ -93,6 +95,8 @@ abstract class PaintReference(internal val source: File) {
      */
     internal var displayZoom = 1.0
 
+    internal var gridData: GridData? = null
+
     init {
         @Suppress("LeakingThis")
         loadImages()
@@ -102,8 +106,9 @@ abstract class PaintReference(internal val source: File) {
                 PaintData.read(dataFile).let {
                     displayZoom = it.displayZoom
                     windowCenter = it.windowCenter
+                    gridData = it.grid
                 }
-            } catch (e2: IOException) {
+            } catch (e2: Exception) {
                 Log.error(Labels.CANNOT_LOAD_MASK_DATA, e2)
             }
         }
@@ -164,7 +169,9 @@ abstract class PaintReference(internal val source: File) {
     fun save() {
         try {
             ImageIO.write(controlMask, "png", maskFile)
-            PaintData.write(dataFile, PaintData(displayZoom, windowCenter))
+            PaintData.write(dataFile,
+                PaintData(displayZoom, windowCenter, gridData)
+            )
         } catch (e: IOException) {
             Log.error(Labels.CANNOT_SAVE_MASK, e)
         }

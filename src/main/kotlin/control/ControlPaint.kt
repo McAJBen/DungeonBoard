@@ -144,6 +144,23 @@ class ControlPaint(
             }
         }
 
+        val gridButton = createButton(Resources.ICON_GRID).also {
+            it.addActionListener {
+                paintRef?.let { pr ->
+                    val gridMenu = GridMenu(
+                        SwingUtilities.getWindowAncestor(this) as JFrame,
+                        pr.gridData,
+                        displayListener
+                    )
+                    pr.gridData = gridMenu.getResult()
+                    gridMenu.isVisible = true
+
+                    pr.gridData = gridMenu.getResult()
+                    displayListener.repaint()
+                }
+            }
+        }
+
         val showButton = createButton(Labels.SHOW).apply {
             background = Colors.ACTIVE
             addActionListener { drawPanel.showAll() }
@@ -178,6 +195,7 @@ class ControlPaint(
                     add(drawStyleButton)
                     add(shapeButton)
                     add(drawModeButton)
+                    add(gridButton)
                     add(showButton)
                     add(hideButton)
                     add(sizeSlider)

@@ -63,6 +63,11 @@ object Settings {
     val CONTROL_SIZE = Dimension(900, 700)
 
     /**
+     * the default size of the `ControlWindow`
+     */
+    val GRID_MODAL_SIZE = Dimension(500, 400)
+
+    /**
      * the size of the display that players see
      */
     var DISPLAY_SIZE = Dimension(1, 1)

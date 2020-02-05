@@ -31,6 +31,11 @@ object Resources {
     val ICON_SETTINGS = loadResource("settings.gif")
 
     /**
+     * the `ImageIcon` for a grid `JButton`
+     */
+    val ICON_GRID = loadResource("grid.gif")
+
+    /**
      * the `ImageIcon` that floats around the `DisplayLoading`
      */
     val ICON_DVD = loadResource("dvdLogo.gif")

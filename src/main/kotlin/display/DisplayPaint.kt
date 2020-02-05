@@ -70,6 +70,26 @@ class DisplayPaint(window: DisplayWindow) : Display(window), ControlPaintListene
                 imageSize.height,
                 null
             )
+
+            gridData?.let { gridData ->
+                g2d.paint = gridData.color
+
+                IntProgression.fromClosedRange(
+                    gridData.offset.x + offset.x,
+                    DISPLAY_SIZE.width,
+                    gridData.squareSize.width
+                ).forEach {
+                    g2d.fillRect(it, 0, gridData.lineWidth, DISPLAY_SIZE.height)
+                }
+
+                IntProgression.fromClosedRange(
+                    gridData.offset.y + offset.y,
+                    DISPLAY_SIZE.height,
+                    gridData.squareSize.height
+                ).forEach {
+                    g2d.fillRect(0, it, DISPLAY_SIZE.width, gridData.lineWidth)
+                }
+            }
         }
 
         paintMouse(g2d)

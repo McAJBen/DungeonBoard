@@ -50,6 +50,11 @@ object Colors {
     val BLACK = Color(0, 0, 0)
 
     /**
+     * the grey color used by default for `GridMenu`
+     */
+    val TRANSPARENT_GREY = Color(128, 128, 128, 192)
+
+    /**
      * the pink color used on `DrawPanel` to show the cursor and outline of player's view
      */
     val PINK = Color(255, 0, 255)
