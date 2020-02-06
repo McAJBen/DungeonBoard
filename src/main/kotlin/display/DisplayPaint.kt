@@ -37,20 +37,20 @@ class DisplayPaint(window: DisplayWindow) : Display(window), ControlPaintListene
 
         paintRef?.apply {
             val imageSize = Dimension(
-                (displayImage.width / displayZoom).roundToInt(),
-                (displayImage.height / displayZoom).roundToInt()
+                (displayImage.width / paintData.displayZoom).roundToInt(),
+                (displayImage.height / paintData.displayZoom).roundToInt()
             )
 
             val offset = Point(
                 if (DISPLAY_SIZE.width > imageSize.width) {
                     (DISPLAY_SIZE.width - imageSize.width) / 2
                 } else {
-                    (-windowOffset.x / displayZoom).roundToInt()
+                    (-windowOffset.x / paintData.displayZoom).roundToInt()
                 },
                 if (DISPLAY_SIZE.height > imageSize.height) {
                     (DISPLAY_SIZE.height - imageSize.height) / 2
                 } else {
-                    (-windowOffset.y / displayZoom).roundToInt()
+                    (-windowOffset.y / paintData.displayZoom).roundToInt()
                 }
             )
 
@@ -71,7 +71,7 @@ class DisplayPaint(window: DisplayWindow) : Display(window), ControlPaintListene
                 null
             )
 
-            gridData?.let { gridData ->
+            paintData.grid?.let { gridData ->
                 g2d.paint = gridData.color
 
                 IntProgression.fromClosedRange(

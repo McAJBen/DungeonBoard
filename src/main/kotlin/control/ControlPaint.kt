@@ -149,13 +149,13 @@ class ControlPaint(
                 paintRef?.let { pr ->
                     val gridMenu = GridMenu(
                         SwingUtilities.getWindowAncestor(this) as JFrame,
-                        pr.gridData,
+                        pr.paintData.grid,
                         displayListener
                     )
-                    pr.gridData = gridMenu.getResult()
+                    pr.paintData.grid = gridMenu.getResult()
                     gridMenu.isVisible = true
 
-                    pr.gridData = gridMenu.getResult()
+                    pr.paintData.grid = gridMenu.getResult()
                     displayListener.repaint()
                 }
             }
@@ -235,8 +235,8 @@ class ControlPaint(
                 paintRef.displayImage.height / Settings.DISPLAY_SIZE.getHeight()
             )
             zoomSlider.maximum = (maxZoom * 100).toInt()
-            zoomSlider.value = (paintRef.displayZoom * 100).toInt()
-            zoomText.text = String.format("%.2f", paintRef.displayZoom)
+            zoomSlider.value = (paintRef.paintData.displayZoom * 100).toInt()
+            zoomText.text = String.format("%.2f", paintRef.paintData.displayZoom)
 
             paintRef.updateDisplayMask()
 

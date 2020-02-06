@@ -8,6 +8,8 @@ import java.awt.BorderLayout
 import java.awt.FlowLayout
 import java.awt.Frame
 import java.awt.Point
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
 import javax.swing.*
 
 /**
@@ -114,6 +116,11 @@ class GridMenu(
             owner.location.x + (owner.size.width - size.width) / 2,
             owner.location.y + (owner.size.height - size.height) / 2
         )
+        addWindowListener(object: WindowAdapter() {
+            override fun windowClosing(e: WindowEvent?) {
+                returnType = ReturnType.ORIGINAL
+            }
+        })
 
         redSlider.addChangeListener {
             gridData.changeRed(redSlider.value)

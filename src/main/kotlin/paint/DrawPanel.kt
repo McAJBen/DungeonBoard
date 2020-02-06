@@ -174,8 +174,8 @@ class DrawPanel(
      */
     private fun drawPlayerView(g2d: Graphics2D) {
         parent.paintRef?.run {
-            val w = (DISPLAY_SIZE.width * displayZoom * size.width / displayImage.width).roundToInt()
-            val h = (DISPLAY_SIZE.height * displayZoom * size.height / displayImage.height).roundToInt()
+            val w = (DISPLAY_SIZE.width * paintData.displayZoom * size.width / displayImage.width).roundToInt()
+            val h = (DISPLAY_SIZE.height * paintData.displayZoom * size.height / displayImage.height).roundToInt()
             val x = if (w > size.width) {
                 -(w - size.width) / 2
             } else {

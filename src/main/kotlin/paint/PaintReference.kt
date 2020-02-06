@@ -1,12 +1,17 @@
 package paint
 
-import model.GridData
 import main.Mode
 import model.PaintData
-import util.*
+import util.Colors
+import util.Labels
+import util.Log
+import util.Settings
 import util.Settings.DISPLAY_SIZE
 import util.Settings.PIXELS_PER_MASK
-import java.awt.*
+import java.awt.AlphaComposite
+import java.awt.Graphics2D
+import java.awt.Point
+import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
@@ -86,34 +91,19 @@ abstract class PaintReference(internal val source: File) {
     internal var windowOffset = Point(0, 0)
 
     /**
-     * the current window center, used when `displayZoom` is changed and `windowOffset` must be recalculated
+     * paint data that will be saved between instances
      */
-    private var windowCenter = Point(0, 0)
-
-    /**
-     * the zoom level of the displayed image
-     */
-    internal var displayZoom = 1.0
-
-    /**
-     * grid settings or null if there is no grid
-     */
-    internal var gridData: GridData? = null
+    internal var paintData: PaintData
 
     init {
         @Suppress("LeakingThis")
         loadImages()
 
-        if (dataFile.exists()) {
-            try {
-                PaintData.read(dataFile).let {
-                    displayZoom = it.displayZoom
-                    windowCenter = it.windowCenter
-                    gridData = it.grid
-                }
-            } catch (e2: Exception) {
-                Log.error(Labels.CANNOT_LOAD_MASK_DATA, e2)
-            }
+        paintData = try {
+            PaintData.read(dataFile)
+        } catch (e2: Exception) {
+            Log.error(Labels.CANNOT_LOAD_MASK_DATA, e2)
+            PaintData()
         }
         updateWindow()
 
@@ -153,7 +143,7 @@ abstract class PaintReference(internal val source: File) {
      * - a lower number will zoom in
      */
     fun setDisplayZoom(zoom: Double) {
-        displayZoom = zoom
+        paintData.displayZoom = zoom
         updateWindow()
     }
 
@@ -162,7 +152,7 @@ abstract class PaintReference(internal val source: File) {
      * @param center the center point of the display, according to `controlMask`
      */
     fun setWindowPosition(center: Point) {
-        this.windowCenter = center
+        paintData.windowCenter = center
         updateWindow()
     }
 
@@ -172,9 +162,7 @@ abstract class PaintReference(internal val source: File) {
     fun save() {
         try {
             ImageIO.write(controlMask, "png", maskFile)
-            PaintData.write(dataFile,
-                PaintData(displayZoom, windowCenter, gridData)
-            )
+            PaintData.write(dataFile, paintData)
         } catch (e: IOException) {
             Log.error(Labels.CANNOT_SAVE_MASK, e)
         }
@@ -184,10 +172,10 @@ abstract class PaintReference(internal val source: File) {
      * updates the `windowOffset`, used when a change is made to `windowCenter` or `displayZoom`
      */
     private fun updateWindow() {
-        val x = windowCenter.x * PIXELS_PER_MASK - (DISPLAY_SIZE.width * displayZoom / 2).roundToInt()
-        val y = windowCenter.y * PIXELS_PER_MASK - (DISPLAY_SIZE.height * displayZoom / 2).roundToInt()
-        val xMax = displayImage.width - (DISPLAY_SIZE.width * displayZoom).roundToInt()
-        val yMax = displayImage.height - (DISPLAY_SIZE.height * displayZoom).roundToInt()
+        val x = paintData.windowCenter.x * PIXELS_PER_MASK - (DISPLAY_SIZE.width * paintData.displayZoom / 2).roundToInt()
+        val y = paintData.windowCenter.y * PIXELS_PER_MASK - (DISPLAY_SIZE.height * paintData.displayZoom / 2).roundToInt()
+        val xMax = displayImage.width - (DISPLAY_SIZE.width * paintData.displayZoom).roundToInt()
+        val yMax = displayImage.height - (DISPLAY_SIZE.height * paintData.displayZoom).roundToInt()
 
         windowOffset = Point(
             x.boundTo(0, xMax),

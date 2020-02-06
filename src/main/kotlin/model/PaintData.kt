@@ -12,16 +12,18 @@ import java.io.File
 /**
  * storage class for `PaintReference`
  * @author McAJBen@gmail.com
- * @param displayZoom the displayZoom used in `PaintReference`
- * @param windowCenter the windowCenter used in `PaintReference`
+ * @param displayZoom the displayZoom used in `PaintReference`.
+ * The zoom level of the displayed image
+ * @param windowCenter the windowCenter used in `PaintReference`.
+ * Used when `displayZoom` is changed and `windowOffset` must be recalculated
  * @param grid the grid settings or null if there is no grid, used in `PaintReference`
  * @since 2.5.1
  */
 @Serializable
 data class PaintData(
-    val displayZoom: Double,
-    @Serializable(with = PointSerializer::class) val windowCenter: Point,
-    val grid: GridData? = null
+    var displayZoom: Double = 1.0,
+    @Serializable(with = PointSerializer::class) var windowCenter: Point = Point(0, 0),
+    var grid: GridData? = null
 ) {
 
     companion object {
