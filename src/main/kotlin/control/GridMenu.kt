@@ -79,8 +79,8 @@ class GridMenu(
     /**
      * number visual for the size of each square in the grid in pixels between each line
      */
-    private val pixelsPerSquareWidthLabel = JLabel(gridData.squareSize.width.toLabel())
-    private val pixelsPerSquareHeightLabel = JLabel(gridData.squareSize.height.toLabel())
+    private val squareSizeWidthLabel = JLabel(gridData.squareSize.width.toLabel())
+    private val squareSizeHeightLabel = JLabel(gridData.squareSize.height.toLabel())
 
     /**
      * control for the number of pixels to shift the grid in x and y directions
@@ -157,7 +157,7 @@ class GridMenu(
             displayListener.repaint()
             offsetXSlider.maximum = squareSizeWidthSlider.value - 1
             offsetYSlider.maximum = squareSizeWidthSlider.value - 1
-            pixelsPerSquareWidthLabel.text = squareSizeWidthSlider.value.toLabel()
+            squareSizeWidthLabel.text = squareSizeWidthSlider.value.toLabel()
         }
 
         squareSizeHeightSlider.addChangeListener {
@@ -165,7 +165,7 @@ class GridMenu(
             displayListener.repaint()
             offsetXSlider.maximum = squareSizeHeightSlider.value - 1
             offsetYSlider.maximum = squareSizeHeightSlider.value - 1
-            pixelsPerSquareHeightLabel.text = squareSizeHeightSlider.value.toLabel()
+            squareSizeHeightLabel.text = squareSizeHeightSlider.value.toLabel()
         }
 
         offsetXSlider.addChangeListener {
@@ -195,55 +195,120 @@ class GridMenu(
             dispose()
         }
 
+        val redText = JLabel(Labels.RED)
+        val greenText = JLabel(Labels.GREEN)
+        val blueText = JLabel(Labels.BLUE)
+        val alphaText = JLabel(Labels.ALPHA)
+        val lineWidthText = JLabel(Labels.LINE_WIDTH)
+        val squareSizeWidthText = JLabel(Labels.SQUARE_WIDTH)
+        val squareSizeHeightText = JLabel(Labels.SQUARE_HEIGHT)
+        val offsetXText = JLabel(Labels.X_OFFSET)
+        val offsetYText = JLabel(Labels.Y_OFFSET)
+
         layout = BorderLayout()
         add(
             JPanel().apply {
-                layout = BoxLayout(this, BoxLayout.Y_AXIS)
-                add(JPanel().apply {
-                    add(JLabel(Labels.RED))
-                    add(redLabel)
-                    add(redSlider)
-                })
-                add(JPanel().apply {
-                    add(JLabel(Labels.GREEN))
-                    add(greenLabel)
-                    add(greenSlider)
-                })
-                add(JPanel().apply {
-                    add(JLabel(Labels.BLUE))
-                    add(blueLabel)
-                    add(blueSlider)
-                })
-                add(JPanel().apply {
-                    add(JLabel(Labels.ALPHA))
-                    add(alphaLabel)
-                    add(alphaSlider)
-                })
-                add(JPanel().apply {
-                    add(JLabel(Labels.LINE_WIDTH))
-                    add(lineWidthLabel)
-                    add(lineWidthSlider)
-                })
-                add(JPanel().apply {
-                    add(JLabel(Labels.SQUARE_WIDTH))
-                    add(pixelsPerSquareWidthLabel)
-                    add(squareSizeWidthSlider)
-                })
-                add(JPanel().apply {
-                    add(JLabel(Labels.SQUARE_HEIGHT))
-                    add(pixelsPerSquareHeightLabel)
-                    add(squareSizeHeightSlider)
-                })
-                add(JPanel().apply {
-                    add(JLabel(Labels.X_OFFSET))
-                    add(offsetXLabel)
-                    add(offsetXSlider)
-                })
-                add(JPanel().apply {
-                    add(JLabel(Labels.Y_OFFSET))
-                    add(offsetYLabel)
-                    add(offsetYSlider)
-                })
+
+                layout = GroupLayout(this).apply {
+                    autoCreateGaps = true
+                    autoCreateContainerGaps = true
+                    setVerticalGroup(
+                        createSequentialGroup()
+                            .addGroup(
+                                createParallelGroup()
+                                    .addComponent(redText)
+                                    .addComponent(redLabel)
+                                    .addComponent(redSlider)
+                            )
+                            .addGroup(
+                                createParallelGroup()
+                                    .addComponent(greenText)
+                                    .addComponent(greenLabel)
+                                    .addComponent(greenSlider)
+                            )
+                            .addGroup(
+                                createParallelGroup()
+                                    .addComponent(blueText)
+                                    .addComponent(blueLabel)
+                                    .addComponent(blueSlider)
+                            )
+                            .addGroup(
+                                createParallelGroup()
+                                    .addComponent(alphaText)
+                                    .addComponent(alphaLabel)
+                                    .addComponent(alphaSlider)
+                            )
+                            .addGroup(
+                                createParallelGroup()
+                                    .addComponent(lineWidthText)
+                                    .addComponent(lineWidthLabel)
+                                    .addComponent(lineWidthSlider)
+                            )
+                            .addGroup(
+                                createParallelGroup()
+                                    .addComponent(squareSizeWidthText)
+                                    .addComponent(squareSizeWidthLabel)
+                                    .addComponent(squareSizeWidthSlider)
+                            )
+                            .addGroup(
+                                createParallelGroup()
+                                    .addComponent(squareSizeHeightText)
+                                    .addComponent(squareSizeHeightLabel)
+                                    .addComponent(squareSizeHeightSlider)
+                            )
+                            .addGroup(
+                                createParallelGroup()
+                                    .addComponent(offsetXText)
+                                    .addComponent(offsetXLabel)
+                                    .addComponent(offsetXSlider)
+                            )
+                            .addGroup(
+                                createParallelGroup()
+                                    .addComponent(offsetYText)
+                                    .addComponent(offsetYLabel)
+                                    .addComponent(offsetYSlider)
+                            )
+                    )
+                    setHorizontalGroup(
+                        createSequentialGroup()
+                            .addGroup(
+                                createParallelGroup()
+                                    .addComponent(redText)
+                                    .addComponent(greenText)
+                                    .addComponent(blueText)
+                                    .addComponent(alphaText)
+                                    .addComponent(lineWidthText)
+                                    .addComponent(squareSizeWidthText)
+                                    .addComponent(squareSizeHeightText)
+                                    .addComponent(offsetXText)
+                                    .addComponent(offsetYText)
+                            )
+                            .addGroup(
+                                createParallelGroup()
+                                    .addComponent(redLabel)
+                                    .addComponent(greenLabel)
+                                    .addComponent(blueLabel)
+                                    .addComponent(alphaLabel)
+                                    .addComponent(lineWidthLabel)
+                                    .addComponent(squareSizeWidthLabel)
+                                    .addComponent(squareSizeHeightLabel)
+                                    .addComponent(offsetXLabel)
+                                    .addComponent(offsetYLabel)
+                            )
+                            .addGroup(
+                                createParallelGroup()
+                                    .addComponent(redSlider)
+                                    .addComponent(greenSlider)
+                                    .addComponent(blueSlider)
+                                    .addComponent(alphaSlider)
+                                    .addComponent(lineWidthSlider)
+                                    .addComponent(squareSizeWidthSlider)
+                                    .addComponent(squareSizeHeightSlider)
+                                    .addComponent(offsetXSlider)
+                                    .addComponent(offsetYSlider)
+                            )
+                    )
+                }
             },
             BorderLayout.NORTH
         )

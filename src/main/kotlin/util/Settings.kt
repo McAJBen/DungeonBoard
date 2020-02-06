@@ -65,7 +65,7 @@ object Settings {
     /**
      * the default size of the `GridMenu`
      */
-    val GRID_MODAL_SIZE = Dimension(500, 400)
+    val GRID_MODAL_SIZE = Dimension(500, 300)
 
     /**
      * the size of the display that players see
