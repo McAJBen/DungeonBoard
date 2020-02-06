@@ -95,6 +95,9 @@ abstract class PaintReference(internal val source: File) {
      */
     internal var displayZoom = 1.0
 
+    /**
+     * grid settings or null if there is no grid
+     */
     internal var gridData: GridData? = null
 
     init {

@@ -63,7 +63,7 @@ object Settings {
     val CONTROL_SIZE = Dimension(900, 700)
 
     /**
-     * the default size of the `ControlWindow`
+     * the default size of the `GridMenu`
      */
     val GRID_MODAL_SIZE = Dimension(500, 400)
 

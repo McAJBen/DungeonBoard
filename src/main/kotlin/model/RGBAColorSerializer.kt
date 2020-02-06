@@ -4,6 +4,11 @@ import kotlinx.serialization.*
 import kotlinx.serialization.internal.SerialClassDescImpl
 import java.awt.Color
 
+/**
+ * Serializer for storing the red, green, blue and alpha of a `Color`
+ * @author McAJBen@gmail.com
+ * @since 3.0
+ */
 @Serializer(forClass = Color::class)
 class RGBAColorSerializer: KSerializer<Color> {
     override val descriptor: SerialDescriptor = object : SerialClassDescImpl("RGBAColor") {

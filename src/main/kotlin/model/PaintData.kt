@@ -14,6 +14,7 @@ import java.io.File
  * @author McAJBen@gmail.com
  * @param displayZoom the displayZoom used in `PaintReference`
  * @param windowCenter the windowCenter used in `PaintReference`
+ * @param grid the grid settings or null if there is no grid, used in `PaintReference`
  * @since 2.5.1
  */
 @Serializable
@@ -22,6 +23,7 @@ data class PaintData(
     @Serializable(with = PointSerializer::class) val windowCenter: Point,
     val grid: GridData? = null
 ) {
+
     companion object {
 
         /**

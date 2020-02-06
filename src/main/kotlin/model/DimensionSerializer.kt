@@ -4,6 +4,11 @@ import kotlinx.serialization.*
 import kotlinx.serialization.internal.SerialClassDescImpl
 import java.awt.Dimension
 
+/**
+ * Serializer for storing the width and height of a `Dimension`
+ * @author McAJBen@gmail.com
+ * @since 3.0
+ */
 @Serializer(forClass = Dimension::class)
 class DimensionSerializer: KSerializer<Dimension> {
     override val descriptor: SerialDescriptor = object : SerialClassDescImpl("Dimension") {

@@ -4,6 +4,11 @@ import kotlinx.serialization.*
 import kotlinx.serialization.internal.SerialClassDescImpl
 import java.awt.Point
 
+/**
+ * Serializer for storing the x and y of a `Point`
+ * @author McAJBen@gmail.com
+ * @since 3.0
+ */
 @Serializer(forClass = Point::class)
 class PointSerializer: KSerializer<Point> {
     override val descriptor: SerialDescriptor = object : SerialClassDescImpl("Point") {
