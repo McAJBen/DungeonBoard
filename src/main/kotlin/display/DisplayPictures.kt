@@ -1,5 +1,9 @@
 package display
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import main.Mode
 import util.Settings.DISPLAY_SIZE
 import java.awt.Color
@@ -8,7 +12,9 @@ import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage
-import java.util.*
+import java.util.concurrent.LinkedBlockingQueue
+import kotlin.math.min
+import kotlin.math.roundToInt
 
 /**
  * `JPanel` for displaying Image and Layer Utility
@@ -29,12 +35,16 @@ class DisplayPictures(
     /**
      * a list of the images to be painted
      */
-    private val images: LinkedList<AlphaImage> = LinkedList()
+    private val images: LinkedBlockingQueue<AlphaImage> = LinkedBlockingQueue()
 
     /**
      * the image being displayed by `DisplayPictures`
      */
-    private var image: BufferedImage? = null
+    private var image: BufferedImage? = BufferedImage(
+        DISPLAY_SIZE.width,
+        DISPLAY_SIZE.height,
+        BufferedImage.TYPE_INT_ARGB
+    )
 
     /**
      * the method of scale to show the image
@@ -42,9 +52,9 @@ class DisplayPictures(
     private var scaleMode = Scale.UP_SCALE
 
     /**
-     * the thread that is in charge of repainting `image`
+     * the last job that started to repaint `image`
      */
-    private var compileThread: Thread? = null
+    private var compileJob: Job? = null
 
     /**
      * tells if the image should be flipped
@@ -54,12 +64,76 @@ class DisplayPictures(
     private var flip = false
 
     init {
-        image = BufferedImage(
-            DISPLAY_SIZE.width,
-            DISPLAY_SIZE.height,
-            BufferedImage.TYPE_INT_ARGB
-        )
         isVisible = true
+    }
+
+    /**
+     * adds an image to be drawn on the panel
+     * @param name the name of the file to load an image from
+     */
+    fun addImage(name: String) {
+        images.add(AlphaImage(mode, name))
+        compileImage()
+    }
+
+    /**
+     * removes an image by the name of the file
+     * @param name the name of the file that was used to load the image from
+     */
+    fun removeImage(name: String) {
+        images.removeIf { it.name == name }
+        compileImage()
+    }
+
+    /**
+     * changes the scale mode
+     * @param selectedItem the index of the new scale mode
+     */
+    fun setScaleMode(selectedItem: Scale) {
+        scaleMode = selectedItem
+        compileImage()
+    }
+
+    /**
+     * removes all images from the screen
+     */
+    fun removeAllImages() {
+        images.clear()
+        compileImage()
+    }
+
+    /**
+     * toggles the flip of the images. Rotates them by 180 degrees
+     */
+    fun flip() {
+        flip = !flip
+        repaint()
+    }
+
+    /**
+     * turns the `AlphaImages` into a single image to be displayed
+     */
+    private fun compileImage() {
+        compileJob?.cancel()
+        compileJob = GlobalScope.launch(Dispatchers.Default) {
+            val img = BufferedImage(
+                DISPLAY_SIZE.width,
+                DISPLAY_SIZE.height,
+                BufferedImage.TYPE_INT_ARGB
+            )
+            val g2d = img.createGraphics()
+            if (images.size == 0) {
+                fillBackground(g2d, Color.BLACK)
+            } else {
+                fillBackground(g2d, images.peek().getBackgroundColor())
+                for (image in images) {
+                    paintImage(g2d, image.readImage())
+                }
+            }
+            g2d.dispose()
+            image = img
+            repaint()
+        }
     }
 
     /**
@@ -67,7 +141,7 @@ class DisplayPictures(
      * @param g2d the graphics to draw onto
      * @param img the image to draw
      */
-    fun paintImage(g2d: Graphics2D, img: BufferedImage) {
+    private fun paintImage(g2d: Graphics2D, img: BufferedImage) {
         when (scaleMode) {
             Scale.FILL -> g2d.drawImage(
                 img,
@@ -86,19 +160,20 @@ class DisplayPictures(
                 null
             )
             Scale.UP_SCALE -> {
-                val screenRatio = DISPLAY_SIZE.getWidth() / DISPLAY_SIZE.getHeight()
-                val imageRatio = img.width.toDouble() / img.height
-                val imageScale = if (imageRatio > screenRatio) { // width > height
-                    Dimension(DISPLAY_SIZE.width, (DISPLAY_SIZE.width / imageRatio).toInt())
-                } else { // width < height
-                    Dimension((DISPLAY_SIZE.height * imageRatio).toInt(), DISPLAY_SIZE.height)
-                }
+                val imageScale = min(
+                    DISPLAY_SIZE.getWidth() / img.width,
+                    DISPLAY_SIZE.getHeight() / img.height
+                )
+                val imageSize = Dimension(
+                    (img.width * imageScale).roundToInt(),
+                    (img.height * imageScale).roundToInt()
+                )
                 g2d.drawImage(
                     img,
-                    (DISPLAY_SIZE.width - imageScale.width) / 2,
-                    (DISPLAY_SIZE.height - imageScale.height) / 2,
-                    imageScale.width,
-                    imageScale.height,
+                    (DISPLAY_SIZE.width - imageSize.width) / 2,
+                    (DISPLAY_SIZE.height - imageSize.height) / 2,
+                    imageSize.width,
+                    imageSize.height,
                     null
                 )
             }
@@ -123,9 +198,9 @@ class DisplayPictures(
     private fun drawImage(g2d: Graphics2D, img: BufferedImage) {
         if (flip) {
             val oldAT = g2d.transform
-            val at = AffineTransform()
-            at.rotate(Math.PI, width / 2.toDouble(), height / 2.toDouble())
-            g2d.transform = at
+            g2d.transform = AffineTransform().apply {
+                rotate(Math.PI, width / 2.toDouble(), height / 2.toDouble())
+            }
             g2d.drawImage(img, 0, 0, null)
             g2d.transform = oldAT
         } else {
@@ -133,108 +208,10 @@ class DisplayPictures(
         }
     }
 
-    /**
-     * adds an image to be drawn on the panel
-     * @param name the name of the file to load an image from
-     */
-    fun addImage(name: String) {
-        val ai = AlphaImage(mode, name)
-        stopCompile()
-        images.add(ai)
-        compileImage()
-        repaint()
-    }
-
-    /**
-     * stops painting to image so another thread can be made
-     */
-    private fun stopCompile() {
-        if (compileThread != null && compileThread!!.isAlive) {
-            compileThread!!.interrupt()
-        }
-    }
-
-    /**
-     * turns the `AlphaImages` into a single image to be displayed
-     */
-    private fun compileImage() {
-        compileThread = object : Thread("compileImage") {
-            override fun run() {
-                val img = BufferedImage(
-                    DISPLAY_SIZE.width,
-                    DISPLAY_SIZE.height,
-                    BufferedImage.TYPE_INT_ARGB
-                )
-                val g2d = img.createGraphics()
-                if (images.size == 0) {
-                    fillBackground(g2d, Color.BLACK)
-                } else {
-                    fillBackground(g2d, images.first.bGColor)
-                    try {
-                        for (image in images) {
-                            paintImage(g2d, image.image!!)
-                        }
-                    } catch (e: NullPointerException) {
-                        return
-                    } catch (e: ConcurrentModificationException) {
-                        return
-                    }
-                }
-                g2d.dispose()
-                if (isInterrupted) {
-                    return
-                }
-                image = img
-                repaint()
-            }
-        }
-        compileThread!!.start()
-    }
-
-    /**
-     * removes an image by the name of the file
-     * @param name the name of the file that was used to load the image from
-     */
-    fun removeImage(name: String) {
-        stopCompile()
-        images.removeIf { it.name == name }
-        compileImage()
-        repaint()
-    }
-
-    /**
-     * changes the scale mode
-     * @param selectedItem the index of the new scale mode
-     */
-    fun setScaleMode(selectedItem: Scale) {
-        stopCompile()
-        scaleMode = selectedItem
-        compileImage()
-        repaint()
-    }
-
-    /**
-     * removes all images from the screen
-     */
-    fun removeAllImages() {
-        stopCompile()
-        images.clear()
-        compileImage()
-        repaint()
-    }
-
-    /**
-     * toggles the flip of the images. Rotates them by 180 degrees
-     */
-    fun flip() {
-        flip = !flip
-        repaint()
-    }
-
     override fun paint(g: Graphics) {
         super.paint(g)
         val g2d = g as Graphics2D
-        drawImage(g2d, image!!)
+        image?.let { drawImage(g2d, it) }
         paintMouse(g2d)
         g2d.dispose()
     }
@@ -242,7 +219,6 @@ class DisplayPictures(
     @Synchronized
     override fun setMainDisplay(b: Boolean) {
         if (b) {
-            stopCompile()
             compileImage()
         } else {
             image = null

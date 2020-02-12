@@ -3,6 +3,7 @@ package display
 import main.Mode
 import util.Labels
 import util.Log
+import util.Resources
 import util.Settings
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -34,36 +35,25 @@ class AlphaImage(
     /**
      * the `BufferedImage` from the file
      */
-    val image: BufferedImage?
-        get() {
-            var error: OutOfMemoryError? = null
-            for (i in 0..49) {
-                try {
-                    return ImageIO.read(file)
-                } catch (e: OutOfMemoryError) {
-                    error = e
-                    Thread.sleep(10)
-                } catch (e: Exception) {
-                    Log.error(String.format(Labels.CANNOT_LOAD_IMAGE, name), e)
-                }
-            }
-            if (error != null) {
-                Log.error(String.format(Labels.CANNOT_LOAD_IMAGE_ERROR_MULTIPLE, name), error)
-            }
-            return null
+    fun readImage(): BufferedImage {
+        return try {
+            ImageIO.read(file)
+        } catch (e: Exception) {
+            Log.error(String.format(Labels.CANNOT_LOAD_IMAGE, name), e)
+            Resources.BLANK_CURSOR
         }
+    }
 
     /**
      * the background color of the image by using the top left corner pixel
      */
-    val bGColor: Color
-        get() {
-            try {
-                return Color(ImageIO.read(thumbnail).getRGB(0, 0))
-            } catch (e: Exception) {
-                Log.error(String.format(Labels.CANNOT_LOAD_IMAGE_RGB, name), e)
-            }
-            return Color.BLACK
+    fun getBackgroundColor(): Color {
+        return try {
+            Color(ImageIO.read(thumbnail).getRGB(0, 0))
+        } catch (e: Exception) {
+            Log.error(String.format(Labels.CANNOT_LOAD_IMAGE_RGB, name), e)
+            Color.BLACK
         }
+    }
 
 }
