@@ -1,7 +1,6 @@
 package display
 
 import main.Mode
-import util.Settings
 import util.Settings.DISPLAY_SIZE
 import java.awt.Color
 import java.awt.Dimension

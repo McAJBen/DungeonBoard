@@ -2,14 +2,14 @@ package control
 
 import display.DisplayPictures
 import display.Scale
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import main.Mode
 import util.*
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.io.File
-import java.util.concurrent.Executors
 import javax.swing.BorderFactory
-import javax.swing.JButton
 import javax.swing.JComboBox
 import javax.swing.JScrollPane
 
@@ -47,7 +47,19 @@ class ControlPictures(
     /**
      * the scroll menu of images inside the folder
      */
-    private val picturePanel: PicturePanel
+    private val picturePanel = object : PicturePanel(thumbnailFolder) {
+        override fun select(name: String) {
+            if (!allowList) {
+                display.removeAllImages()
+                components.forEach { it.background = Colors.DISABLE_COLOR }
+            }
+            display.addImage(name)
+        }
+
+        override fun deselect(name: String) {
+            display.removeImage(name)
+        }
+    }
 
     init {
         val scaleComboBox: JComboBox<Scale> = JComboBox<Scale>(Scale.values()).apply {
@@ -60,20 +72,6 @@ class ControlPictures(
         val flipButton = createButton(Resources.ICON_FLIP).apply {
             background = Colors.CONTROL_BACKGROUND
             addActionListener { display.flip() }
-        }
-
-        picturePanel = object : PicturePanel(thumbnailFolder) {
-            override fun select(name: String) {
-                if (!allowList) {
-                    display.removeAllImages()
-                    components.forEach { it.background = Colors.DISABLE_COLOR }
-                }
-                display.addImage(name)
-            }
-
-            override fun deselect(name: String) {
-                display.removeImage(name)
-            }
         }
 
         add(
@@ -123,19 +121,15 @@ class ControlPictures(
 
             picturePanel.clearButtons()
 
-            val executor = Executors.newFixedThreadPool(Settings.SYS_THREADS)
-            folder.listFilesInOrder().filter {
-                it.extension.equals("PNG", ignoreCase = true)
-                        || it.extension.equals("JPG", ignoreCase = true)
-                        || it.extension.equals("JPEG", ignoreCase = true)
-            }.map {
-                executor.submit<JButton> {
-                    picturePanel.createPPButton(it)
+            runBlocking {
+                folder.listFilesInOrder().filter {
+                    it.hasImageExtension()
+                }.map {
+                    async { picturePanel.add(picturePanel.createPPButton(it)) }
+                }.forEach {
+                    it.await()
                 }
-            }.forEach {
-                picturePanel.add(it.get())
             }
-            executor.shutdown()
 
             repaint()
             revalidate()

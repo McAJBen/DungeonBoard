@@ -159,11 +159,7 @@ class DisplayLoading(window: DisplayWindow) : Display(window) {
 
         if (folder.exists()) {
             fileNames.addAll(
-                folder.listFilesInOrder().filter {
-                    it.extension.equals("PNG", ignoreCase = true)
-                            || it.extension.equals("JPG", ignoreCase = true)
-                            || it.extension.equals("JPEG", ignoreCase = true)
-                }.shuffled()
+                folder.listFilesInOrder().filter { it.hasImageExtension() }.shuffled()
             )
         }
     }

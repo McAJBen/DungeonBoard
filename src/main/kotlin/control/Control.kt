@@ -50,7 +50,7 @@ abstract class Control : JPanel() {
 
     init {
         layout = BorderLayout()
-        border = BorderFactory.createLineBorder(Colors.BACKGROUND, 5)
+        border = BorderFactory.createLineBorder(Colors.BACKGROUND, 1)
     }
 
     /**

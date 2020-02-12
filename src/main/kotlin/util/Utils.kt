@@ -35,3 +35,14 @@ fun createButton(imageIcon: ImageIcon): JButton {
         isRolloverEnabled = false
     }
 }
+
+/**
+ * determines if the file has a valid image extension. Options are [PNG, JPG, JPEG, GIF]
+ * @return true if the file is an image
+ */
+fun File.hasImageExtension(): Boolean {
+    return extension.equals("PNG", ignoreCase = true)
+            || extension.equals("JPG", ignoreCase = true)
+            || extension.equals("JPEG", ignoreCase = true)
+            || extension.equals("GIF", ignoreCase = true)
+}

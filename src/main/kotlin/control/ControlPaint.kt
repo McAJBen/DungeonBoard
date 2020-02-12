@@ -303,10 +303,7 @@ class ControlPaint(
         Settings.getFolder(Mode.PAINT).listFilesInOrder().forEach {
             if (it.isDirectory) {
                 fileBox.addItem(it.name)
-            } else if (it.extension.equals("PNG", ignoreCase = true)
-                || it.extension.equals("JPG", ignoreCase = true)
-                || it.extension.equals("JPEG", ignoreCase = true)
-            ) {
+            } else if (it.hasImageExtension()) {
                 fileBox.addItem(it.name)
             }
         }
