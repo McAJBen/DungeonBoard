@@ -1,5 +1,6 @@
 package display
 
+import control.PictureButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -35,7 +36,7 @@ class DisplayPictures(
     /**
      * a list of the images to be painted
      */
-    private val images: LinkedBlockingQueue<AlphaImage> = LinkedBlockingQueue()
+    private val images: LinkedBlockingQueue<PictureButton> = LinkedBlockingQueue()
 
     /**
      * the image being displayed by `DisplayPictures`
@@ -69,19 +70,19 @@ class DisplayPictures(
 
     /**
      * adds an image to be drawn on the panel
-     * @param name the name of the file to load an image from
+     * @param image the file to load an image from
      */
-    fun addImage(name: String) {
-        images.add(AlphaImage(mode, name))
+    fun addImage(image: PictureButton) {
+        images.add(image)
         compileImage()
     }
 
     /**
      * removes an image by the name of the file
-     * @param name the name of the file that was used to load the image from
+     * @param image the file that was used to load the image from
      */
-    fun removeImage(name: String) {
-        images.removeIf { it.name == name }
+    fun removeImage(image: PictureButton) {
+        images.remove(image)
         compileImage()
     }
 

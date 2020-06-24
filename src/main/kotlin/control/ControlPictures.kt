@@ -47,17 +47,17 @@ class ControlPictures(
     /**
      * the scroll menu of images inside the folder
      */
-    private val picturePanel = object : PicturePanel(thumbnailFolder) {
-        override fun select(name: String) {
-            if (!allowList) {
-                display.removeAllImages()
-                components.forEach { it.background = Colors.DISABLE_COLOR }
+    private val picturePanel = object : PicturePanel(mode) {
+        override fun onChange(button: PictureButton, isEnabled: Boolean) {
+            if (isEnabled) {
+                if (!allowList) {
+                    display.removeAllImages()
+                    buttons.forEach { it.setEnabled(false) }
+                }
+                display.addImage(button)
+            } else {
+                display.removeImage(button)
             }
-            display.addImage(name)
-        }
-
-        override fun deselect(name: String) {
-            display.removeImage(name)
         }
     }
 
@@ -89,7 +89,7 @@ class ControlPictures(
             BorderLayout.CENTER
         )
         load()
-        picturePanel.forgetThumbnails()
+        picturePanel.unloadButtons()
         isVisible = true
     }
 
@@ -103,9 +103,9 @@ class ControlPictures(
 
     override fun setMainControl(b: Boolean) {
         if (b) {
-            picturePanel.rememberThumbnails()
+            picturePanel.loadButtons()
         } else {
-            picturePanel.forgetThumbnails()
+            picturePanel.unloadButtons()
         }
     }
 
@@ -119,13 +119,13 @@ class ControlPictures(
                 it.delete()
             }
 
-            picturePanel.clearButtons()
+            picturePanel.unloadButtons()
 
             runBlocking {
                 folder.listFilesInOrder().filter {
                     it.hasImageExtension()
                 }.map {
-                    async { picturePanel.add(picturePanel.createPPButton(it)) }
+                    async { picturePanel.addPicture(it) }
                 }.forEach {
                     it.await()
                 }
@@ -134,7 +134,7 @@ class ControlPictures(
             repaint()
             revalidate()
             display.removeAllImages()
-            picturePanel.rememberThumbnails()
+            picturePanel.loadButtons()
         }
     }
 

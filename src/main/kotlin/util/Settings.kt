@@ -103,6 +103,16 @@ object Settings {
     }
 
     /**
+     * gets the `Mode` that this file belongs to
+     * @param file a file which is in one of the Dungeon Board folders
+     * @return The `Mode` this file belongs to or null
+     */
+    fun getFileMode(file: File): Mode? {
+        val ordinal = FOLDERS.indexOf(file.parentFile)
+        return Mode.values().getOrNull(ordinal)
+    }
+
+    /**
      * gets the folder that contains data for the specific mode
      * @param mode the `Mode`
      * @return the folder that contains data for the mode
