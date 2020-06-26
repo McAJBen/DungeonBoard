@@ -64,15 +64,13 @@ The main use case is for the DM to show 'loading tips' to distract the players a
 
 ## Running Dungeon Board
 
-[Download 2.5.1](https://github.com/McAJBen/DungeonBoard/releases/download/v2.5.1/Dungeon.Board.v2.5.1.jar)
+[Download 3.0.1](https://github.com/McAJBen/DungeonBoard/releases/download/v3.0.1/Dungeon.Board.v3.0.1.jar)
 
 *Caution, web browsers do not like .jar files. They can be used to give viruses. Do your research before downloading (Don't take my word for it).*
-
-**As of 2.5.0 Java 13 is a requirement to run this application.**
 
 When you first run Dungeon Board it will create a folder next to the .jar file. Inside of this are 4 folders (Layer, Image, Paint, Loading). Simply place all of your images you want to display in these folders in the .png format.
 The next time you run Dungeon Board it will automatically load these on startup.
 
 If you want to run Dungeon Board with more memory allocated you have to run the .jar file from the command line.
 
-    java -jar -Xmx2000m "Dungeon Board v2.5.1.jar"
+    java -jar -Xmx2000m "Dungeon Board v3.0.1.jar"
