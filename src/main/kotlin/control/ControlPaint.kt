@@ -18,7 +18,7 @@ import javax.swing.*
  */
 class ControlPaint(
     private val displayListener: ControlPaintListener
-) : Control(), DrawPanelListener {
+) : Control(), DrawPanelListener, ToggleButton.Listener {
 
     companion object {
         private const val serialVersionUID = -3231530555502467648L
@@ -217,6 +217,7 @@ class ControlPaint(
         if (source.exists()) {
             drawPanel.setImageLoading(true)
             paintRef?.save()
+            paintRef = null
             val paintRef = when {
                 source.isDirectory -> {
                     val pr = PaintFolderReference(source)
@@ -255,23 +256,9 @@ class ControlPaint(
     private fun setFolderControlPanel(paintRef: PaintFolderReference) {
         folderControlPanel.removeAll()
         paintRef.getImageFileNames().forEach { imageName ->
-            folderControlPanel.add(createButton(imageName).apply {
-                background = Colors.INACTIVE
-                addActionListener {
-                    if (background == Colors.ACTIVE) {
-                        background = Colors.INACTIVE
-                        paintRef.setImageVisibility(imageName, false)
-                    } else {
-                        background = Colors.ACTIVE
-                        paintRef.setImageVisibility(imageName, true)
-                    }
-
-                    executor.execute {
-                        paintRef.updateDisplayImage()
-                        displayListener.repaint()
-                    }
-                }
-            })
+            val toggleButton = ToggleButton(imageName, this)
+            toggleButton.setEnabled(paintRef.getImageVisibility(imageName))
+            folderControlPanel.add(toggleButton.button)
         }
         folderControlPanel.isVisible = true
     }
@@ -313,5 +300,19 @@ class ControlPaint(
 
     override fun onClosing() {
         paintRef?.save()
+    }
+
+    override fun onButtonClicked(identifier: String): Boolean {
+        val paintRef = paintRef ?: return false
+        if (paintRef is PaintFolderReference) {
+            val enabled = paintRef.toggleImageVisibility(identifier)
+
+            executor.execute {
+                paintRef.updateDisplayImage()
+                displayListener.repaint()
+            }
+            return enabled
+        }
+        return false
     }
 }

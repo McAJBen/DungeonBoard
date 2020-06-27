@@ -99,10 +99,14 @@ abstract class PaintReference(internal val source: File) {
         @Suppress("LeakingThis")
         loadImages()
 
-        paintData = try {
-            PaintData.read(dataFile)
-        } catch (e2: Exception) {
-            Log.error(Labels.CANNOT_LOAD_MASK_DATA, e2)
+        paintData = if (dataFile.exists()) {
+            try {
+                PaintData.read(dataFile)
+            } catch (e2: Exception) {
+                Log.error(Labels.CANNOT_LOAD_MASK_DATA, e2)
+                PaintData()
+            }
+        } else {
             PaintData()
         }
         updateWindow()

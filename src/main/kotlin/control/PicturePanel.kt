@@ -26,6 +26,9 @@ abstract class PicturePanel(
         private const val GRID_WIDTH = 4
     }
 
+    /**
+     * reference to buttons in this panel
+     */
     protected val buttons = mutableListOf<PictureButton>()
 
     init {

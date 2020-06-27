@@ -31,8 +31,6 @@ object Labels {
     const val CANNOT_UPDATE_IMAGE = "Cannot update Image, file is probably large"
     const val CANNOT_LOAD_IMAGE = "Cannot load Image %s"
     const val CANNOT_LOAD_IMAGE_RGB = "Cannot load Image RGB %s"
-    const val CANNOT_LOAD_IMAGE_ERROR_MULTIPLE = "Cannot Load Image '%s' after 50 attempts\n" +
-            "Allocate more memory or use smaller images"
     const val CANNOT_CREATE_THUMBNAIL = "Cannot create Thumbnail, file is probably too large"
     const val CANNOT_LOAD_THUMBNAIL = "Cannot load Thumbnail, file is probably too large"
     const val CANNOT_SAVE_MASK = "Cannot save mask"

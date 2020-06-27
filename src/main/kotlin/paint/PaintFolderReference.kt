@@ -17,14 +17,6 @@ import javax.imageio.ImageIO
 class PaintFolderReference(source: File) : PaintReference(source) {
 
     /**
-     * data class for storing a file and it's visibility
-     */
-    private data class ImageFile(
-        val file: File,
-        var visibility: Boolean
-    )
-
-    /**
      * optional backgroundFile to paint with instead of a black background
      */
     private val backgroundFile: File? = source.listFiles(File::isFile)?.find {
@@ -32,12 +24,10 @@ class PaintFolderReference(source: File) : PaintReference(source) {
     }
 
     /**
-     * list of `ImageFiles` that can be enabled/disabled
+     * list of images that can be enabled/disabled
      */
-    private val imageFiles: List<ImageFile> = source.listFilesInOrder().filter {
+    private val imageFiles = source.listFilesInOrder().filter {
         it.nameWithoutExtension.matches("[0-9]+".toRegex())
-    }.map {
-        ImageFile(it, false)
     }
 
     /**
@@ -46,19 +36,32 @@ class PaintFolderReference(source: File) : PaintReference(source) {
      */
     fun getImageFileNames(): List<String> {
         return imageFiles.map {
-            it.file.nameWithoutExtension
+            it.nameWithoutExtension
         }
     }
 
     /**
      * changes the visibility of an image
      * @param fileName the name of the file to change
-     * @param visibility the new visibility, true for visible, false for invisible
+     * @return the new visibility of the image
      */
-    fun setImageVisibility(fileName: String, visibility: Boolean) {
-        imageFiles.find {
-            it.file.nameWithoutExtension == fileName
-        }?.visibility = visibility
+    fun toggleImageVisibility(fileName: String): Boolean {
+        return if (fileName in paintData.visibleLayers) {
+            paintData.visibleLayers.remove(fileName)
+            false
+        } else {
+            paintData.visibleLayers.add(fileName)
+            true
+        }
+    }
+
+    /**
+     * gets the current visibility of an image
+     * @param fileName the name of the file
+     * @return the visibility of the image
+     */
+    fun getImageVisibility(fileName: String): Boolean {
+        return fileName in paintData.visibleLayers
     }
 
     /**
@@ -90,10 +93,10 @@ class PaintFolderReference(source: File) : PaintReference(source) {
         }
 
         imageFiles.filter {
-            it.visibility
+            it.nameWithoutExtension in paintData.visibleLayers
         }.reversed().forEach {
             g2d.drawImage(
-                ImageIO.read(it.file),
+                ImageIO.read(it),
                 0,
                 0,
                 displayImage.width,
@@ -135,7 +138,7 @@ class PaintFolderReference(source: File) : PaintReference(source) {
             it.nameWithoutExtension.equals("Guide", ignoreCase = true)
         }
 
-        controlImage = ImageIO.read(guideFile ?: imageFiles.last().file)
+        controlImage = ImageIO.read(guideFile ?: imageFiles.last())
 
         displayImage = BufferedImage(
             controlImage.width,
