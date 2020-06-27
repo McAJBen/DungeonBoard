@@ -17,41 +17,45 @@ import java.io.File
  * @param windowCenter the windowCenter used in `PaintReference`.
  * Used when `displayZoom` is changed and `windowOffset` must be recalculated
  * @param grid the grid settings or null if there is no grid, used in `PaintReference`
- * @since 2.5.1
  */
 @Serializable
 data class PaintData(
-    var displayZoom: Double = 1.0,
-    @Serializable(with = PointSerializer::class) var windowCenter: Point = Point(0, 0),
-    var visibleLayers: MutableSet<String> = mutableSetOf(),
-    var grid: GridData? = null
+	var displayZoom: Double = 1.0,
+	@Serializable(with = PointSerializer::class) var windowCenter: Point = Point(
+		0,
+		0
+	),
+	var visibleLayers: MutableSet<String> = mutableSetOf(),
+	var grid: GridData? = null
 ) {
 
-    companion object {
+	companion object {
 
-        /**
-         * reads a data file and converts it to `PaintData`
-         * @param file the data file to read
-         * @return the conversion of the file into `PaintData`
-         */
-        fun read(file: File): PaintData {
-            @UseExperimental(ImplicitReflectionSerializer::class)
-            return Json.parse(file.readText())
-        }
+		/**
+		 * reads a data file and converts it to `PaintData`
+		 * @param file the data file to read
+		 * @return the conversion of the file into `PaintData`
+		 */
+		fun read(file: File): PaintData {
+			@UseExperimental(ImplicitReflectionSerializer::class) return Json.parse(file.readText())
+		}
 
-        /**
-         * writes a `PaintData` to a data file
-         * @param file the data file to write
-         * @param paintData the data to write
-         */
-        fun write(file: File, paintData: PaintData) {
-            try {
-                @UseExperimental(ImplicitReflectionSerializer::class)
-                file.writeText(Json.stringify(paintData))
-            } catch (e: Exception) {
-                Log.error(e.localizedMessage)
-            }
-        }
-    }
+		/**
+		 * writes a `PaintData` to a data file
+		 * @param file the data file to write
+		 * @param paintData the data to write
+		 */
+		fun write(file: File, paintData: PaintData) {
+			try {
+				@UseExperimental(ImplicitReflectionSerializer::class) file.writeText(
+					Json.stringify(
+						paintData
+					)
+				)
+			} catch (e: Exception) {
+				Log.error(e.localizedMessage)
+			}
+		}
+	}
 }
 

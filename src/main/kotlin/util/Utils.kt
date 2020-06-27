@@ -9,7 +9,7 @@ import javax.swing.JButton
  * @return a `LinkedList<File>` of all files in `folder` in alphabetical order
  */
 fun File.listFilesInOrder(): List<File> {
-    return listFiles()?.sortedWith(compareBy { it.absolutePath }) ?: listOf()
+	return listFiles()?.sortedWith(compareBy { it.absolutePath }) ?: listOf()
 }
 
 /**
@@ -18,10 +18,10 @@ fun File.listFilesInOrder(): List<File> {
  * @return a `JButton` that looks like the standard for Dungeon Board
  */
 fun createButton(label: String): JButton {
-    return JButton(label).apply {
-        isFocusPainted = false
-        isRolloverEnabled = false
-    }
+	return JButton(label).apply {
+		isFocusPainted = false
+		isRolloverEnabled = false
+	}
 }
 
 /**
@@ -30,10 +30,10 @@ fun createButton(label: String): JButton {
  * @return a `JButton` that looks like the standard for Dungeon Board
  */
 fun createButton(imageIcon: ImageIcon): JButton {
-    return JButton(imageIcon).apply {
-        isFocusPainted = false
-        isRolloverEnabled = false
-    }
+	return JButton(imageIcon).apply {
+		isFocusPainted = false
+		isRolloverEnabled = false
+	}
 }
 
 /**
@@ -41,8 +41,17 @@ fun createButton(imageIcon: ImageIcon): JButton {
  * @return true if the file is an image
  */
 fun File.hasImageExtension(): Boolean {
-    return extension.equals("PNG", ignoreCase = true)
-            || extension.equals("JPG", ignoreCase = true)
-            || extension.equals("JPEG", ignoreCase = true)
-            || extension.equals("GIF", ignoreCase = true)
+	return extension.equals(
+		"PNG",
+		ignoreCase = true
+	) || extension.equals(
+		"JPG",
+		ignoreCase = true
+	) || extension.equals(
+		"JPEG",
+		ignoreCase = true
+	) || extension.equals(
+		"GIF",
+		ignoreCase = true
+	)
 }
