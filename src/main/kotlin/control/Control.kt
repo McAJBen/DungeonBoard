@@ -42,22 +42,20 @@ abstract class Control: JPanel() {
 		get() {
 			return JPanel().apply {
 				background = Colors.CONTROL_BACKGROUND
-				layout =
-					BoxLayout(
-						this,
-						BoxLayout.X_AXIS
-					)
+				layout = BoxLayout(
+					this,
+					BoxLayout.X_AXIS
+				)
 				repaint()
 			}
 		}
 
 	init {
 		layout = BorderLayout()
-		border =
-			BorderFactory.createLineBorder(
-				Colors.BACKGROUND,
-				1
-			)
+		border = BorderFactory.createLineBorder(
+			Colors.BACKGROUND,
+			1
+		)
 	}
 
 	/**

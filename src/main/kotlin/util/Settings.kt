@@ -16,11 +16,10 @@ object Settings {
 	/**
 	 * The Dungeon Board directory that contains all images
 	 */
-	private val FOLDER =
-		File(
-			System.getProperty("user.dir"),
-			NAME
-		)
+	private val FOLDER = File(
+		System.getProperty("user.dir"),
+		NAME
+	)
 
 	/**
 	 * an array of all the sub folders in the Dungeon Board folder by their `Mode`
@@ -47,11 +46,10 @@ object Settings {
 	/**
 	 * a sub folder in Dungeon Board to store data separate from sessions
 	 */
-	private val DATA_FOLDER =
-		File(
-			FOLDER,
-			"Data"
-		)
+	private val DATA_FOLDER = File(
+		FOLDER,
+		"Data"
+	)
 
 	/**
 	 * an array of all the sub folders that contain meta data by their `Mode`
@@ -91,29 +89,26 @@ object Settings {
 	/**
 	 * the default size of the `ControlWindow`
 	 */
-	val CONTROL_SIZE =
-		Dimension(
-			900,
-			700
-		)
+	val CONTROL_SIZE = Dimension(
+		900,
+		700
+	)
 
 	/**
 	 * the default size of the `GridMenu`
 	 */
-	val GRID_MODAL_SIZE =
-		Dimension(
-			500,
-			300
-		)
+	val GRID_MODAL_SIZE = Dimension(
+		500,
+		300
+	)
 
 	/**
 	 * the size of the display that players see
 	 */
-	var DISPLAY_SIZE =
-		Dimension(
-			1,
-			1
-		)
+	var DISPLAY_SIZE = Dimension(
+		1,
+		1
+	)
 
 	/**
 	 * the number of threads this computer has

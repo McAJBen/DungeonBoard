@@ -49,28 +49,25 @@ class ControlPaint(
 	/**
 	 * the text field for changing zoom
 	 */
-	private val zoomText =
-		JTextField(
-			"1.00",
-			1
-		).apply {
-			maximumSize =
-				Dimension(
-					5000,
-					25
-				)
-		}
+	private val zoomText = JTextField(
+		"1.00",
+		1
+	).apply {
+		maximumSize = Dimension(
+			5000,
+			25
+		)
+	}
 
 	/**
 	 * the slider for changing zoom
 	 */
-	private val zoomSlider =
-		JSlider(
-			SwingConstants.VERTICAL,
-			1,
-			(maxZoom * 100).toInt(),
-			100
-		)
+	private val zoomSlider = JSlider(
+		SwingConstants.VERTICAL,
+		1,
+		(maxZoom * 100).toInt(),
+		100
+	)
 
 	/**
 	 * the `JPanel` holding options for which file in a folder to display
@@ -132,21 +129,19 @@ class ControlPaint(
 			} catch (nfe: NumberFormatException) {
 				zoom = zoomSlider.value / 100.0
 			}
-			zoomText.text =
-				String.format(
-					"%.2f",
-					zoom
-				)
+			zoomText.text = String.format(
+				"%.2f",
+				zoom
+			)
 			zoomSlider.value = (zoom * 100).toInt()
 		}
 
 		zoomSlider.addChangeListener {
 			val zoom = (zoomSlider.value / 100.0).boundZoom()
-			zoomText.text =
-				String.format(
-					"%.2f",
-					zoom
-				)
+			zoomText.text = String.format(
+				"%.2f",
+				zoom
+			)
 			paintRef?.setDisplayZoom(zoom)
 			drawPanel.repaint()
 			displayListener.repaint()
@@ -200,24 +195,22 @@ class ControlPaint(
 			addActionListener { drawPanel.hideAll() }
 		}
 
-		val sizeSlider =
-			JSlider(
-				SwingConstants.HORIZONTAL,
-				10,
-				100,
-				25
-			).apply {
-				background = Colors.CONTROL_BACKGROUND
-				addChangeListener { drawPanel.setRadius(value) }
-			}
+		val sizeSlider = JSlider(
+			SwingConstants.HORIZONTAL,
+			10,
+			100,
+			25
+		).apply {
+			background = Colors.CONTROL_BACKGROUND
+			addChangeListener { drawPanel.setRadius(value) }
+		}
 
 		add(
 			JPanel().apply {
-				layout =
-					BoxLayout(
-						this,
-						BoxLayout.Y_AXIS
-					)
+				layout = BoxLayout(
+					this,
+					BoxLayout.Y_AXIS
+				)
 				background = Colors.CONTROL_BACKGROUND
 				add(
 					JLabel(
@@ -232,11 +225,10 @@ class ControlPaint(
 		)
 		add(
 			JPanel().apply {
-				layout =
-					BoxLayout(
-						this,
-						BoxLayout.Y_AXIS
-					)
+				layout = BoxLayout(
+					this,
+					BoxLayout.Y_AXIS
+				)
 				add(folderControlPanel)
 				add(northPanel.apply {
 					add(fileBox)
@@ -288,11 +280,10 @@ class ControlPaint(
 			)
 			zoomSlider.maximum = (maxZoom * 100).toInt()
 			zoomSlider.value = (paintRef.paintData.displayZoom * 100).toInt()
-			zoomText.text =
-				String.format(
-					"%.2f",
-					paintRef.paintData.displayZoom
-				)
+			zoomText.text = String.format(
+				"%.2f",
+				paintRef.paintData.displayZoom
+			)
 
 			paintRef.updateDisplayMask()
 
@@ -311,11 +302,10 @@ class ControlPaint(
 	private fun setFolderControlPanel(paintRef: PaintFolderReference) {
 		folderControlPanel.removeAll()
 		paintRef.getImageFileNames().forEach { imageName ->
-			val toggleButton =
-				ToggleButton(
-					imageName,
-					this
-				)
+			val toggleButton = ToggleButton(
+				imageName,
+				this
+			)
 			toggleButton.setEnabled(paintRef.getImageVisibility(imageName))
 			folderControlPanel.add(toggleButton.button)
 		}

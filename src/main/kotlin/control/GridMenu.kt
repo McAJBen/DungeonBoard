@@ -50,34 +50,30 @@ class GridMenu(
 	/**
 	 * control for red, green, blue, alpha color values
 	 */
-	private val redSlider =
-		JSlider(
-			JSlider.HORIZONTAL,
-			0,
-			255,
-			gridData.color.red
-		)
-	private val greenSlider =
-		JSlider(
-			JSlider.HORIZONTAL,
-			0,
-			255,
-			gridData.color.green
-		)
-	private val blueSlider =
-		JSlider(
-			JSlider.HORIZONTAL,
-			0,
-			255,
-			gridData.color.blue
-		)
-	private val alphaSlider =
-		JSlider(
-			JSlider.HORIZONTAL,
-			0,
-			255,
-			gridData.color.alpha
-		)
+	private val redSlider = JSlider(
+		JSlider.HORIZONTAL,
+		0,
+		255,
+		gridData.color.red
+	)
+	private val greenSlider = JSlider(
+		JSlider.HORIZONTAL,
+		0,
+		255,
+		gridData.color.green
+	)
+	private val blueSlider = JSlider(
+		JSlider.HORIZONTAL,
+		0,
+		255,
+		gridData.color.blue
+	)
+	private val alphaSlider = JSlider(
+		JSlider.HORIZONTAL,
+		0,
+		255,
+		gridData.color.alpha
+	)
 
 	/**
 	 * number visual for red, green, blue, alpha color values
@@ -90,13 +86,12 @@ class GridMenu(
 	/**
 	 * control for the width of each line in the grid
 	 */
-	private val lineWidthSlider =
-		JSlider(
-			JSlider.HORIZONTAL,
-			1,
-			20,
-			gridData.lineWidth
-		)
+	private val lineWidthSlider = JSlider(
+		JSlider.HORIZONTAL,
+		1,
+		20,
+		gridData.lineWidth
+	)
 
 	/**
 	 * number visual for the width of each line in the grid
@@ -106,20 +101,18 @@ class GridMenu(
 	/**
 	 * control for the size of each square in the grid in pixels between each line
 	 */
-	private val squareSizeWidthSlider =
-		JSlider(
-			JSlider.HORIZONTAL,
-			2,
-			999,
-			gridData.squareSize.width
-		)
-	private val squareSizeHeightSlider =
-		JSlider(
-			JSlider.HORIZONTAL,
-			2,
-			999,
-			gridData.squareSize.height
-		)
+	private val squareSizeWidthSlider = JSlider(
+		JSlider.HORIZONTAL,
+		2,
+		999,
+		gridData.squareSize.width
+	)
+	private val squareSizeHeightSlider = JSlider(
+		JSlider.HORIZONTAL,
+		2,
+		999,
+		gridData.squareSize.height
+	)
 
 	/**
 	 * number visual for the size of each square in the grid in pixels between each line
@@ -130,20 +123,18 @@ class GridMenu(
 	/**
 	 * control for the number of pixels to shift the grid in x and y directions
 	 */
-	private val offsetXSlider =
-		JSlider(
-			JSlider.HORIZONTAL,
-			0,
-			gridData.squareSize.width - 1,
-			gridData.offset.x
-		)
-	private val offsetYSlider =
-		JSlider(
-			JSlider.HORIZONTAL,
-			0,
-			gridData.squareSize.height - 1,
-			gridData.offset.y
-		)
+	private val offsetXSlider = JSlider(
+		JSlider.HORIZONTAL,
+		0,
+		gridData.squareSize.width - 1,
+		gridData.offset.x
+	)
+	private val offsetYSlider = JSlider(
+		JSlider.HORIZONTAL,
+		0,
+		gridData.squareSize.height - 1,
+		gridData.offset.y
+	)
 
 	/**
 	 * number visual for the number of pixels to shift the grid in x and y directions

@@ -19,64 +19,57 @@ data class GridData(
 	@Serializable(with = DimensionSerializer::class) var squareSize: Dimension = Dimension(
 		100,
 		100
-	),
-	var lineWidth: Int = 4,
-	@Serializable(with = PointSerializer::class) var offset: Point = Point(
+	), var lineWidth: Int = 4, @Serializable(with = PointSerializer::class) var offset: Point = Point(
 		0,
 		0
-	),
-	@Serializable(with = RGBAColorSerializer::class) var color: Color = Colors.TRANSPARENT_GREY
+	), @Serializable(with = RGBAColorSerializer::class) var color: Color = Colors.TRANSPARENT_GREY
 ) {
 
 	/**
 	 * changes the color's red value
 	 */
 	fun changeRed(red: Int) {
-		color =
-			Color(
-				red,
-				color.green,
-				color.blue,
-				color.alpha
-			)
+		color = Color(
+			red,
+			color.green,
+			color.blue,
+			color.alpha
+		)
 	}
 
 	/**
 	 * changes the color's green value
 	 */
 	fun changeGreen(green: Int) {
-		color =
-			Color(
-				color.red,
-				green,
-				color.blue,
-				color.alpha
-			)
+		color = Color(
+			color.red,
+			green,
+			color.blue,
+			color.alpha
+		)
 	}
 
 	/**
 	 * changes the color's blue value
 	 */
 	fun changeBlue(blue: Int) {
-		color =
-			Color(
-				color.red,
-				color.green,
-				blue,
-				color.alpha
-			)
+		color = Color(
+			color.red,
+			color.green,
+			blue,
+			color.alpha
+		)
 	}
 
 	/**
 	 * changes the color's alpha value
 	 */
 	fun changeAlpha(alpha: Int) {
-		color =
-			Color(
-				color.red,
-				color.green,
-				color.blue,
-				alpha
-			)
+		color = Color(
+			color.red,
+			color.green,
+			color.blue,
+			alpha
+		)
 	}
 }

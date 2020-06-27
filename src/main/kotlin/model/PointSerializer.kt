@@ -24,16 +24,14 @@ class PointSerializer: KSerializer<Point> {
 		loop@ while (true) {
 			when (val i = dec.decodeElementIndex(descriptor)) {
 				CompositeDecoder.READ_DONE -> break@loop
-				0 -> x =
-					dec.decodeIntElement(
-						descriptor,
-						i
-					)
-				1 -> y =
-					dec.decodeIntElement(
-						descriptor,
-						i
-					)
+				0 -> x = dec.decodeIntElement(
+					descriptor,
+					i
+				)
+				1 -> y = dec.decodeIntElement(
+					descriptor,
+					i
+				)
 				else -> throw SerializationException("Unknown index $i")
 			}
 		}

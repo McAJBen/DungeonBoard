@@ -25,11 +25,10 @@ class WindowManager(
 	/**
 	 * the main window that is shown to the person controlling everything
 	 */
-	private val controlWindow =
-		ControlWindow(
-			this,
-			controlScreen
-		)
+	private val controlWindow = ControlWindow(
+		this,
+		controlScreen
+	)
 
 	/**
 	 * a list of all possible displays to be shown to players

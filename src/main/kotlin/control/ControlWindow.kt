@@ -98,11 +98,10 @@ class ControlWindow(
 	private fun createButtonGroup(title: String, buttons: List<JButton>): JPanel {
 		val buttonPanel = JPanel().apply {
 			background = Colors.CONTROL_BACKGROUND
-			layout =
-				GridLayout(
-					1,
-					buttons.size
-				)
+			layout = GridLayout(
+				1,
+				buttons.size
+			)
 			for (i in buttons.indices) {
 				add(buttons[i])
 			}
@@ -110,16 +109,14 @@ class ControlWindow(
 
 		return JPanel().apply {
 			background = Colors.CONTROL_BACKGROUND
-			layout =
-				GridLayout(
-					2,
-					1
-				)
-			border =
-				BorderFactory.createLineBorder(
-					Colors.BACKGROUND,
-					2
-				)
+			layout = GridLayout(
+				2,
+				1
+			)
+			border = BorderFactory.createLineBorder(
+				Colors.BACKGROUND,
+				2
+			)
 			add(
 				JLabel(
 					title,

@@ -233,13 +233,12 @@ class DisplayLoading(window: DisplayWindow): Display(window) {
 		super.paint(g)
 		val g2d = g as Graphics2D
 
-		g2d.color =
-			Color(
-				currentImage?.getRGB(
-					0,
-					0
-				) ?: Colors.BLACK.rgb
-			)
+		g2d.color = Color(
+			currentImage?.getRGB(
+				0,
+				0
+			) ?: Colors.BLACK.rgb
+		)
 		g2d.fillRect(
 			0,
 			0,
@@ -255,22 +254,20 @@ class DisplayLoading(window: DisplayWindow): Display(window) {
 		val cycleTime = System.currentTimeMillis() - lastSwapTime
 		if (cycleTime < FADE_IN_MS) {
 			val fade = 1 - cycleTime / FADE_IN_MS.toFloat()
-			g2d.composite =
-				AlphaComposite.getInstance(
-					AlphaComposite.SRC_OVER,
-					fade
-				)
+			g2d.composite = AlphaComposite.getInstance(
+				AlphaComposite.SRC_OVER,
+				fade
+			)
 			drawImage(
 				g2d,
 				oldImage
 			)
 		}
 
-		g2d.composite =
-			AlphaComposite.getInstance(
-				AlphaComposite.SRC_OVER,
-				1f
-			)
+		g2d.composite = AlphaComposite.getInstance(
+			AlphaComposite.SRC_OVER,
+			1f
+		)
 		for (c in cubes) {
 			c.paint(g2d)
 		}

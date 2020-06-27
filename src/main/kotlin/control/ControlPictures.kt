@@ -62,11 +62,10 @@ class ControlPictures(
 	init {
 		val scaleComboBox: JComboBox<Scale> = JComboBox<Scale>(Scale.values()).apply {
 			background = Colors.CONTROL_BACKGROUND
-			maximumSize =
-				Dimension(
-					100,
-					5000
-				)
+			maximumSize = Dimension(
+				100,
+				5000
+			)
 			selectedItem = Scale.UP_SCALE
 			addActionListener { display.setScaleMode(selectedItem as Scale) }
 		}

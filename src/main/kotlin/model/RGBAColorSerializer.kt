@@ -28,26 +28,22 @@ class RGBAColorSerializer: KSerializer<Color> {
 		loop@ while (true) {
 			when (val i = dec.decodeElementIndex(descriptor)) {
 				CompositeDecoder.READ_DONE -> break@loop
-				0 -> red =
-					dec.decodeIntElement(
-						descriptor,
-						i
-					)
-				1 -> green =
-					dec.decodeIntElement(
-						descriptor,
-						i
-					)
-				2 -> blue =
-					dec.decodeIntElement(
-						descriptor,
-						i
-					)
-				3 -> alpha =
-					dec.decodeIntElement(
-						descriptor,
-						i
-					)
+				0 -> red = dec.decodeIntElement(
+					descriptor,
+					i
+				)
+				1 -> green = dec.decodeIntElement(
+					descriptor,
+					i
+				)
+				2 -> blue = dec.decodeIntElement(
+					descriptor,
+					i
+				)
+				3 -> alpha = dec.decodeIntElement(
+					descriptor,
+					i
+				)
 				else -> throw SerializationException("Unknown index $i")
 			}
 		}

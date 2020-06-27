@@ -42,12 +42,11 @@ class DisplayTimer(
 		/**
 		 * the font used for `DisplayTimer`
 		 */
-		private val FONT =
-			Font(
-				"TimesRoman",
-				Font.BOLD,
-				120
-			)
+		private val FONT = Font(
+			"TimesRoman",
+			Font.BOLD,
+			120
+		)
 	}
 
 	/**
@@ -106,11 +105,10 @@ class DisplayTimer(
 	 * @param seconds the number of seconds to display
 	 */
 	private fun paintTimer(g2d: Graphics2D, background: Color, seconds: Int) {
-		val digits =
-			max(
-				log10(seconds / 60.toDouble()).toInt(),
-				0
-			)
+		val digits = max(
+			log10(seconds / 60.toDouble()).toInt(),
+			0
+		)
 		val x = left - TIMER_WIDTH_MULTIPLIER * digits / 2
 		val w = TIMER_WIDTH + TIMER_WIDTH_MULTIPLIER * digits
 		g2d.color = background

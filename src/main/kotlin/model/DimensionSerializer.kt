@@ -24,16 +24,14 @@ class DimensionSerializer: KSerializer<Dimension> {
 		loop@ while (true) {
 			when (val i = dec.decodeElementIndex(descriptor)) {
 				CompositeDecoder.READ_DONE -> break@loop
-				0 -> width =
-					dec.decodeIntElement(
-						descriptor,
-						i
-					)
-				1 -> height =
-					dec.decodeIntElement(
-						descriptor,
-						i
-					)
+				0 -> width = dec.decodeIntElement(
+					descriptor,
+					i
+				)
+				1 -> height = dec.decodeIntElement(
+					descriptor,
+					i
+				)
 				else -> throw SerializationException("Unknown index $i")
 			}
 		}

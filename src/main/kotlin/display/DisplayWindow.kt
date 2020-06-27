@@ -20,11 +20,10 @@ class DisplayWindow(r: Rectangle): JFrame() {
 	/**
 	 * handler for displaying a timer created from `DisplayLoading`
 	 */
-	private val displayTimer =
-		DisplayTimer(
-			this,
-			r.size
-		)
+	private val displayTimer = DisplayTimer(
+		this,
+		r.size
+	)
 
 	/**
 	 * handler for displaying the cursor hand

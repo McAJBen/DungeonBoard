@@ -95,11 +95,10 @@ abstract class PaintReference(internal val source: File) {
 	/**
 	 * the window offset for displaying an image on `DisplayPaint`
 	 */
-	internal var windowOffset =
-		Point(
-			0,
-			0
-		)
+	internal var windowOffset = Point(
+		0,
+		0
+	)
 
 	/**
 	 * paint data that will be saved between instances
@@ -151,11 +150,10 @@ abstract class PaintReference(internal val source: File) {
 		)
 
 		maskGraphics = controlMask.createGraphics().apply {
-			composite =
-				AlphaComposite.getInstance(
-					AlphaComposite.SRC,
-					1.0f
-				)
+			composite = AlphaComposite.getInstance(
+				AlphaComposite.SRC,
+				1.0f
+			)
 			setRenderingHint(
 				RenderingHints.KEY_RENDERING,
 				RenderingHints.VALUE_RENDER_SPEED

@@ -56,28 +56,25 @@ class ControlLoading(
 			horizontalAlignment = SwingConstants.CENTER
 		}
 
-		val timeSlider =
-			JSlider(
-				SwingConstants.HORIZONTAL,
-				1,
-				20,
-				8
-			).apply {
-				background = Colors.CONTROL_BACKGROUND
-				minimumSize =
-					Dimension(
-						100,
-						0
-					)
-				addChangeListener {
-					timeLabel.text =
-						String.format(
-							"%02d",
-							value
-						)
-					displayLoading.setTotalWait(value)
-				}
+		val timeSlider = JSlider(
+			SwingConstants.HORIZONTAL,
+			1,
+			20,
+			8
+		).apply {
+			background = Colors.CONTROL_BACKGROUND
+			minimumSize = Dimension(
+				100,
+				0
+			)
+			addChangeListener {
+				timeLabel.text = String.format(
+					"%02d",
+					value
+				)
+				displayLoading.setTotalWait(value)
 			}
+		}
 
 		val createTimerButton = createButton(Labels.CREATE_TIMER).apply {
 			addActionListener {

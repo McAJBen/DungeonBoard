@@ -34,11 +34,10 @@ class PictureButton(
 		/**
 		 * The size of the `ImageIcon` in each of the buttons
 		 */
-		private val IMAGE_ICON_SIZE =
-			Dimension(
-				100,
-				60
-			)
+		private val IMAGE_ICON_SIZE = Dimension(
+			100,
+			60
+		)
 	}
 
 	/**
@@ -49,11 +48,10 @@ class PictureButton(
 	/**
 	 * the thumbnail file for this image
 	 */
-	private val thumbnailSource =
-		File(
-			Settings.getDataFolder(mode),
-			source.name
-		)
+	private val thumbnailSource = File(
+		Settings.getDataFolder(mode),
+		source.name
+	)
 
 	/**
 	 * whether the button is currently enabled or disabled
@@ -64,13 +62,12 @@ class PictureButton(
 	 * button that controls whether the image should be displayed
 	 */
 	val button = JButton(source.nameWithoutExtension).also { button ->
-		button.margin =
-			Insets(
-				0,
-				0,
-				0,
-				0
-			)
+		button.margin = Insets(
+			0,
+			0,
+			0,
+			0
+		)
 		button.isFocusPainted = false
 		button.verticalTextPosition = SwingConstants.TOP
 		button.horizontalTextPosition = SwingConstants.CENTER
@@ -176,8 +173,7 @@ class PictureButton(
 	fun getBackgroundColor(): Color {
 		return try {
 			Color(
-				ImageIO.read(thumbnailSource)
-					.getRGB(
+				ImageIO.read(thumbnailSource).getRGB(
 						0,
 						0
 					)

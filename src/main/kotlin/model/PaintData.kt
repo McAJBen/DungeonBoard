@@ -20,13 +20,10 @@ import java.io.File
  */
 @Serializable
 data class PaintData(
-	var displayZoom: Double = 1.0,
-	@Serializable(with = PointSerializer::class) var windowCenter: Point = Point(
+	var displayZoom: Double = 1.0, @Serializable(with = PointSerializer::class) var windowCenter: Point = Point(
 		0,
 		0
-	),
-	var visibleLayers: MutableSet<String> = mutableSetOf(),
-	var grid: GridData? = null
+	), var visibleLayers: MutableSet<String> = mutableSetOf(), var grid: GridData? = null
 ) {
 
 	companion object {

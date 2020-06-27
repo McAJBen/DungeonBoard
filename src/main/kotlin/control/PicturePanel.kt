@@ -31,11 +31,10 @@ abstract class PicturePanel(
 	protected val buttons = mutableListOf<PictureButton>()
 
 	init {
-		layout =
-			GridLayout(
-				0,
-				GRID_WIDTH
-			)
+		layout = GridLayout(
+			0,
+			GRID_WIDTH
+		)
 		border = BorderFactory.createEmptyBorder()
 	}
 
@@ -44,11 +43,10 @@ abstract class PicturePanel(
 	 * @param source the file of an image to add
 	 */
 	fun addPicture(source: File) {
-		val pictureButton =
-			PictureButton(
-				source,
-				this
-			)
+		val pictureButton = PictureButton(
+			source,
+			this
+		)
 
 		buttons.add(pictureButton)
 	}

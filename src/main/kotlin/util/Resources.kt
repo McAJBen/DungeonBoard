@@ -76,12 +76,11 @@ object Resources {
 	/**
 	 * a blank 3x3 `BufferedImage` for displaying an invisible cursor, or as a placeholder for an image;
 	 */
-	val BLANK_CURSOR =
-		BufferedImage(
-			3,
-			3,
-			BufferedImage.TYPE_INT_ARGB
-		)
+	val BLANK_CURSOR = BufferedImage(
+		3,
+		3,
+		BufferedImage.TYPE_INT_ARGB
+	)
 
 	/**
 	 * the images for cursor hands

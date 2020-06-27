@@ -43,11 +43,10 @@ class DrawPanel(
 	/**
 	 * the current position of the mouse inside of (@code drawingLayer}
 	 */
-	private var mousePos =
-		Point(
-			Int.MIN_VALUE,
-			Int.MIN_VALUE
-		)
+	private var mousePos = Point(
+		Int.MIN_VALUE,
+		Int.MIN_VALUE
+	)
 
 	/**
 	 * true if the pen is drawing, false if you ignore it
@@ -318,11 +317,10 @@ class DrawPanel(
 	private fun getCircleDragPolygon(
 		newP: Point?, oldP: Point?, radiusWidth: Double, radiusHeight: Double
 	): Polygon {
-		val angle =
-			-atan2(
-				newP!!.getY() - oldP!!.getY(),
-				newP.getX() - oldP.getX()
-			)
+		val angle = -atan2(
+			newP!!.getY() - oldP!!.getY(),
+			newP.getX() - oldP.getX()
+		)
 		val anglePos = angle + Math.PI / 2
 		val angleNeg = angle - Math.PI / 2
 		val cosP = (cos(anglePos) * radiusWidth).roundToInt()

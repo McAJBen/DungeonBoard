@@ -21,22 +21,20 @@ class DisplayCursor(
 		/**
 		 * the offsets used to display the cursor hand
 		 */
-		private val HANDS_OFFSET =
-			intArrayOf(
-				-5,
-				-100,
-				-45,
-				0
-			)
+		private val HANDS_OFFSET = intArrayOf(
+			-5,
+			-100,
+			-45,
+			0
+		)
 
 		/**
 		 * the position a cursor is placed when not on screen
 		 */
-		private val NULL_POS =
-			Point(
-				Int.MIN_VALUE,
-				Int.MIN_VALUE
-			)
+		private val NULL_POS = Point(
+			Int.MIN_VALUE,
+			Int.MIN_VALUE
+		)
 	}
 
 	/**

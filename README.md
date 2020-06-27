@@ -64,7 +64,7 @@ The main use case is for the DM to show 'loading tips' to distract the players a
 
 ## Running Dungeon Board
 
-[Download 3.0.1](https://github.com/McAJBen/DungeonBoard/releases/download/v3.0.1/Dungeon.Board.v3.0.1.jar)
+[Download v3.0.2](https://github.com/McAJBen/DungeonBoard/releases/download/v3.0.2/DungeonBoard.v3.0.2.jar)
 
 *Caution, web browsers do not like .jar files. They can be used to give viruses. Do your research before downloading (Don't take my word for it).*
 
@@ -73,4 +73,4 @@ The next time you run Dungeon Board it will automatically load these on startup.
 
 If you want to run Dungeon Board with more memory allocated you have to run the .jar file from the command line.
 
-    java -jar -Xmx2000m "Dungeon Board v3.0.1.jar"
+    java -jar -Xmx2000m DungeonBoard.v3.0.2.jar

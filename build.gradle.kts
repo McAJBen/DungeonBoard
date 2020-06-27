@@ -10,7 +10,7 @@ group = "mcajben.dungeonboard"
 
 version = "dev"
 
-val releaseVersion = "3.0.1"
+val releaseVersion = "3.0.2"
 
 val resourcesDir = File(buildDir, "resources/main")
 
@@ -20,7 +20,9 @@ val jarFile: File
 	get() = File(jarDir, "${rootProject.name}-$version.jar")
 
 val releaseFile: File
-	get() = File("${rootProject.name}-$releaseVersion.jar")
+	get() = File("${rootProject.name}.v$releaseVersion.jar")
+
+val readMeFile = File("README.md")
 
 repositories {
 	jcenter()
@@ -79,5 +81,15 @@ val buildRelease by tasks.registering {
 		releaseFile.delete()
 		jarFile.copyTo(releaseFile)
 		jarFile.delete()
+
+		readMeFile.writeText(
+			readMeFile.readText().replace(
+				Regex("""\[Download v.*]\(https://github.com/McAJBen/DungeonBoard/releases/download/v.*/DungeonBoard\.v.*\.jar\)"""),
+				"[Download v$releaseVersion](https://github.com/McAJBen/DungeonBoard/releases/download/v$releaseVersion/DungeonBoard.v$releaseVersion.jar)"
+			).replace(
+				Regex("""java -jar -Xmx2000m DungeonBoard\.v.*\.jar"""),
+				"java -jar -Xmx2000m DungeonBoard.v$releaseVersion.jar"
+			)
+		)
 	}
 }
